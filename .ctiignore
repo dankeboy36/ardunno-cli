@@ -1,0 +1,7 @@
+{
+    "**/*.ts": [
+        "protobufPackage",
+        "DeepPartial",
+        "ServerStreamingMethodResult"
+    ]
+}

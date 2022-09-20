@@ -1,0 +1,1 @@
+### JS/TS API for the [Arduino CLI](https://github.com/arduino/arduino-cli)
