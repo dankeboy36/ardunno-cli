@@ -31,9 +31,8 @@
     "api:generate": "mkdirp ./src-gen && ./generate.sh",
     "api:index": "ctix single -p ./tsconfig.json -o ./src-gen/index.ts -w",
     "api:patch": "replace 'type ArduinoCoreServiceDefinition' 'ArduinoCoreServiceDefinition' ./src-gen/index.ts && replace 'type DebugServiceDefinition' 'DebugServiceDefinition' ./src-gen/index.ts && replace 'type SettingsServiceDefinition' 'SettingsServiceDefinition' ./src-gen/index.ts && mkdirp ./api && move-cli ./src-gen ./api",
-    "api:prettier": "prettier --write .",
     "api:build": "tsup ./api/index.ts --format cjs,esm --dts --clean",
-    "api:all": "npm run clean && npm run api:clone && npm run api:generate && npm run api:index && npm run api:patch && npm run api:prettier && npm run api:build",
+    "api:all": "npm run clean && npm run api:clone && npm run api:generate && npm run api:index && npm run api:patch && npm run api:build",
     "prepublishOnly": "npm run api:all"
   },
   "repository": {
@@ -48,7 +47,6 @@
     "ctix": "^1.4.0",
     "mkdirp": "^1.0.4",
     "move-cli": "^2.0.0",
-    "prettier": "^2.7.1",
     "replace": "^1.2.1",
     "rimraf": "^3.0.2",
     "tsup": "^6.2.3",
