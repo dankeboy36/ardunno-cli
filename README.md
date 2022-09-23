@@ -2,7 +2,7 @@
 
 JS/TS API for the [Arduino CLI](https://github.com/arduino/arduino-cli).
 
-EMS example:
+ESM example:
 ```js
 import { createChannel, createClient } from 'nice-grpc';
 import { ArduinoCoreServiceDefinition } from 'ardunno-cli-api';
