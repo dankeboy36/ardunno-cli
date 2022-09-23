@@ -1,6 +1,6 @@
 {
-  "name": "@ardunno/cli-api",
-  "version": "0.0.1-alpha.1",
+  "name": "ardunno-cli-api",
+  "version": "0.1.0-beta.2",
   "description": "JS/TS API for the Arduino CLI",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -33,7 +33,8 @@
     "api:patch": "replace 'type ArduinoCoreServiceDefinition' 'ArduinoCoreServiceDefinition' ./src-gen/index.ts && replace 'type DebugServiceDefinition' 'DebugServiceDefinition' ./src-gen/index.ts && replace 'type SettingsServiceDefinition' 'SettingsServiceDefinition' ./src-gen/index.ts && mkdirp ./api && move-cli ./src-gen ./api",
     "api:prettier": "prettier --write .",
     "api:build": "tsup ./api/index.ts --format cjs,esm --dts --clean",
-    "api:all": "npm run clean && npm run api:clone && npm run api:generate && npm run api:index && npm run api:patch && npm run api:prettier && npm run api:build"
+    "api:all": "npm run clean && npm run api:clone && npm run api:generate && npm run api:index && npm run api:patch && npm run api:prettier && npm run api:build",
+    "prepublishOnly": "npm run api:all"
   },
   "repository": {
     "type": "git",
