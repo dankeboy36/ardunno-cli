@@ -2,33 +2,42 @@
   "name": "@ardunno/cli-api",
   "version": "0.0.1-alpha.1",
   "description": "JS/TS API for the Arduino CLI",
-  "main": "dist/cjs/index.js",
-  "types": "dist/esm/index.d.ts",
-  "module": "dist/esm/index.js",
-  "scripts": {
-    "clean": "rimraf ./arduino-cli",
-    "api:clone": "git clone https://github.com/arduino/arduino-cli.git --depth 1 -qq",
-    "api:generate": "mkdirp api && ./generate.sh",
-    "api:index": "ctix single -p ./tsconfig.json -o ./api/index.ts -w",
-    "api:patch": "replace 'type ArduinoCoreServiceDefinition' 'ArduinoCoreServiceDefinition' ./api/index.ts && replace 'type DebugServiceDefinition' 'DebugServiceDefinition' ./api/index.ts && replace 'type SettingsServiceDefinition' 'SettingsServiceDefinition' ./api/index.ts",
-    "api:prettier": "prettier --write .",
-    "api:build": "rollup -c ./rollup.config.js",
-    "api:all": "npm run clean && npm run api:clone && npm run api:generate && npm run api:index && npm run api:patch && npm run api:prettier && npm run api:build"
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
   },
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "arduino",
     "proto",
     "grpc"
   ],
-  "files": [],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dankeboy36/ardunno-cli-api.git"
-  },
   "author": "dankeboy36",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/dankeboy36/ardunno-cli-api/issues"
+  },
+  "scripts": {
+    "clean": "rimraf ./arduino-cli ./src-gen ./api",
+    "api:clone": "git clone https://github.com/arduino/arduino-cli.git --depth 1 -qq",
+    "api:generate": "mkdirp ./src-gen && ./generate.sh",
+    "api:index": "ctix single -p ./tsconfig.json -o ./src-gen/index.ts -w",
+    "api:patch": "replace 'type ArduinoCoreServiceDefinition' 'ArduinoCoreServiceDefinition' ./src-gen/index.ts && replace 'type DebugServiceDefinition' 'DebugServiceDefinition' ./src-gen/index.ts && replace 'type SettingsServiceDefinition' 'SettingsServiceDefinition' ./src-gen/index.ts && mkdirp ./api && move-cli ./src-gen ./api",
+    "api:prettier": "prettier --write .",
+    "api:build": "tsup ./api/index.ts --format cjs,esm --dts --clean",
+    "api:all": "npm run clean && npm run api:clone && npm run api:generate && npm run api:index && npm run api:patch && npm run api:prettier && npm run api:build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dankeboy36/ardunno-cli-api.git"
   },
   "dependencies": {
     "nice-grpc-common": "^2.0.0",
@@ -37,12 +46,11 @@
   "devDependencies": {
     "ctix": "^1.4.0",
     "mkdirp": "^1.0.4",
+    "move-cli": "^2.0.0",
     "prettier": "^2.7.1",
     "replace": "^1.2.1",
     "rimraf": "^3.0.2",
-    "rollup": "^2.79.0",
-    "rollup-plugin-sourcemaps": "^0.6.3",
-    "rollup-plugin-ts": "^3.0.2",
+    "tsup": "^6.2.3",
     "ts-proto": "^1.125.0",
     "typescript": "^4.8.3"
   }
