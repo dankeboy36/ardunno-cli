@@ -10,4 +10,4 @@ protoc \
     --ts_proto_opt=paths=source_relative \
     --ts_proto_opt=esModuleInterop=true \
     --ts_proto_opt=importSuffix=.js \
-    --ts_proto_out=src-gen $(find arduino-cli/rpc -name "*.proto")
+    --ts_proto_out=api $(find arduino-cli/rpc -name "*.proto")

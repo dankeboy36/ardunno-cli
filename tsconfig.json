@@ -17,8 +17,5 @@
     "declarationMap": true,
     "outDir": "./dist"
   },
-  "include": [
-    "./api",
-    "./src-gen"
-  ]
+  "include": ["./api"]
 }

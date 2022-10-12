@@ -2,5 +2,4 @@ node_modules
 arduino-cli
 .DS_Store
 *.ts.bak
-api
 dist

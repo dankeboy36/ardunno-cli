@@ -1,7 +1,7 @@
 {
   "name": "ardunno-cli-api",
-  "version": "0.1.0-beta.2",
-  "description": "JS/TS API for the Arduino CLI",
+  "version": "0.1.0-beta.3",
+  "description": "nice-grpc API for the Arduino CLI",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -26,13 +26,12 @@
     "url": "https://github.com/dankeboy36/ardunno-cli-api/issues"
   },
   "scripts": {
-    "clean": "rimraf ./arduino-cli ./src-gen ./api",
-    "api:clone": "git clone https://github.com/arduino/arduino-cli.git --depth 1 -qq",
-    "api:generate": "mkdirp ./src-gen && ./generate.sh",
-    "api:index": "ctix single -p ./tsconfig.json -o ./src-gen/index.ts -w",
-    "api:patch": "replace 'type ArduinoCoreServiceDefinition' 'ArduinoCoreServiceDefinition' ./src-gen/index.ts && replace 'type DebugServiceDefinition' 'DebugServiceDefinition' ./src-gen/index.ts && replace 'type SettingsServiceDefinition' 'SettingsServiceDefinition' ./src-gen/index.ts && mkdirp ./api && move-cli ./src-gen ./api",
+    "api:clone": "rimraf ./arduino-cli && git clone https://github.com/arduino/arduino-cli.git --depth 1 -qq",
+    "api:generate": "mkdirp ./api && ./generate.sh",
+    "api:index": "ctix single -p ./tsconfig.json -o ./api/index.ts -w",
+    "api:format": "prettier --write .",
     "api:build": "tsup ./api/index.ts --format cjs,esm --dts --clean",
-    "api:all": "npm run clean && npm run api:clone && npm run api:generate && npm run api:index && npm run api:patch && npm run api:build",
+    "api:all": "npm run api:clone && npm run api:generate && npm run api:index && npm run api:format && npm run api:build",
     "prepublishOnly": "npm run api:all"
   },
   "repository": {
@@ -44,9 +43,9 @@
     "protobufjs": "^7.1.1"
   },
   "devDependencies": {
-    "ctix": "^1.4.0",
+    "ctix": "^1.5.0",
     "mkdirp": "^1.0.4",
-    "move-cli": "^2.0.0",
+    "prettier": "^2.7.1",
     "replace": "^1.2.1",
     "rimraf": "^3.0.2",
     "tsup": "^6.2.3",
