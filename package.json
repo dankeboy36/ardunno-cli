@@ -1,6 +1,6 @@
 {
   "name": "ardunno-cli-api",
-  "version": "0.1.0-beta.4",
+  "version": "0.1.0-beta.5",
   "description": "nice-grpc API for the Arduino CLI",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -30,7 +30,7 @@
     "url": "git+https://github.com/dankeboy36/ardunno-cli-api.git"
   },
   "scripts": {
-    "api:clone": "rimraf ./arduino-cli && git clone https://github.com/arduino/arduino-cli.git --depth 1 -qq",
+    "api:clone": "rimraf ./arduino-cli && git clone https://github.com/arduino/arduino-cli.git --depth 1 -qq && git -C ./arduino-cli fetch --tags -qq && git -C ./arduino-cli checkout tags/0.28.0 -b 0.28.0 -qq",
     "api:generate": "mkdirp ./api && ./generate.sh",
     "api:index": "ctix single -p ./tsconfig.json -o ./api/index.ts -w && replace ' type' '' ./api/index.ts ",
     "api:format": "prettier --write .",
@@ -46,10 +46,10 @@
     "ctix": "^1.5.0",
     "mkdirp": "^1.0.4",
     "prettier": "^2.7.1",
-    "replace": "^1.2.1",
+    "replace": "^0.2.2",
     "rimraf": "^3.0.2",
-    "tsup": "^6.2.3",
     "ts-proto": "^1.125.0",
+    "tsup": "^6.2.3",
     "typescript": "^4.8.3"
   }
 }
