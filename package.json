@@ -1,6 +1,6 @@
 {
   "name": "ardunno-cli-api",
-  "version": "0.1.0-beta.5",
+  "version": "0.1.0-beta.6",
   "description": "nice-grpc API for the Arduino CLI",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -31,11 +31,15 @@
   },
   "scripts": {
     "api:clone": "rimraf ./arduino-cli && git clone https://github.com/arduino/arduino-cli.git --depth 1 -qq && git -C ./arduino-cli fetch --tags -qq && git -C ./arduino-cli checkout tags/0.28.0 -b 0.28.0 -qq",
-    "api:generate": "mkdirp ./api && ./generate.sh",
-    "api:index": "ctix single -p ./tsconfig.json -o ./api/index.ts -w && replace ' type' '' ./api/index.ts ",
-    "api:format": "prettier --write .",
-    "api:build": "tsup ./api/index.ts --format cjs,esm --dts --clean",
-    "api:all": "npm run api:clone && npm run api:generate && npm run api:index && npm run api:format && npm run api:build",
+    "api:generate": "mkdirp ./src/api && node ./dist/src/cli/cli.js generate arduino-cli/rpc -o src/api -f",
+    "api:index": "ctix single -p ./tsconfig.json -o ./src/api/index.ts -w && replace ' type' '' ./src/api/index.ts ",
+    "build": "tsc -p ./",
+    "watch": "tsc -p ./ -w",
+    "test": "mocha",
+    "format": "prettier --write .",
+    "lint": "eslint ./src --ext ts",
+    "api:build": "tsup ./src/api/index.ts --format cjs,esm --dts --clean",
+    "api:all": "npm run build && npm run test && npm run api:clone && npm run api:generate && npm run api:index && npm run format && npm run lint && npm run api:build",
     "prepublishOnly": "npm run api:all"
   },
   "dependencies": {
@@ -43,11 +47,24 @@
     "protobufjs": "^7.1.1"
   },
   "devDependencies": {
+    "@types/is-valid-path": "^0.1.0",
+    "@types/mocha": "^10.0.0",
+    "@types/semver": "^7.3.13",
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "@typescript-eslint/parser": "^5.40.0",
+    "commander": "^9.4.1",
     "ctix": "^1.5.0",
+    "eslint": "^8.25.0",
+    "globby": "^11.1.0",
+    "is-valid-path": "^0.1.1",
     "mkdirp": "^1.0.4",
+    "mocha": "^10.0.0",
     "prettier": "^2.7.1",
+    "protoc": "^1.1.3",
     "replace": "^0.2.2",
     "rimraf": "^3.0.2",
+    "semver": "^7.3.8",
+    "ts-node": "^10.9.1",
     "ts-proto": "^1.125.0",
     "tsup": "^6.2.3",
     "typescript": "^4.8.3"

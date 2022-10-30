@@ -1,6 +1,6 @@
 /* eslint-disable */
-import _m0 from 'protobufjs/minimal.js';
-import { Any } from '../protobuf/any.js';
+import _m0 from 'protobufjs/minimal';
+import { Any } from '../protobuf/any';
 
 export const protobufPackage = 'google.rpc';
 

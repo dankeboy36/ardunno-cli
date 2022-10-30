@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { CallContext, CallOptions } from 'nice-grpc-common';
-import _m0 from 'protobufjs/minimal.js';
-import { Status } from '../../../../../google/rpc/status.js';
+import _m0 from 'protobufjs/minimal';
+import { Status } from '../../../../../google/rpc/status';
 import {
     BoardAttachRequest,
     BoardAttachResponse,
@@ -15,9 +15,9 @@ import {
     BoardListWatchResponse,
     BoardSearchRequest,
     BoardSearchResponse,
-} from './board.js';
-import { DownloadProgress, Instance, Platform, Profile, TaskProgress } from './common.js';
-import { CompileRequest, CompileResponse } from './compile.js';
+} from './board';
+import { DownloadProgress, Instance, Platform, Profile, TaskProgress } from './common';
+import { CompileRequest, CompileResponse } from './compile';
 import {
     PlatformDownloadRequest,
     PlatformDownloadResponse,
@@ -31,7 +31,7 @@ import {
     PlatformUninstallResponse,
     PlatformUpgradeRequest,
     PlatformUpgradeResponse,
-} from './core.js';
+} from './core';
 import {
     GitLibraryInstallRequest,
     GitLibraryInstallResponse,
@@ -54,13 +54,13 @@ import {
     LibraryUpgradeResponse,
     ZipLibraryInstallRequest,
     ZipLibraryInstallResponse,
-} from './lib.js';
+} from './lib';
 import {
     EnumerateMonitorPortSettingsRequest,
     EnumerateMonitorPortSettingsResponse,
     MonitorRequest,
     MonitorResponse,
-} from './monitor.js';
+} from './monitor';
 import {
     BurnBootloaderRequest,
     BurnBootloaderResponse,
@@ -72,7 +72,7 @@ import {
     UploadResponse,
     UploadUsingProgrammerRequest,
     UploadUsingProgrammerResponse,
-} from './upload.js';
+} from './upload';
 
 export const protobufPackage = 'cc.arduino.cli.commands.v1';
 

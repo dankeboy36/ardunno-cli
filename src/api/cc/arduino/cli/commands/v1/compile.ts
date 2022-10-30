@@ -1,9 +1,9 @@
 /* eslint-disable */
 import Long from 'long';
-import _m0 from 'protobufjs/minimal.js';
-import { BoolValue } from '../../../../../google/protobuf/wrappers.js';
-import { InstalledPlatformReference, Instance, TaskProgress } from './common.js';
-import { Library } from './lib.js';
+import _m0 from 'protobufjs/minimal';
+import { BoolValue } from '../../../../../google/protobuf/wrappers';
+import { InstalledPlatformReference, Instance, TaskProgress } from './common';
+import { Library } from './lib';
 
 export const protobufPackage = 'cc.arduino.cli.commands.v1';
 

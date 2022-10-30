@@ -1,8 +1,8 @@
 /* eslint-disable */
 import { CallContext, CallOptions } from 'nice-grpc-common';
-import _m0 from 'protobufjs/minimal.js';
-import { Instance } from '../../commands/v1/common.js';
-import { Port } from '../../commands/v1/port.js';
+import _m0 from 'protobufjs/minimal';
+import { Instance } from '../../commands/v1/common';
+import { Port } from '../../commands/v1/port';
 
 export const protobufPackage = 'cc.arduino.cli.debug.v1';
 

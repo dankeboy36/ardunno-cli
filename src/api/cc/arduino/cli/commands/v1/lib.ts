@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from 'long';
-import _m0 from 'protobufjs/minimal.js';
-import { DownloadProgress, Instance, TaskProgress } from './common.js';
+import _m0 from 'protobufjs/minimal';
+import { DownloadProgress, Instance, TaskProgress } from './common';
 
 export const protobufPackage = 'cc.arduino.cli.commands.v1';
 

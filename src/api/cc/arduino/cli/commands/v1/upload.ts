@@ -1,7 +1,7 @@
 /* eslint-disable */
-import _m0 from 'protobufjs/minimal.js';
-import { Instance, Programmer } from './common.js';
-import { Port } from './port.js';
+import _m0 from 'protobufjs/minimal';
+import { Instance, Programmer } from './common';
+import { Port } from './port';
 
 export const protobufPackage = 'cc.arduino.cli.commands.v1';
 
