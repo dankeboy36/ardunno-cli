@@ -15,6 +15,9 @@
   "files": [
     "dist"
   ],
+  "bin": {
+    "arduino-cli-ts-gen": "./dist/cli"
+  },
   "keywords": [
     "arduino",
     "proto",
@@ -31,15 +34,15 @@
   },
   "scripts": {
     "api:clone": "rimraf ./arduino-cli && git clone https://github.com/arduino/arduino-cli.git --depth 1 -qq && git -C ./arduino-cli fetch --tags -qq && git -C ./arduino-cli checkout tags/0.28.0 -b 0.28.0 -qq",
-    "api:generate": "mkdirp ./src/api && node ./dist/src/cli/cli.js generate arduino-cli/rpc -o src/api -f",
+    "api:generate": "mkdirp ./src/api && node ./dist/cli generate arduino-cli/rpc -o src/api -f",
     "api:index": "ctix single -p ./tsconfig.json -o ./src/api/index.ts -w && replace ' type' '' ./src/api/index.ts ",
-    "build": "tsc -p ./",
+    "compile": "tsc -p ./",
     "watch": "tsc -p ./ -w",
     "test": "mocha",
     "format": "prettier --write .",
     "lint": "eslint ./src --ext ts",
     "api:build": "tsup ./src/api/index.ts --format cjs,esm --dts --clean",
-    "api:all": "npm run build && npm run test && npm run api:clone && npm run api:generate && npm run api:index && npm run format && npm run lint && npm run api:build",
+    "api:all": "npm run compile && npm run test && npm run api:clone && npm run api:generate && npm run api:index && npm run format && npm run lint && npm run api:build",
     "prepublishOnly": "npm run api:all"
   },
   "dependencies": {

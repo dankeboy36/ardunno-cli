@@ -1,10 +1,11 @@
+#!/usr/bin/env node
+
 import { Command } from 'commander';
 import generate from './generate';
-import { version } from '../../package.json';
 
 const description = 'Generates TS/JS API for the Arduino CLI';
 const program = new Command();
-program.name('arduino-cli-ts-gen').description(description).version(version);
+program.name('arduino-cli-ts-gen').description(description);
 
 program
     .command('generate')

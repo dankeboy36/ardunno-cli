@@ -15,7 +15,8 @@
     "declaration": true,
     "declarationMap": true,
     "resolveJsonModule": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "rootDir": "./src"
   },
   "include": ["src"]
 }
