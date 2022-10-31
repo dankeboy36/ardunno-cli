@@ -1,20 +1,15 @@
 {
-  "name": "ardunno-cli-api",
-  "version": "0.1.0-beta.5",
+  "name": "ardunno-cli",
+  "version": "0.1.0-beta.7",
   "description": "nice-grpc API for the Arduino CLI",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
-    }
-  },
   "files": [
     "dist"
   ],
+  "bin": {
+    "ardunno-cli-gen": "./dist/cli"
+  },
   "keywords": [
     "arduino",
     "proto",
@@ -23,31 +18,48 @@
   "author": "dankeboy36",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dankeboy36/ardunno-cli-api/issues"
+    "url": "https://github.com/dankeboy36/ardunno-cli/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dankeboy36/ardunno-cli-api.git"
+    "url": "git+https://github.com/dankeboy36/ardunno-cli.git"
   },
   "scripts": {
-    "api:clone": "rimraf ./arduino-cli && git clone https://github.com/arduino/arduino-cli.git --depth 1 -qq && git -C ./arduino-cli fetch --tags -qq && git -C ./arduino-cli checkout tags/0.28.0 -b 0.28.0 -qq",
-    "api:generate": "mkdirp ./api && ./generate.sh",
-    "api:index": "ctix single -p ./tsconfig.json -o ./api/index.ts -w && replace ' type' '' ./api/index.ts ",
-    "api:format": "prettier --write .",
-    "api:build": "tsup ./api/index.ts --format cjs,esm --dts --clean",
-    "api:all": "npm run api:clone && npm run api:generate && npm run api:index && npm run api:format && npm run api:build",
-    "prepublishOnly": "npm run api:all"
+    "generate": "ts-node ./src/cli/index generate 0.28.0 -o src/api -f",
+    "index": "ctix single -p ./tsconfig.json -o ./src/api/index.ts -w && replace ' type' '' ./src/api/index.ts ",
+    "compile": "tsc -p ./",
+    "watch": "tsc -p ./ -w",
+    "test": "mocha",
+    "format": "prettier --write .",
+    "lint": "eslint ./src --ext ts",
+    "prepublishOnly": "npm run test && npm run generate && npm run index && npm run compile && npm run lint && npm run format"
   },
   "dependencies": {
     "nice-grpc-common": "^2.0.0",
     "protobufjs": "^7.1.1"
   },
   "devDependencies": {
+    "@types/is-valid-path": "^0.1.0",
+    "@types/mocha": "^10.0.0",
+    "@types/rimraf": "^3.0.2",
+    "@types/semver": "^7.3.13",
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "@typescript-eslint/parser": "^5.40.0",
+    "commander": "^9.4.1",
     "ctix": "^1.5.0",
+    "eslint": "^8.25.0",
+    "execa": "^5.1.1",
+    "globby": "^11.1.0",
+    "is-valid-path": "^0.1.1",
     "mkdirp": "^1.0.4",
+    "mocha": "^10.0.0",
     "prettier": "^2.7.1",
+    "protoc": "^1.1.3",
     "replace": "^0.2.2",
     "rimraf": "^3.0.2",
+    "semver": "^7.3.8",
+    "tmp-promise": "^3.0.3",
+    "ts-node": "^10.9.1",
     "ts-proto": "^1.125.0",
     "tsup": "^6.2.3",
     "typescript": "^4.8.3"
