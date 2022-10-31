@@ -1,28 +1,31 @@
 {
   "name": "ardunno-cli",
-  "version": "0.1.0-beta.7",
+  "version": "0.1.0-beta.10",
   "description": "nice-grpc API for the Arduino CLI",
-  "main": "./dist/index.js",
+  "main": "./dist/api/index.js",
   "exports": {
-    ".": "./dist/api/index.js",
-    "./generate": "./cli/generate.js"
+    "./api": "./dist/api/index.js",
+    "./config": "./dist/config/index.js",
+    "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
-      ".": [
+      "api": [
         "dist/api/index.d.ts"
       ],
-      "generate": [
-        "dist/cli/generate.d.ts"
+      "config": [
+        "dist/config/index.d.ts"
       ]
     }
   },
   "files": [
     "dist/api",
-    "dist/cli"
+    "dist/cli",
+    "dist/config",
+    "schemas"
   ],
   "bin": {
-    "ardunno-cli-gen": "./dist/cli"
+    "ardunno-cli-gen": "./dist/cli/index.js"
   },
   "keywords": [
     "arduino",
@@ -39,14 +42,15 @@
     "url": "git+https://github.com/dankeboy36/ardunno-cli.git"
   },
   "scripts": {
-    "generate": "ts-node ./src/cli generate 0.28.0 -o src/api -f",
-    "index": "ctix single -p ./tsconfig.json -o ./src/api/index.ts -w && replace ' type' '' ./src/api/index.ts ",
+    "generate:api": "ts-node ./src/cli generate 0.28.0 -o src/api -f",
+    "index:api": "ctix single -p ./tsconfig.json -o ./src/api/index.ts -w && replace ' type' '' ./src/api/index.ts ",
+    "generate:schema": "ts-json-schema-generator --path ./src/config/index.ts --type Config --expose none --no-top-ref --tsconfig ./tsconfig.json --out ./schemas/arduino-cli-schema.json",
     "compile": "tsc -p ./",
     "watch": "tsc -p ./ -w",
     "test": "mocha",
     "format": "prettier --write .",
     "lint": "eslint ./src --ext ts",
-    "prepublishOnly": "npm run test && npm run generate && npm run index && npm run compile && npm run lint && npm run format"
+    "prepublishOnly": "npm run test && npm run generate:api && npm run index:api && npm run generate:schema && npm run compile && npm run lint && npm run format"
   },
   "dependencies": {
     "nice-grpc-common": "^2.0.0",
@@ -73,6 +77,7 @@
     "rimraf": "^3.0.2",
     "semver": "^7.3.8",
     "tmp-promise": "^3.0.3",
+    "ts-json-schema-generator": "^1.1.2",
     "ts-node": "^10.9.1",
     "ts-proto": "^1.125.0",
     "tsup": "^6.2.3",
