@@ -1,9 +1,11 @@
-import isValidPath from 'is-valid-path';
-import globby from 'globby';
-import { isAbsolute, join } from 'path';
+import execa from 'execa';
 import { promises as fs } from 'fs';
+import globby from 'globby';
+import isValidPath from 'is-valid-path';
+import { isAbsolute, join } from 'path';
 import { gt, SemVer, valid } from 'semver';
-import { spawn } from 'child_process';
+import { dir } from 'tmp-promise';
+import rimraf from 'rimraf';
 
 export interface Options {
     readonly src: string;
@@ -13,7 +15,7 @@ export interface Options {
 
 export default async function (options: Options): Promise<void> {
     const { src, out, force } = options;
-    const [outExists, protos] = await Promise.all([isAccessibleFolder(out), globProtos(src)]);
+    const [outExists, protos] = await Promise.all([accessibleFolder(out), globProtos(src)]);
     if (!force && outExists) {
         throw new Error(`${out} already exists. Use '--force' to override output.`);
     }
@@ -21,37 +23,69 @@ export default async function (options: Options): Promise<void> {
     if (protos) {
         return generate(src, protos, out);
     }
+    let semver = parseSemver(src);
+    if (typeof semver === 'string') {
+        console.warn(
+            'Downloading the proto files from the GitHub release is not yet available. Falling back to Git clone. See https://github.com/arduino/arduino-cli/pull/1931.'
+        );
+        semver = {
+            ...arduinoGitHub,
+            commit: semver,
+        };
+    }
+    const gh = semver || parseGitHub(src);
+    if (gh) {
+        const { dispose, checkoutSrc } = await checkout(gh);
+        try {
+            const clonedProtos = await globProtos(checkoutSrc);
+            if (!clonedProtos) {
+                throw new Error(`glob failed in ${checkoutSrc}`);
+            }
+            return generate(checkoutSrc, clonedProtos, out);
+        } finally {
+            await dispose();
+        }
+    }
 }
+interface Plugin {
+    readonly name: string;
+    readonly options: Record<string, string | string[] | boolean | boolean[]>;
+    readonly path: string;
+}
+function createArgs(plugin: Plugin, src: string, out: string): string[] {
+    const { name, options, path } = plugin;
+    const opt = Object.entries(options)
+        .reduce(
+            (acc, [key, value]) => acc.concat((Array.isArray(value) ? value : [value]).map((v) => `${key}=${v}`)),
+            [] as string[]
+        )
+        .join(',');
+    return [`--plugin=${path}`, `--proto_path=${src}`, `--${name}_opt=${opt}`, `--${name}_out=${out}`];
+}
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const TsProto: Plugin = {
+    name: 'ts_proto',
+    path: require.resolve('ts-proto/protoc-gen-ts_proto'),
+    options: {
+        outputServices: ['nice-grpc', 'generic-definitions'],
+        oneof: 'unions',
+        useExactTypes: false,
+        paths: 'source_relative',
+        esModuleInterop: true,
+    },
+};
 
 async function generate(src: string, protos: string[], out: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-        const protoc = require('protoc/protoc');
-        const plugin = require.resolve('ts-proto/protoc-gen-ts_proto');
-        const args = [
-            `--plugin=${plugin}`,
-            `--proto_path=${src}`,
-            '--ts_proto_opt=outputServices=nice-grpc,outputServices=generic-definitions,oneof=unions,useExactTypes=false,paths=source_relative,esModuleInterop=true',
-            `--ts_proto_out=${out}`,
-            ...protos,
-        ];
-        const cp = spawn(protoc, args);
-        cp.on('error', reject);
-        cp.on('exit', (signal, code) => {
-            if (signal) {
-                reject(`Exited with signal ${signal}`);
-            }
-            if (code) {
-                reject(`Exited with code ${code}`);
-            }
-            resolve();
-        });
-        cp.stdout.on('data', (data) => console.log(data.toString()));
-        cp.stderr.on('data', (data) => console.error(data.toString()));
-    });
+    const protoc = require('protoc/protoc');
+    const args = [...createArgs(TsProto, src, out), ...protos];
+    await execa(protoc, args);
 }
 
 async function globProtos(cwd: string): Promise<string[] | undefined> {
     if (!isValidPath(cwd)) {
+        return undefined;
+    }
+    if (!(await accessibleFolder(cwd))) {
         return undefined;
     }
     try {
@@ -62,7 +96,7 @@ async function globProtos(cwd: string): Promise<string[] | undefined> {
     }
 }
 
-async function isAccessibleFolder(maybePath: string): Promise<boolean> {
+async function accessibleFolder(maybePath: string): Promise<boolean> {
     if (!isValidPath(maybePath)) {
         return false;
     }
@@ -105,6 +139,19 @@ export function parseGitHub(src: string): GitHub | undefined {
     return undefined;
 }
 
+async function checkout(gh: GitHub): Promise<{ checkoutSrc: string; dispose: () => Promise<void> }> {
+    const { owner, repo, commit = 'HEAD' } = gh;
+    const { path } = await dir({ prefix: repo });
+    await execa('git', ['clone', `https://github.com/${owner}/${repo}.git`, path]);
+    await execa('git', ['-C', path, 'fetch', '--all', '--tags']);
+    await execa('git', ['-C', path, 'checkout', commit]);
+    return { checkoutSrc: join(path, 'rpc'), dispose: () => rm(path) };
+}
+
+async function rm(path: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => rimraf(path, (error) => (error ? reject(error) : resolve())));
+}
+
 /**
  * The `.proto` files are not part of the Arduino CLI release until before version 0.29.0+ ([`arduino/arduino-cli#1931`](https://github.com/arduino/arduino-cli/pull/1931)). It provides the GitHub ref instead.
  */
@@ -121,12 +168,6 @@ export function parseSemver(src: string): string | GitHub | undefined {
         commit: semver.version,
     };
 }
-
-// async function generateFromFolder(): Promise<string | undefined> {}
-// async function generateFromSemver(): Promise<string | undefined> {}
-// async function generateFromCommit(): Promise<string | undefined> {}
-
-// async function generate()
 
 // Taken from https://github.com/microsoft/TypeScript/issues/32098#issuecomment-1212501932
 type RegExpGroups<T extends string[]> =
