@@ -1,4 +1,4 @@
-### ardunno-cli-api
+### ardunno-cli
 
 [`nice-grpc`](https://github.com/deeplay-io/nice-grpc) API for the [Arduino CLI](https://github.com/arduino/arduino-cli)
 
@@ -7,7 +7,7 @@ All code in this repository is generated from the [`.proto` files](https://githu
 ## Installation
 
 ```
-npm i ardunno-cli-api --save
+npm i ardunno-cli --save
 ```
 
 ## Usage
@@ -16,7 +16,7 @@ Create client:
 
 ```ts
 const { createChannel, createClient } = require('nice-grpc');
-const { ArduinoCoreServiceDefinition } = require('ardunno-cli-api');
+const { ArduinoCoreServiceDefinition } = require('ardunno-cli');
 
 // Requires a running Arduino CLI. `./arduino-cli daemon --port 50051 --format json`
 const channel = createChannel('localhost:50051');
@@ -27,7 +27,7 @@ ESM is also supported:
 
 ```ts
 import { createChannel, createClient } from 'nice-grpc';
-import { ArduinoCoreServiceDefinition } from 'ardunno-cli-api';
+import { ArduinoCoreServiceDefinition } from 'ardunno-cli';
 ```
 
 Create and initialize instance:
