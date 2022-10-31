@@ -5,7 +5,7 @@ import generate from './generate';
 
 const description = 'Generates TS/JS API for the Arduino CLI';
 const program = new Command();
-program.name('arduino-cli-ts-gen').description(description);
+program.name('ardunno-cli-gen').description(description);
 
 program
     .command('generate')
