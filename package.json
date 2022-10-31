@@ -3,9 +3,23 @@
   "version": "0.1.0-beta.7",
   "description": "nice-grpc API for the Arduino CLI",
   "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/api/index.js",
+    "./generate": "./cli/generate.js"
+  },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "dist/api/index.d.ts"
+      ],
+      "generate": [
+        "dist/cli/generate.d.ts"
+      ]
+    }
+  },
   "files": [
-    "dist"
+    "dist/api",
+    "dist/cli"
   ],
   "bin": {
     "ardunno-cli-gen": "./dist/cli"
@@ -25,7 +39,7 @@
     "url": "git+https://github.com/dankeboy36/ardunno-cli.git"
   },
   "scripts": {
-    "generate": "ts-node ./src/cli/index generate 0.28.0 -o src/api -f",
+    "generate": "ts-node ./src/cli generate 0.28.0 -o src/api -f",
     "index": "ctix single -p ./tsconfig.json -o ./src/api/index.ts -w && replace ' type' '' ./src/api/index.ts ",
     "compile": "tsc -p ./",
     "watch": "tsc -p ./ -w",
