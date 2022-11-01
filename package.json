@@ -1,12 +1,11 @@
 {
   "name": "ardunno-cli",
-  "version": "0.1.0-beta.10",
+  "version": "0.1.0-beta.13",
   "description": "nice-grpc API for the Arduino CLI",
   "main": "./dist/api/index.js",
   "exports": {
     "./api": "./dist/api/index.js",
-    "./config": "./dist/config/index.js",
-    "./package.json": "./package.json"
+    "./config": "./dist/config/index.js"
   },
   "typesVersions": {
     "*": {
@@ -19,18 +18,19 @@
     }
   },
   "files": [
-    "dist/api",
-    "dist/cli",
-    "dist/config",
-    "schemas"
+    "dist",
+    "schemas",
+    "!/**/__tests__"
   ],
   "bin": {
-    "ardunno-cli-gen": "./dist/cli/index.js"
+    "ardunno-cli": "./dist/cli/index.js"
   },
   "keywords": [
     "arduino",
+    "arduino-cli",
     "proto",
-    "grpc"
+    "grpc",
+    "nice-grpc"
   ],
   "author": "dankeboy36",
   "license": "MIT",
@@ -42,15 +42,14 @@
     "url": "git+https://github.com/dankeboy36/ardunno-cli.git"
   },
   "scripts": {
-    "generate:api": "ts-node ./src/cli generate 0.28.0 -o src/api -f",
+    "generate:api": "ardunno-cli generate 0.28.0 -o src/api -f",
     "index:api": "ctix single -p ./tsconfig.json -o ./src/api/index.ts -w && replace ' type' '' ./src/api/index.ts ",
     "generate:schema": "ts-json-schema-generator --path ./src/config/index.ts --type Config --expose none --no-top-ref --tsconfig ./tsconfig.json --out ./schemas/arduino-cli-schema.json",
     "compile": "tsc -p ./",
     "watch": "tsc -p ./ -w",
-    "test": "mocha",
     "format": "prettier --write .",
     "lint": "eslint ./src --ext ts",
-    "prepublishOnly": "npm run test && npm run generate:api && npm run index:api && npm run generate:schema && npm run compile && npm run lint && npm run format"
+    "prepublishOnly": "npm run generate:api && npm run index:api && npm run generate:schema && npm run compile && npm run lint && npm run format"
   },
   "dependencies": {
     "nice-grpc-common": "^2.0.0",
@@ -58,29 +57,17 @@
   },
   "devDependencies": {
     "@types/is-valid-path": "^0.1.0",
-    "@types/mocha": "^10.0.0",
     "@types/rimraf": "^3.0.2",
     "@types/semver": "^7.3.13",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",
-    "commander": "^9.4.1",
+    "ardunno-cli-gen": "^0.1.0-beta.8",
     "ctix": "^1.5.0",
     "eslint": "^8.25.0",
-    "execa": "^5.1.1",
-    "globby": "^11.1.0",
-    "is-valid-path": "^0.1.1",
-    "mkdirp": "^1.0.4",
-    "mocha": "^10.0.0",
     "prettier": "^2.7.1",
-    "protoc": "^1.1.3",
     "replace": "^0.2.2",
-    "rimraf": "^3.0.2",
-    "semver": "^7.3.8",
-    "tmp-promise": "^3.0.3",
     "ts-json-schema-generator": "^1.1.2",
     "ts-node": "^10.9.1",
-    "ts-proto": "^1.125.0",
-    "tsup": "^6.2.3",
     "typescript": "^4.8.3"
   }
 }
