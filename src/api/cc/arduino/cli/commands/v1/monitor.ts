@@ -85,13 +85,25 @@ export interface MonitorPortSettingDescriptor {
 }
 
 function createBaseMonitorRequest(): MonitorRequest {
-    return { instance: undefined, port: undefined, fqbn: '', txData: new Uint8Array(), portConfiguration: undefined };
+    return {
+        instance: undefined,
+        port: undefined,
+        fqbn: '',
+        txData: new Uint8Array(),
+        portConfiguration: undefined,
+    };
 }
 
 export const MonitorRequest = {
-    encode(message: MonitorRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: MonitorRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.port !== undefined) {
             Port.encode(message.port, writer.uint32(18).fork()).ldelim();
@@ -103,13 +115,17 @@ export const MonitorRequest = {
             writer.uint32(34).bytes(message.txData);
         }
         if (message.portConfiguration !== undefined) {
-            MonitorPortConfiguration.encode(message.portConfiguration, writer.uint32(42).fork()).ldelim();
+            MonitorPortConfiguration.encode(
+                message.portConfiguration,
+                writer.uint32(42).fork()
+            ).ldelim();
         }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): MonitorRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseMonitorRequest();
         while (reader.pos < end) {
@@ -128,7 +144,10 @@ export const MonitorRequest = {
                     message.txData = reader.bytes();
                     break;
                 case 5:
-                    message.portConfiguration = MonitorPortConfiguration.decode(reader, reader.uint32());
+                    message.portConfiguration = MonitorPortConfiguration.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -140,10 +159,14 @@ export const MonitorRequest = {
 
     fromJSON(object: any): MonitorRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             port: isSet(object.port) ? Port.fromJSON(object.port) : undefined,
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
-            txData: isSet(object.txData) ? bytesFromBase64(object.txData) : new Uint8Array(),
+            txData: isSet(object.txData)
+                ? bytesFromBase64(object.txData)
+                : new Uint8Array(),
             portConfiguration: isSet(object.portConfiguration)
                 ? MonitorPortConfiguration.fromJSON(object.portConfiguration)
                 : undefined,
@@ -153,11 +176,16 @@ export const MonitorRequest = {
     toJSON(message: MonitorRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
-        message.port !== undefined && (obj.port = message.port ? Port.toJSON(message.port) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
+        message.port !== undefined &&
+            (obj.port = message.port ? Port.toJSON(message.port) : undefined);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         message.txData !== undefined &&
-            (obj.txData = base64FromBytes(message.txData !== undefined ? message.txData : new Uint8Array()));
+            (obj.txData = base64FromBytes(
+                message.txData !== undefined ? message.txData : new Uint8Array()
+            ));
         message.portConfiguration !== undefined &&
             (obj.portConfiguration = message.portConfiguration
                 ? MonitorPortConfiguration.toJSON(message.portConfiguration)
@@ -171,11 +199,15 @@ export const MonitorRequest = {
             object.instance !== undefined && object.instance !== null
                 ? Instance.fromPartial(object.instance)
                 : undefined;
-        message.port = object.port !== undefined && object.port !== null ? Port.fromPartial(object.port) : undefined;
+        message.port =
+            object.port !== undefined && object.port !== null
+                ? Port.fromPartial(object.port)
+                : undefined;
         message.fqbn = object.fqbn ?? '';
         message.txData = object.txData ?? new Uint8Array();
         message.portConfiguration =
-            object.portConfiguration !== undefined && object.portConfiguration !== null
+            object.portConfiguration !== undefined &&
+            object.portConfiguration !== null
                 ? MonitorPortConfiguration.fromPartial(object.portConfiguration)
                 : undefined;
         return message;
@@ -187,22 +219,31 @@ function createBaseMonitorPortConfiguration(): MonitorPortConfiguration {
 }
 
 export const MonitorPortConfiguration = {
-    encode(message: MonitorPortConfiguration, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: MonitorPortConfiguration,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         for (const v of message.settings) {
             MonitorPortSetting.encode(v!, writer.uint32(10).fork()).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): MonitorPortConfiguration {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): MonitorPortConfiguration {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseMonitorPortConfiguration();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.settings.push(MonitorPortSetting.decode(reader, reader.uint32()));
+                    message.settings.push(
+                        MonitorPortSetting.decode(reader, reader.uint32())
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -215,7 +256,9 @@ export const MonitorPortConfiguration = {
     fromJSON(object: any): MonitorPortConfiguration {
         return {
             settings: Array.isArray(object?.settings)
-                ? object.settings.map((e: any) => MonitorPortSetting.fromJSON(e))
+                ? object.settings.map((e: any) =>
+                      MonitorPortSetting.fromJSON(e)
+                  )
                 : [],
         };
     },
@@ -223,26 +266,40 @@ export const MonitorPortConfiguration = {
     toJSON(message: MonitorPortConfiguration): unknown {
         const obj: any = {};
         if (message.settings) {
-            obj.settings = message.settings.map((e) => (e ? MonitorPortSetting.toJSON(e) : undefined));
+            obj.settings = message.settings.map((e) =>
+                e ? MonitorPortSetting.toJSON(e) : undefined
+            );
         } else {
             obj.settings = [];
         }
         return obj;
     },
 
-    fromPartial(object: DeepPartial<MonitorPortConfiguration>): MonitorPortConfiguration {
+    fromPartial(
+        object: DeepPartial<MonitorPortConfiguration>
+    ): MonitorPortConfiguration {
         const message = createBaseMonitorPortConfiguration();
-        message.settings = object.settings?.map((e) => MonitorPortSetting.fromPartial(e)) || [];
+        message.settings =
+            object.settings?.map((e) => MonitorPortSetting.fromPartial(e)) ||
+            [];
         return message;
     },
 };
 
 function createBaseMonitorResponse(): MonitorResponse {
-    return { error: '', rxData: new Uint8Array(), appliedSettings: [], success: false };
+    return {
+        error: '',
+        rxData: new Uint8Array(),
+        appliedSettings: [],
+        success: false,
+    };
 }
 
 export const MonitorResponse = {
-    encode(message: MonitorResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: MonitorResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.error !== '') {
             writer.uint32(10).string(message.error);
         }
@@ -259,7 +316,8 @@ export const MonitorResponse = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): MonitorResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseMonitorResponse();
         while (reader.pos < end) {
@@ -272,7 +330,9 @@ export const MonitorResponse = {
                     message.rxData = reader.bytes();
                     break;
                 case 3:
-                    message.appliedSettings.push(MonitorPortSetting.decode(reader, reader.uint32()));
+                    message.appliedSettings.push(
+                        MonitorPortSetting.decode(reader, reader.uint32())
+                    );
                     break;
                 case 4:
                     message.success = reader.bool();
@@ -288,9 +348,13 @@ export const MonitorResponse = {
     fromJSON(object: any): MonitorResponse {
         return {
             error: isSet(object.error) ? String(object.error) : '',
-            rxData: isSet(object.rxData) ? bytesFromBase64(object.rxData) : new Uint8Array(),
+            rxData: isSet(object.rxData)
+                ? bytesFromBase64(object.rxData)
+                : new Uint8Array(),
             appliedSettings: Array.isArray(object?.appliedSettings)
-                ? object.appliedSettings.map((e: any) => MonitorPortSetting.fromJSON(e))
+                ? object.appliedSettings.map((e: any) =>
+                      MonitorPortSetting.fromJSON(e)
+                  )
                 : [],
             success: isSet(object.success) ? Boolean(object.success) : false,
         };
@@ -300,9 +364,13 @@ export const MonitorResponse = {
         const obj: any = {};
         message.error !== undefined && (obj.error = message.error);
         message.rxData !== undefined &&
-            (obj.rxData = base64FromBytes(message.rxData !== undefined ? message.rxData : new Uint8Array()));
+            (obj.rxData = base64FromBytes(
+                message.rxData !== undefined ? message.rxData : new Uint8Array()
+            ));
         if (message.appliedSettings) {
-            obj.appliedSettings = message.appliedSettings.map((e) => (e ? MonitorPortSetting.toJSON(e) : undefined));
+            obj.appliedSettings = message.appliedSettings.map((e) =>
+                e ? MonitorPortSetting.toJSON(e) : undefined
+            );
         } else {
             obj.appliedSettings = [];
         }
@@ -314,7 +382,10 @@ export const MonitorResponse = {
         const message = createBaseMonitorResponse();
         message.error = object.error ?? '';
         message.rxData = object.rxData ?? new Uint8Array();
-        message.appliedSettings = object.appliedSettings?.map((e) => MonitorPortSetting.fromPartial(e)) || [];
+        message.appliedSettings =
+            object.appliedSettings?.map((e) =>
+                MonitorPortSetting.fromPartial(e)
+            ) || [];
         message.success = object.success ?? false;
         return message;
     },
@@ -325,7 +396,10 @@ function createBaseMonitorPortSetting(): MonitorPortSetting {
 }
 
 export const MonitorPortSetting = {
-    encode(message: MonitorPortSetting, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: MonitorPortSetting,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.settingId !== '') {
             writer.uint32(10).string(message.settingId);
         }
@@ -335,8 +409,12 @@ export const MonitorPortSetting = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): MonitorPortSetting {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): MonitorPortSetting {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseMonitorPortSetting();
         while (reader.pos < end) {
@@ -383,9 +461,15 @@ function createBaseEnumerateMonitorPortSettingsRequest(): EnumerateMonitorPortSe
 }
 
 export const EnumerateMonitorPortSettingsRequest = {
-    encode(message: EnumerateMonitorPortSettingsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: EnumerateMonitorPortSettingsRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.portProtocol !== '') {
             writer.uint32(18).string(message.portProtocol);
@@ -396,8 +480,12 @@ export const EnumerateMonitorPortSettingsRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): EnumerateMonitorPortSettingsRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): EnumerateMonitorPortSettingsRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseEnumerateMonitorPortSettingsRequest();
         while (reader.pos < end) {
@@ -422,8 +510,12 @@ export const EnumerateMonitorPortSettingsRequest = {
 
     fromJSON(object: any): EnumerateMonitorPortSettingsRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
-            portProtocol: isSet(object.portProtocol) ? String(object.portProtocol) : '',
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+            portProtocol: isSet(object.portProtocol)
+                ? String(object.portProtocol)
+                : '',
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
         };
     },
@@ -431,13 +523,18 @@ export const EnumerateMonitorPortSettingsRequest = {
     toJSON(message: EnumerateMonitorPortSettingsRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
-        message.portProtocol !== undefined && (obj.portProtocol = message.portProtocol);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
+        message.portProtocol !== undefined &&
+            (obj.portProtocol = message.portProtocol);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<EnumerateMonitorPortSettingsRequest>): EnumerateMonitorPortSettingsRequest {
+    fromPartial(
+        object: DeepPartial<EnumerateMonitorPortSettingsRequest>
+    ): EnumerateMonitorPortSettingsRequest {
         const message = createBaseEnumerateMonitorPortSettingsRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -454,22 +551,37 @@ function createBaseEnumerateMonitorPortSettingsResponse(): EnumerateMonitorPortS
 }
 
 export const EnumerateMonitorPortSettingsResponse = {
-    encode(message: EnumerateMonitorPortSettingsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: EnumerateMonitorPortSettingsResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         for (const v of message.settings) {
-            MonitorPortSettingDescriptor.encode(v!, writer.uint32(10).fork()).ldelim();
+            MonitorPortSettingDescriptor.encode(
+                v!,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): EnumerateMonitorPortSettingsResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): EnumerateMonitorPortSettingsResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseEnumerateMonitorPortSettingsResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.settings.push(MonitorPortSettingDescriptor.decode(reader, reader.uint32()));
+                    message.settings.push(
+                        MonitorPortSettingDescriptor.decode(
+                            reader,
+                            reader.uint32()
+                        )
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -482,7 +594,9 @@ export const EnumerateMonitorPortSettingsResponse = {
     fromJSON(object: any): EnumerateMonitorPortSettingsResponse {
         return {
             settings: Array.isArray(object?.settings)
-                ? object.settings.map((e: any) => MonitorPortSettingDescriptor.fromJSON(e))
+                ? object.settings.map((e: any) =>
+                      MonitorPortSettingDescriptor.fromJSON(e)
+                  )
                 : [],
         };
     },
@@ -490,16 +604,23 @@ export const EnumerateMonitorPortSettingsResponse = {
     toJSON(message: EnumerateMonitorPortSettingsResponse): unknown {
         const obj: any = {};
         if (message.settings) {
-            obj.settings = message.settings.map((e) => (e ? MonitorPortSettingDescriptor.toJSON(e) : undefined));
+            obj.settings = message.settings.map((e) =>
+                e ? MonitorPortSettingDescriptor.toJSON(e) : undefined
+            );
         } else {
             obj.settings = [];
         }
         return obj;
     },
 
-    fromPartial(object: DeepPartial<EnumerateMonitorPortSettingsResponse>): EnumerateMonitorPortSettingsResponse {
+    fromPartial(
+        object: DeepPartial<EnumerateMonitorPortSettingsResponse>
+    ): EnumerateMonitorPortSettingsResponse {
         const message = createBaseEnumerateMonitorPortSettingsResponse();
-        message.settings = object.settings?.map((e) => MonitorPortSettingDescriptor.fromPartial(e)) || [];
+        message.settings =
+            object.settings?.map((e) =>
+                MonitorPortSettingDescriptor.fromPartial(e)
+            ) || [];
         return message;
     },
 };
@@ -509,7 +630,10 @@ function createBaseMonitorPortSettingDescriptor(): MonitorPortSettingDescriptor 
 }
 
 export const MonitorPortSettingDescriptor = {
-    encode(message: MonitorPortSettingDescriptor, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: MonitorPortSettingDescriptor,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.settingId !== '') {
             writer.uint32(10).string(message.settingId);
         }
@@ -528,8 +652,12 @@ export const MonitorPortSettingDescriptor = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): MonitorPortSettingDescriptor {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): MonitorPortSettingDescriptor {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseMonitorPortSettingDescriptor();
         while (reader.pos < end) {
@@ -563,7 +691,9 @@ export const MonitorPortSettingDescriptor = {
             settingId: isSet(object.settingId) ? String(object.settingId) : '',
             label: isSet(object.label) ? String(object.label) : '',
             type: isSet(object.type) ? String(object.type) : '',
-            enumValues: Array.isArray(object?.enumValues) ? object.enumValues.map((e: any) => String(e)) : [],
+            enumValues: Array.isArray(object?.enumValues)
+                ? object.enumValues.map((e: any) => String(e))
+                : [],
             value: isSet(object.value) ? String(object.value) : '',
         };
     },
@@ -582,7 +712,9 @@ export const MonitorPortSettingDescriptor = {
         return obj;
     },
 
-    fromPartial(object: DeepPartial<MonitorPortSettingDescriptor>): MonitorPortSettingDescriptor {
+    fromPartial(
+        object: DeepPartial<MonitorPortSettingDescriptor>
+    ): MonitorPortSettingDescriptor {
         const message = createBaseMonitorPortSettingDescriptor();
         message.settingId = object.settingId ?? '';
         message.label = object.label ?? '';
@@ -637,7 +769,14 @@ function base64FromBytes(arr: Uint8Array): string {
     }
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+    | Date
+    | Function
+    | Uint8Array
+    | string
+    | number
+    | boolean
+    | undefined;
 
 export type DeepPartial<T> = T extends Builtin
     ? T
@@ -646,7 +785,9 @@ export type DeepPartial<T> = T extends Builtin
     : T extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
     : T extends { $case: string }
-    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & { $case: T['$case'] }
+    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & {
+          $case: T['$case'];
+      }
     : T extends {}
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;

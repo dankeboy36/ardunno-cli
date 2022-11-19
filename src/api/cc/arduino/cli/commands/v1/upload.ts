@@ -239,9 +239,15 @@ function createBaseUploadRequest(): UploadRequest {
 }
 
 export const UploadRequest = {
-    encode(message: UploadRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: UploadRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.fqbn !== '') {
             writer.uint32(18).string(message.fqbn);
@@ -271,13 +277,17 @@ export const UploadRequest = {
             writer.uint32(80).bool(message.dryRun);
         }
         Object.entries(message.userFields).forEach(([key, value]) => {
-            UploadRequest_UserFieldsEntry.encode({ key: key as any, value }, writer.uint32(90).fork()).ldelim();
+            UploadRequest_UserFieldsEntry.encode(
+                { key: key as any, value },
+                writer.uint32(90).fork()
+            ).ldelim();
         });
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): UploadRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUploadRequest();
         while (reader.pos < end) {
@@ -314,7 +324,10 @@ export const UploadRequest = {
                     message.dryRun = reader.bool();
                     break;
                 case 11:
-                    const entry11 = UploadRequest_UserFieldsEntry.decode(reader, reader.uint32());
+                    const entry11 = UploadRequest_UserFieldsEntry.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     if (entry11.value !== undefined) {
                         message.userFields[entry11.key] = entry11.value;
                     }
@@ -329,18 +342,28 @@ export const UploadRequest = {
 
     fromJSON(object: any): UploadRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
-            sketchPath: isSet(object.sketchPath) ? String(object.sketchPath) : '',
+            sketchPath: isSet(object.sketchPath)
+                ? String(object.sketchPath)
+                : '',
             port: isSet(object.port) ? Port.fromJSON(object.port) : undefined,
             verbose: isSet(object.verbose) ? Boolean(object.verbose) : false,
             verify: isSet(object.verify) ? Boolean(object.verify) : false,
-            importFile: isSet(object.importFile) ? String(object.importFile) : '',
+            importFile: isSet(object.importFile)
+                ? String(object.importFile)
+                : '',
             importDir: isSet(object.importDir) ? String(object.importDir) : '',
-            programmer: isSet(object.programmer) ? String(object.programmer) : '',
+            programmer: isSet(object.programmer)
+                ? String(object.programmer)
+                : '',
             dryRun: isSet(object.dryRun) ? Boolean(object.dryRun) : false,
             userFields: isObject(object.userFields)
-                ? Object.entries(object.userFields).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+                ? Object.entries(object.userFields).reduce<{
+                      [key: string]: string;
+                  }>((acc, [key, value]) => {
                       acc[key] = String(value);
                       return acc;
                   }, {})
@@ -351,15 +374,21 @@ export const UploadRequest = {
     toJSON(message: UploadRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
-        message.sketchPath !== undefined && (obj.sketchPath = message.sketchPath);
-        message.port !== undefined && (obj.port = message.port ? Port.toJSON(message.port) : undefined);
+        message.sketchPath !== undefined &&
+            (obj.sketchPath = message.sketchPath);
+        message.port !== undefined &&
+            (obj.port = message.port ? Port.toJSON(message.port) : undefined);
         message.verbose !== undefined && (obj.verbose = message.verbose);
         message.verify !== undefined && (obj.verify = message.verify);
-        message.importFile !== undefined && (obj.importFile = message.importFile);
+        message.importFile !== undefined &&
+            (obj.importFile = message.importFile);
         message.importDir !== undefined && (obj.importDir = message.importDir);
-        message.programmer !== undefined && (obj.programmer = message.programmer);
+        message.programmer !== undefined &&
+            (obj.programmer = message.programmer);
         message.dryRun !== undefined && (obj.dryRun = message.dryRun);
         obj.userFields = {};
         if (message.userFields) {
@@ -378,22 +407,24 @@ export const UploadRequest = {
                 : undefined;
         message.fqbn = object.fqbn ?? '';
         message.sketchPath = object.sketchPath ?? '';
-        message.port = object.port !== undefined && object.port !== null ? Port.fromPartial(object.port) : undefined;
+        message.port =
+            object.port !== undefined && object.port !== null
+                ? Port.fromPartial(object.port)
+                : undefined;
         message.verbose = object.verbose ?? false;
         message.verify = object.verify ?? false;
         message.importFile = object.importFile ?? '';
         message.importDir = object.importDir ?? '';
         message.programmer = object.programmer ?? '';
         message.dryRun = object.dryRun ?? false;
-        message.userFields = Object.entries(object.userFields ?? {}).reduce<{ [key: string]: string }>(
-            (acc, [key, value]) => {
-                if (value !== undefined) {
-                    acc[key] = String(value);
-                }
-                return acc;
-            },
-            {}
-        );
+        message.userFields = Object.entries(object.userFields ?? {}).reduce<{
+            [key: string]: string;
+        }>((acc, [key, value]) => {
+            if (value !== undefined) {
+                acc[key] = String(value);
+            }
+            return acc;
+        }, {});
         return message;
     },
 };
@@ -403,7 +434,10 @@ function createBaseUploadRequest_UserFieldsEntry(): UploadRequest_UserFieldsEntr
 }
 
 export const UploadRequest_UserFieldsEntry = {
-    encode(message: UploadRequest_UserFieldsEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: UploadRequest_UserFieldsEntry,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.key !== '') {
             writer.uint32(10).string(message.key);
         }
@@ -413,8 +447,12 @@ export const UploadRequest_UserFieldsEntry = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): UploadRequest_UserFieldsEntry {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): UploadRequest_UserFieldsEntry {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUploadRequest_UserFieldsEntry();
         while (reader.pos < end) {
@@ -448,7 +486,9 @@ export const UploadRequest_UserFieldsEntry = {
         return obj;
     },
 
-    fromPartial(object: DeepPartial<UploadRequest_UserFieldsEntry>): UploadRequest_UserFieldsEntry {
+    fromPartial(
+        object: DeepPartial<UploadRequest_UserFieldsEntry>
+    ): UploadRequest_UserFieldsEntry {
         const message = createBaseUploadRequest_UserFieldsEntry();
         message.key = object.key ?? '';
         message.value = object.value ?? '';
@@ -461,7 +501,10 @@ function createBaseUploadResponse(): UploadResponse {
 }
 
 export const UploadResponse = {
-    encode(message: UploadResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: UploadResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.outStream.length !== 0) {
             writer.uint32(10).bytes(message.outStream);
         }
@@ -472,7 +515,8 @@ export const UploadResponse = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): UploadResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUploadResponse();
         while (reader.pos < end) {
@@ -494,17 +538,29 @@ export const UploadResponse = {
 
     fromJSON(object: any): UploadResponse {
         return {
-            outStream: isSet(object.outStream) ? bytesFromBase64(object.outStream) : new Uint8Array(),
-            errStream: isSet(object.errStream) ? bytesFromBase64(object.errStream) : new Uint8Array(),
+            outStream: isSet(object.outStream)
+                ? bytesFromBase64(object.outStream)
+                : new Uint8Array(),
+            errStream: isSet(object.errStream)
+                ? bytesFromBase64(object.errStream)
+                : new Uint8Array(),
         };
     },
 
     toJSON(message: UploadResponse): unknown {
         const obj: any = {};
         message.outStream !== undefined &&
-            (obj.outStream = base64FromBytes(message.outStream !== undefined ? message.outStream : new Uint8Array()));
+            (obj.outStream = base64FromBytes(
+                message.outStream !== undefined
+                    ? message.outStream
+                    : new Uint8Array()
+            ));
         message.errStream !== undefined &&
-            (obj.errStream = base64FromBytes(message.errStream !== undefined ? message.errStream : new Uint8Array()));
+            (obj.errStream = base64FromBytes(
+                message.errStream !== undefined
+                    ? message.errStream
+                    : new Uint8Array()
+            ));
         return obj;
     },
 
@@ -521,12 +577,19 @@ function createBaseProgrammerIsRequiredForUploadError(): ProgrammerIsRequiredFor
 }
 
 export const ProgrammerIsRequiredForUploadError = {
-    encode(_: ProgrammerIsRequiredForUploadError, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        _: ProgrammerIsRequiredForUploadError,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): ProgrammerIsRequiredForUploadError {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): ProgrammerIsRequiredForUploadError {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseProgrammerIsRequiredForUploadError();
         while (reader.pos < end) {
@@ -549,7 +612,9 @@ export const ProgrammerIsRequiredForUploadError = {
         return obj;
     },
 
-    fromPartial(_: DeepPartial<ProgrammerIsRequiredForUploadError>): ProgrammerIsRequiredForUploadError {
+    fromPartial(
+        _: DeepPartial<ProgrammerIsRequiredForUploadError>
+    ): ProgrammerIsRequiredForUploadError {
         const message = createBaseProgrammerIsRequiredForUploadError();
         return message;
     },
@@ -572,9 +637,15 @@ function createBaseUploadUsingProgrammerRequest(): UploadUsingProgrammerRequest 
 }
 
 export const UploadUsingProgrammerRequest = {
-    encode(message: UploadUsingProgrammerRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: UploadUsingProgrammerRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.fqbn !== '') {
             writer.uint32(18).string(message.fqbn);
@@ -612,8 +683,12 @@ export const UploadUsingProgrammerRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): UploadUsingProgrammerRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): UploadUsingProgrammerRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUploadUsingProgrammerRequest();
         while (reader.pos < end) {
@@ -650,7 +725,11 @@ export const UploadUsingProgrammerRequest = {
                     message.dryRun = reader.bool();
                     break;
                 case 11:
-                    const entry11 = UploadUsingProgrammerRequest_UserFieldsEntry.decode(reader, reader.uint32());
+                    const entry11 =
+                        UploadUsingProgrammerRequest_UserFieldsEntry.decode(
+                            reader,
+                            reader.uint32()
+                        );
                     if (entry11.value !== undefined) {
                         message.userFields[entry11.key] = entry11.value;
                     }
@@ -665,18 +744,28 @@ export const UploadUsingProgrammerRequest = {
 
     fromJSON(object: any): UploadUsingProgrammerRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
-            sketchPath: isSet(object.sketchPath) ? String(object.sketchPath) : '',
+            sketchPath: isSet(object.sketchPath)
+                ? String(object.sketchPath)
+                : '',
             port: isSet(object.port) ? Port.fromJSON(object.port) : undefined,
             verbose: isSet(object.verbose) ? Boolean(object.verbose) : false,
             verify: isSet(object.verify) ? Boolean(object.verify) : false,
-            importFile: isSet(object.importFile) ? String(object.importFile) : '',
+            importFile: isSet(object.importFile)
+                ? String(object.importFile)
+                : '',
             importDir: isSet(object.importDir) ? String(object.importDir) : '',
-            programmer: isSet(object.programmer) ? String(object.programmer) : '',
+            programmer: isSet(object.programmer)
+                ? String(object.programmer)
+                : '',
             dryRun: isSet(object.dryRun) ? Boolean(object.dryRun) : false,
             userFields: isObject(object.userFields)
-                ? Object.entries(object.userFields).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+                ? Object.entries(object.userFields).reduce<{
+                      [key: string]: string;
+                  }>((acc, [key, value]) => {
                       acc[key] = String(value);
                       return acc;
                   }, {})
@@ -687,15 +776,21 @@ export const UploadUsingProgrammerRequest = {
     toJSON(message: UploadUsingProgrammerRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
-        message.sketchPath !== undefined && (obj.sketchPath = message.sketchPath);
-        message.port !== undefined && (obj.port = message.port ? Port.toJSON(message.port) : undefined);
+        message.sketchPath !== undefined &&
+            (obj.sketchPath = message.sketchPath);
+        message.port !== undefined &&
+            (obj.port = message.port ? Port.toJSON(message.port) : undefined);
         message.verbose !== undefined && (obj.verbose = message.verbose);
         message.verify !== undefined && (obj.verify = message.verify);
-        message.importFile !== undefined && (obj.importFile = message.importFile);
+        message.importFile !== undefined &&
+            (obj.importFile = message.importFile);
         message.importDir !== undefined && (obj.importDir = message.importDir);
-        message.programmer !== undefined && (obj.programmer = message.programmer);
+        message.programmer !== undefined &&
+            (obj.programmer = message.programmer);
         message.dryRun !== undefined && (obj.dryRun = message.dryRun);
         obj.userFields = {};
         if (message.userFields) {
@@ -706,7 +801,9 @@ export const UploadUsingProgrammerRequest = {
         return obj;
     },
 
-    fromPartial(object: DeepPartial<UploadUsingProgrammerRequest>): UploadUsingProgrammerRequest {
+    fromPartial(
+        object: DeepPartial<UploadUsingProgrammerRequest>
+    ): UploadUsingProgrammerRequest {
         const message = createBaseUploadUsingProgrammerRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -714,22 +811,24 @@ export const UploadUsingProgrammerRequest = {
                 : undefined;
         message.fqbn = object.fqbn ?? '';
         message.sketchPath = object.sketchPath ?? '';
-        message.port = object.port !== undefined && object.port !== null ? Port.fromPartial(object.port) : undefined;
+        message.port =
+            object.port !== undefined && object.port !== null
+                ? Port.fromPartial(object.port)
+                : undefined;
         message.verbose = object.verbose ?? false;
         message.verify = object.verify ?? false;
         message.importFile = object.importFile ?? '';
         message.importDir = object.importDir ?? '';
         message.programmer = object.programmer ?? '';
         message.dryRun = object.dryRun ?? false;
-        message.userFields = Object.entries(object.userFields ?? {}).reduce<{ [key: string]: string }>(
-            (acc, [key, value]) => {
-                if (value !== undefined) {
-                    acc[key] = String(value);
-                }
-                return acc;
-            },
-            {}
-        );
+        message.userFields = Object.entries(object.userFields ?? {}).reduce<{
+            [key: string]: string;
+        }>((acc, [key, value]) => {
+            if (value !== undefined) {
+                acc[key] = String(value);
+            }
+            return acc;
+        }, {});
         return message;
     },
 };
@@ -752,10 +851,15 @@ export const UploadUsingProgrammerRequest_UserFieldsEntry = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): UploadUsingProgrammerRequest_UserFieldsEntry {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): UploadUsingProgrammerRequest_UserFieldsEntry {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseUploadUsingProgrammerRequest_UserFieldsEntry();
+        const message =
+            createBaseUploadUsingProgrammerRequest_UserFieldsEntry();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
@@ -790,7 +894,8 @@ export const UploadUsingProgrammerRequest_UserFieldsEntry = {
     fromPartial(
         object: DeepPartial<UploadUsingProgrammerRequest_UserFieldsEntry>
     ): UploadUsingProgrammerRequest_UserFieldsEntry {
-        const message = createBaseUploadUsingProgrammerRequest_UserFieldsEntry();
+        const message =
+            createBaseUploadUsingProgrammerRequest_UserFieldsEntry();
         message.key = object.key ?? '';
         message.value = object.value ?? '';
         return message;
@@ -802,7 +907,10 @@ function createBaseUploadUsingProgrammerResponse(): UploadUsingProgrammerRespons
 }
 
 export const UploadUsingProgrammerResponse = {
-    encode(message: UploadUsingProgrammerResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: UploadUsingProgrammerResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.outStream.length !== 0) {
             writer.uint32(10).bytes(message.outStream);
         }
@@ -812,8 +920,12 @@ export const UploadUsingProgrammerResponse = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): UploadUsingProgrammerResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): UploadUsingProgrammerResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUploadUsingProgrammerResponse();
         while (reader.pos < end) {
@@ -835,21 +947,35 @@ export const UploadUsingProgrammerResponse = {
 
     fromJSON(object: any): UploadUsingProgrammerResponse {
         return {
-            outStream: isSet(object.outStream) ? bytesFromBase64(object.outStream) : new Uint8Array(),
-            errStream: isSet(object.errStream) ? bytesFromBase64(object.errStream) : new Uint8Array(),
+            outStream: isSet(object.outStream)
+                ? bytesFromBase64(object.outStream)
+                : new Uint8Array(),
+            errStream: isSet(object.errStream)
+                ? bytesFromBase64(object.errStream)
+                : new Uint8Array(),
         };
     },
 
     toJSON(message: UploadUsingProgrammerResponse): unknown {
         const obj: any = {};
         message.outStream !== undefined &&
-            (obj.outStream = base64FromBytes(message.outStream !== undefined ? message.outStream : new Uint8Array()));
+            (obj.outStream = base64FromBytes(
+                message.outStream !== undefined
+                    ? message.outStream
+                    : new Uint8Array()
+            ));
         message.errStream !== undefined &&
-            (obj.errStream = base64FromBytes(message.errStream !== undefined ? message.errStream : new Uint8Array()));
+            (obj.errStream = base64FromBytes(
+                message.errStream !== undefined
+                    ? message.errStream
+                    : new Uint8Array()
+            ));
         return obj;
     },
 
-    fromPartial(object: DeepPartial<UploadUsingProgrammerResponse>): UploadUsingProgrammerResponse {
+    fromPartial(
+        object: DeepPartial<UploadUsingProgrammerResponse>
+    ): UploadUsingProgrammerResponse {
         const message = createBaseUploadUsingProgrammerResponse();
         message.outStream = object.outStream ?? new Uint8Array();
         message.errStream = object.errStream ?? new Uint8Array();
@@ -871,9 +997,15 @@ function createBaseBurnBootloaderRequest(): BurnBootloaderRequest {
 }
 
 export const BurnBootloaderRequest = {
-    encode(message: BurnBootloaderRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BurnBootloaderRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.fqbn !== '') {
             writer.uint32(18).string(message.fqbn);
@@ -894,13 +1026,20 @@ export const BurnBootloaderRequest = {
             writer.uint32(56).bool(message.dryRun);
         }
         Object.entries(message.userFields).forEach(([key, value]) => {
-            BurnBootloaderRequest_UserFieldsEntry.encode({ key: key as any, value }, writer.uint32(90).fork()).ldelim();
+            BurnBootloaderRequest_UserFieldsEntry.encode(
+                { key: key as any, value },
+                writer.uint32(90).fork()
+            ).ldelim();
         });
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): BurnBootloaderRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BurnBootloaderRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBurnBootloaderRequest();
         while (reader.pos < end) {
@@ -928,7 +1067,11 @@ export const BurnBootloaderRequest = {
                     message.dryRun = reader.bool();
                     break;
                 case 11:
-                    const entry11 = BurnBootloaderRequest_UserFieldsEntry.decode(reader, reader.uint32());
+                    const entry11 =
+                        BurnBootloaderRequest_UserFieldsEntry.decode(
+                            reader,
+                            reader.uint32()
+                        );
                     if (entry11.value !== undefined) {
                         message.userFields[entry11.key] = entry11.value;
                     }
@@ -943,15 +1086,21 @@ export const BurnBootloaderRequest = {
 
     fromJSON(object: any): BurnBootloaderRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
             port: isSet(object.port) ? Port.fromJSON(object.port) : undefined,
             verbose: isSet(object.verbose) ? Boolean(object.verbose) : false,
             verify: isSet(object.verify) ? Boolean(object.verify) : false,
-            programmer: isSet(object.programmer) ? String(object.programmer) : '',
+            programmer: isSet(object.programmer)
+                ? String(object.programmer)
+                : '',
             dryRun: isSet(object.dryRun) ? Boolean(object.dryRun) : false,
             userFields: isObject(object.userFields)
-                ? Object.entries(object.userFields).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+                ? Object.entries(object.userFields).reduce<{
+                      [key: string]: string;
+                  }>((acc, [key, value]) => {
                       acc[key] = String(value);
                       return acc;
                   }, {})
@@ -962,12 +1111,16 @@ export const BurnBootloaderRequest = {
     toJSON(message: BurnBootloaderRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
-        message.port !== undefined && (obj.port = message.port ? Port.toJSON(message.port) : undefined);
+        message.port !== undefined &&
+            (obj.port = message.port ? Port.toJSON(message.port) : undefined);
         message.verbose !== undefined && (obj.verbose = message.verbose);
         message.verify !== undefined && (obj.verify = message.verify);
-        message.programmer !== undefined && (obj.programmer = message.programmer);
+        message.programmer !== undefined &&
+            (obj.programmer = message.programmer);
         message.dryRun !== undefined && (obj.dryRun = message.dryRun);
         obj.userFields = {};
         if (message.userFields) {
@@ -978,27 +1131,31 @@ export const BurnBootloaderRequest = {
         return obj;
     },
 
-    fromPartial(object: DeepPartial<BurnBootloaderRequest>): BurnBootloaderRequest {
+    fromPartial(
+        object: DeepPartial<BurnBootloaderRequest>
+    ): BurnBootloaderRequest {
         const message = createBaseBurnBootloaderRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
                 ? Instance.fromPartial(object.instance)
                 : undefined;
         message.fqbn = object.fqbn ?? '';
-        message.port = object.port !== undefined && object.port !== null ? Port.fromPartial(object.port) : undefined;
+        message.port =
+            object.port !== undefined && object.port !== null
+                ? Port.fromPartial(object.port)
+                : undefined;
         message.verbose = object.verbose ?? false;
         message.verify = object.verify ?? false;
         message.programmer = object.programmer ?? '';
         message.dryRun = object.dryRun ?? false;
-        message.userFields = Object.entries(object.userFields ?? {}).reduce<{ [key: string]: string }>(
-            (acc, [key, value]) => {
-                if (value !== undefined) {
-                    acc[key] = String(value);
-                }
-                return acc;
-            },
-            {}
-        );
+        message.userFields = Object.entries(object.userFields ?? {}).reduce<{
+            [key: string]: string;
+        }>((acc, [key, value]) => {
+            if (value !== undefined) {
+                acc[key] = String(value);
+            }
+            return acc;
+        }, {});
         return message;
     },
 };
@@ -1008,7 +1165,10 @@ function createBaseBurnBootloaderRequest_UserFieldsEntry(): BurnBootloaderReques
 }
 
 export const BurnBootloaderRequest_UserFieldsEntry = {
-    encode(message: BurnBootloaderRequest_UserFieldsEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BurnBootloaderRequest_UserFieldsEntry,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.key !== '') {
             writer.uint32(10).string(message.key);
         }
@@ -1018,8 +1178,12 @@ export const BurnBootloaderRequest_UserFieldsEntry = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): BurnBootloaderRequest_UserFieldsEntry {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BurnBootloaderRequest_UserFieldsEntry {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBurnBootloaderRequest_UserFieldsEntry();
         while (reader.pos < end) {
@@ -1053,7 +1217,9 @@ export const BurnBootloaderRequest_UserFieldsEntry = {
         return obj;
     },
 
-    fromPartial(object: DeepPartial<BurnBootloaderRequest_UserFieldsEntry>): BurnBootloaderRequest_UserFieldsEntry {
+    fromPartial(
+        object: DeepPartial<BurnBootloaderRequest_UserFieldsEntry>
+    ): BurnBootloaderRequest_UserFieldsEntry {
         const message = createBaseBurnBootloaderRequest_UserFieldsEntry();
         message.key = object.key ?? '';
         message.value = object.value ?? '';
@@ -1066,7 +1232,10 @@ function createBaseBurnBootloaderResponse(): BurnBootloaderResponse {
 }
 
 export const BurnBootloaderResponse = {
-    encode(message: BurnBootloaderResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BurnBootloaderResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.outStream.length !== 0) {
             writer.uint32(10).bytes(message.outStream);
         }
@@ -1076,8 +1245,12 @@ export const BurnBootloaderResponse = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): BurnBootloaderResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BurnBootloaderResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBurnBootloaderResponse();
         while (reader.pos < end) {
@@ -1099,21 +1272,35 @@ export const BurnBootloaderResponse = {
 
     fromJSON(object: any): BurnBootloaderResponse {
         return {
-            outStream: isSet(object.outStream) ? bytesFromBase64(object.outStream) : new Uint8Array(),
-            errStream: isSet(object.errStream) ? bytesFromBase64(object.errStream) : new Uint8Array(),
+            outStream: isSet(object.outStream)
+                ? bytesFromBase64(object.outStream)
+                : new Uint8Array(),
+            errStream: isSet(object.errStream)
+                ? bytesFromBase64(object.errStream)
+                : new Uint8Array(),
         };
     },
 
     toJSON(message: BurnBootloaderResponse): unknown {
         const obj: any = {};
         message.outStream !== undefined &&
-            (obj.outStream = base64FromBytes(message.outStream !== undefined ? message.outStream : new Uint8Array()));
+            (obj.outStream = base64FromBytes(
+                message.outStream !== undefined
+                    ? message.outStream
+                    : new Uint8Array()
+            ));
         message.errStream !== undefined &&
-            (obj.errStream = base64FromBytes(message.errStream !== undefined ? message.errStream : new Uint8Array()));
+            (obj.errStream = base64FromBytes(
+                message.errStream !== undefined
+                    ? message.errStream
+                    : new Uint8Array()
+            ));
         return obj;
     },
 
-    fromPartial(object: DeepPartial<BurnBootloaderResponse>): BurnBootloaderResponse {
+    fromPartial(
+        object: DeepPartial<BurnBootloaderResponse>
+    ): BurnBootloaderResponse {
         const message = createBaseBurnBootloaderResponse();
         message.outStream = object.outStream ?? new Uint8Array();
         message.errStream = object.errStream ?? new Uint8Array();
@@ -1126,9 +1313,15 @@ function createBaseListProgrammersAvailableForUploadRequest(): ListProgrammersAv
 }
 
 export const ListProgrammersAvailableForUploadRequest = {
-    encode(message: ListProgrammersAvailableForUploadRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: ListProgrammersAvailableForUploadRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.fqbn !== '') {
             writer.uint32(18).string(message.fqbn);
@@ -1136,8 +1329,12 @@ export const ListProgrammersAvailableForUploadRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): ListProgrammersAvailableForUploadRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): ListProgrammersAvailableForUploadRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseListProgrammersAvailableForUploadRequest();
         while (reader.pos < end) {
@@ -1159,7 +1356,9 @@ export const ListProgrammersAvailableForUploadRequest = {
 
     fromJSON(object: any): ListProgrammersAvailableForUploadRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
         };
     },
@@ -1167,7 +1366,9 @@ export const ListProgrammersAvailableForUploadRequest = {
     toJSON(message: ListProgrammersAvailableForUploadRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         return obj;
     },
@@ -1190,22 +1391,31 @@ function createBaseListProgrammersAvailableForUploadResponse(): ListProgrammersA
 }
 
 export const ListProgrammersAvailableForUploadResponse = {
-    encode(message: ListProgrammersAvailableForUploadResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: ListProgrammersAvailableForUploadResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         for (const v of message.programmers) {
             Programmer.encode(v!, writer.uint32(10).fork()).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): ListProgrammersAvailableForUploadResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): ListProgrammersAvailableForUploadResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseListProgrammersAvailableForUploadResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.programmers.push(Programmer.decode(reader, reader.uint32()));
+                    message.programmers.push(
+                        Programmer.decode(reader, reader.uint32())
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1226,7 +1436,9 @@ export const ListProgrammersAvailableForUploadResponse = {
     toJSON(message: ListProgrammersAvailableForUploadResponse): unknown {
         const obj: any = {};
         if (message.programmers) {
-            obj.programmers = message.programmers.map((e) => (e ? Programmer.toJSON(e) : undefined));
+            obj.programmers = message.programmers.map((e) =>
+                e ? Programmer.toJSON(e) : undefined
+            );
         } else {
             obj.programmers = [];
         }
@@ -1237,7 +1449,8 @@ export const ListProgrammersAvailableForUploadResponse = {
         object: DeepPartial<ListProgrammersAvailableForUploadResponse>
     ): ListProgrammersAvailableForUploadResponse {
         const message = createBaseListProgrammersAvailableForUploadResponse();
-        message.programmers = object.programmers?.map((e) => Programmer.fromPartial(e)) || [];
+        message.programmers =
+            object.programmers?.map((e) => Programmer.fromPartial(e)) || [];
         return message;
     },
 };
@@ -1247,9 +1460,15 @@ function createBaseSupportedUserFieldsRequest(): SupportedUserFieldsRequest {
 }
 
 export const SupportedUserFieldsRequest = {
-    encode(message: SupportedUserFieldsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: SupportedUserFieldsRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.fqbn !== '') {
             writer.uint32(18).string(message.fqbn);
@@ -1260,8 +1479,12 @@ export const SupportedUserFieldsRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): SupportedUserFieldsRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): SupportedUserFieldsRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseSupportedUserFieldsRequest();
         while (reader.pos < end) {
@@ -1286,7 +1509,9 @@ export const SupportedUserFieldsRequest = {
 
     fromJSON(object: any): SupportedUserFieldsRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
             protocol: isSet(object.protocol) ? String(object.protocol) : '',
         };
@@ -1295,13 +1520,17 @@ export const SupportedUserFieldsRequest = {
     toJSON(message: SupportedUserFieldsRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         message.protocol !== undefined && (obj.protocol = message.protocol);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<SupportedUserFieldsRequest>): SupportedUserFieldsRequest {
+    fromPartial(
+        object: DeepPartial<SupportedUserFieldsRequest>
+    ): SupportedUserFieldsRequest {
         const message = createBaseSupportedUserFieldsRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -1318,7 +1547,10 @@ function createBaseUserField(): UserField {
 }
 
 export const UserField = {
-    encode(message: UserField, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: UserField,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.toolId !== '') {
             writer.uint32(10).string(message.toolId);
         }
@@ -1335,7 +1567,8 @@ export const UserField = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): UserField {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUserField();
         while (reader.pos < end) {
@@ -1394,22 +1627,31 @@ function createBaseSupportedUserFieldsResponse(): SupportedUserFieldsResponse {
 }
 
 export const SupportedUserFieldsResponse = {
-    encode(message: SupportedUserFieldsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: SupportedUserFieldsResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         for (const v of message.userFields) {
             UserField.encode(v!, writer.uint32(10).fork()).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): SupportedUserFieldsResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): SupportedUserFieldsResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseSupportedUserFieldsResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.userFields.push(UserField.decode(reader, reader.uint32()));
+                    message.userFields.push(
+                        UserField.decode(reader, reader.uint32())
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1430,16 +1672,21 @@ export const SupportedUserFieldsResponse = {
     toJSON(message: SupportedUserFieldsResponse): unknown {
         const obj: any = {};
         if (message.userFields) {
-            obj.userFields = message.userFields.map((e) => (e ? UserField.toJSON(e) : undefined));
+            obj.userFields = message.userFields.map((e) =>
+                e ? UserField.toJSON(e) : undefined
+            );
         } else {
             obj.userFields = [];
         }
         return obj;
     },
 
-    fromPartial(object: DeepPartial<SupportedUserFieldsResponse>): SupportedUserFieldsResponse {
+    fromPartial(
+        object: DeepPartial<SupportedUserFieldsResponse>
+    ): SupportedUserFieldsResponse {
         const message = createBaseSupportedUserFieldsResponse();
-        message.userFields = object.userFields?.map((e) => UserField.fromPartial(e)) || [];
+        message.userFields =
+            object.userFields?.map((e) => UserField.fromPartial(e)) || [];
         return message;
     },
 };
@@ -1488,7 +1735,14 @@ function base64FromBytes(arr: Uint8Array): string {
     }
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+    | Date
+    | Function
+    | Uint8Array
+    | string
+    | number
+    | boolean
+    | undefined;
 
 export type DeepPartial<T> = T extends Builtin
     ? T
@@ -1497,7 +1751,9 @@ export type DeepPartial<T> = T extends Builtin
     : T extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
     : T extends { $case: string }
-    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & { $case: T['$case'] }
+    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & {
+          $case: T['$case'];
+      }
     : T extends {}
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;

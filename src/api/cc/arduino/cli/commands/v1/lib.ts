@@ -16,7 +16,9 @@ export enum LibraryInstallLocation {
     UNRECOGNIZED = -1,
 }
 
-export function libraryInstallLocationFromJSON(object: any): LibraryInstallLocation {
+export function libraryInstallLocationFromJSON(
+    object: any
+): LibraryInstallLocation {
     switch (object) {
         case 0:
         case 'LIBRARY_INSTALL_LOCATION_USER':
@@ -31,7 +33,9 @@ export function libraryInstallLocationFromJSON(object: any): LibraryInstallLocat
     }
 }
 
-export function libraryInstallLocationToJSON(object: LibraryInstallLocation): string {
+export function libraryInstallLocationToJSON(
+    object: LibraryInstallLocation
+): string {
     switch (object) {
         case LibraryInstallLocation.LIBRARY_INSTALL_LOCATION_USER:
             return 'LIBRARY_INSTALL_LOCATION_USER';
@@ -479,6 +483,12 @@ export interface Library {
     providesIncludes: string[];
     /** Map of FQBNs that specifies if library is compatible with this library */
     compatibleWith: { [key: string]: boolean };
+    /**
+     * This value is set to true if the library is in development and should not
+     * be treated as read-only. This status is determined by the presence of a
+     * `.development` file in the library root directory.
+     */
+    inDevelopment: boolean;
 }
 
 export interface Library_PropertiesEntry {
@@ -530,9 +540,15 @@ function createBaseLibraryDownloadRequest(): LibraryDownloadRequest {
 }
 
 export const LibraryDownloadRequest = {
-    encode(message: LibraryDownloadRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryDownloadRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.name !== '') {
             writer.uint32(18).string(message.name);
@@ -543,8 +559,12 @@ export const LibraryDownloadRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibraryDownloadRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryDownloadRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryDownloadRequest();
         while (reader.pos < end) {
@@ -569,7 +589,9 @@ export const LibraryDownloadRequest = {
 
     fromJSON(object: any): LibraryDownloadRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             name: isSet(object.name) ? String(object.name) : '',
             version: isSet(object.version) ? String(object.version) : '',
         };
@@ -578,13 +600,17 @@ export const LibraryDownloadRequest = {
     toJSON(message: LibraryDownloadRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.name !== undefined && (obj.name = message.name);
         message.version !== undefined && (obj.version = message.version);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<LibraryDownloadRequest>): LibraryDownloadRequest {
+    fromPartial(
+        object: DeepPartial<LibraryDownloadRequest>
+    ): LibraryDownloadRequest {
         const message = createBaseLibraryDownloadRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -601,22 +627,35 @@ function createBaseLibraryDownloadResponse(): LibraryDownloadResponse {
 }
 
 export const LibraryDownloadResponse = {
-    encode(message: LibraryDownloadResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryDownloadResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.progress !== undefined) {
-            DownloadProgress.encode(message.progress, writer.uint32(10).fork()).ldelim();
+            DownloadProgress.encode(
+                message.progress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibraryDownloadResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryDownloadResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryDownloadResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.progress = DownloadProgress.decode(reader, reader.uint32());
+                    message.progress = DownloadProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -627,17 +666,25 @@ export const LibraryDownloadResponse = {
     },
 
     fromJSON(object: any): LibraryDownloadResponse {
-        return { progress: isSet(object.progress) ? DownloadProgress.fromJSON(object.progress) : undefined };
+        return {
+            progress: isSet(object.progress)
+                ? DownloadProgress.fromJSON(object.progress)
+                : undefined,
+        };
     },
 
     toJSON(message: LibraryDownloadResponse): unknown {
         const obj: any = {};
         message.progress !== undefined &&
-            (obj.progress = message.progress ? DownloadProgress.toJSON(message.progress) : undefined);
+            (obj.progress = message.progress
+                ? DownloadProgress.toJSON(message.progress)
+                : undefined);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<LibraryDownloadResponse>): LibraryDownloadResponse {
+    fromPartial(
+        object: DeepPartial<LibraryDownloadResponse>
+    ): LibraryDownloadResponse {
         const message = createBaseLibraryDownloadResponse();
         message.progress =
             object.progress !== undefined && object.progress !== null
@@ -648,13 +695,26 @@ export const LibraryDownloadResponse = {
 };
 
 function createBaseLibraryInstallRequest(): LibraryInstallRequest {
-    return { instance: undefined, name: '', version: '', noDeps: false, noOverwrite: false, installLocation: 0 };
+    return {
+        instance: undefined,
+        name: '',
+        version: '',
+        noDeps: false,
+        noOverwrite: false,
+        installLocation: 0,
+    };
 }
 
 export const LibraryInstallRequest = {
-    encode(message: LibraryInstallRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryInstallRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.name !== '') {
             writer.uint32(18).string(message.name);
@@ -674,8 +734,12 @@ export const LibraryInstallRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibraryInstallRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryInstallRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryInstallRequest();
         while (reader.pos < end) {
@@ -709,29 +773,42 @@ export const LibraryInstallRequest = {
 
     fromJSON(object: any): LibraryInstallRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             name: isSet(object.name) ? String(object.name) : '',
             version: isSet(object.version) ? String(object.version) : '',
             noDeps: isSet(object.noDeps) ? Boolean(object.noDeps) : false,
-            noOverwrite: isSet(object.noOverwrite) ? Boolean(object.noOverwrite) : false,
-            installLocation: isSet(object.installLocation) ? libraryInstallLocationFromJSON(object.installLocation) : 0,
+            noOverwrite: isSet(object.noOverwrite)
+                ? Boolean(object.noOverwrite)
+                : false,
+            installLocation: isSet(object.installLocation)
+                ? libraryInstallLocationFromJSON(object.installLocation)
+                : 0,
         };
     },
 
     toJSON(message: LibraryInstallRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.name !== undefined && (obj.name = message.name);
         message.version !== undefined && (obj.version = message.version);
         message.noDeps !== undefined && (obj.noDeps = message.noDeps);
-        message.noOverwrite !== undefined && (obj.noOverwrite = message.noOverwrite);
+        message.noOverwrite !== undefined &&
+            (obj.noOverwrite = message.noOverwrite);
         message.installLocation !== undefined &&
-            (obj.installLocation = libraryInstallLocationToJSON(message.installLocation));
+            (obj.installLocation = libraryInstallLocationToJSON(
+                message.installLocation
+            ));
         return obj;
     },
 
-    fromPartial(object: DeepPartial<LibraryInstallRequest>): LibraryInstallRequest {
+    fromPartial(
+        object: DeepPartial<LibraryInstallRequest>
+    ): LibraryInstallRequest {
         const message = createBaseLibraryInstallRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -751,28 +828,47 @@ function createBaseLibraryInstallResponse(): LibraryInstallResponse {
 }
 
 export const LibraryInstallResponse = {
-    encode(message: LibraryInstallResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryInstallResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.progress !== undefined) {
-            DownloadProgress.encode(message.progress, writer.uint32(10).fork()).ldelim();
+            DownloadProgress.encode(
+                message.progress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.taskProgress !== undefined) {
-            TaskProgress.encode(message.taskProgress, writer.uint32(18).fork()).ldelim();
+            TaskProgress.encode(
+                message.taskProgress,
+                writer.uint32(18).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibraryInstallResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryInstallResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryInstallResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.progress = DownloadProgress.decode(reader, reader.uint32());
+                    message.progress = DownloadProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 case 2:
-                    message.taskProgress = TaskProgress.decode(reader, reader.uint32());
+                    message.taskProgress = TaskProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -784,21 +880,31 @@ export const LibraryInstallResponse = {
 
     fromJSON(object: any): LibraryInstallResponse {
         return {
-            progress: isSet(object.progress) ? DownloadProgress.fromJSON(object.progress) : undefined,
-            taskProgress: isSet(object.taskProgress) ? TaskProgress.fromJSON(object.taskProgress) : undefined,
+            progress: isSet(object.progress)
+                ? DownloadProgress.fromJSON(object.progress)
+                : undefined,
+            taskProgress: isSet(object.taskProgress)
+                ? TaskProgress.fromJSON(object.taskProgress)
+                : undefined,
         };
     },
 
     toJSON(message: LibraryInstallResponse): unknown {
         const obj: any = {};
         message.progress !== undefined &&
-            (obj.progress = message.progress ? DownloadProgress.toJSON(message.progress) : undefined);
+            (obj.progress = message.progress
+                ? DownloadProgress.toJSON(message.progress)
+                : undefined);
         message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress ? TaskProgress.toJSON(message.taskProgress) : undefined);
+            (obj.taskProgress = message.taskProgress
+                ? TaskProgress.toJSON(message.taskProgress)
+                : undefined);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<LibraryInstallResponse>): LibraryInstallResponse {
+    fromPartial(
+        object: DeepPartial<LibraryInstallResponse>
+    ): LibraryInstallResponse {
         const message = createBaseLibraryInstallResponse();
         message.progress =
             object.progress !== undefined && object.progress !== null
@@ -817,9 +923,15 @@ function createBaseLibraryUpgradeRequest(): LibraryUpgradeRequest {
 }
 
 export const LibraryUpgradeRequest = {
-    encode(message: LibraryUpgradeRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryUpgradeRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.name !== '') {
             writer.uint32(18).string(message.name);
@@ -830,8 +942,12 @@ export const LibraryUpgradeRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibraryUpgradeRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryUpgradeRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryUpgradeRequest();
         while (reader.pos < end) {
@@ -856,7 +972,9 @@ export const LibraryUpgradeRequest = {
 
     fromJSON(object: any): LibraryUpgradeRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             name: isSet(object.name) ? String(object.name) : '',
             noDeps: isSet(object.noDeps) ? Boolean(object.noDeps) : false,
         };
@@ -865,13 +983,17 @@ export const LibraryUpgradeRequest = {
     toJSON(message: LibraryUpgradeRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.name !== undefined && (obj.name = message.name);
         message.noDeps !== undefined && (obj.noDeps = message.noDeps);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<LibraryUpgradeRequest>): LibraryUpgradeRequest {
+    fromPartial(
+        object: DeepPartial<LibraryUpgradeRequest>
+    ): LibraryUpgradeRequest {
         const message = createBaseLibraryUpgradeRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -888,28 +1010,47 @@ function createBaseLibraryUpgradeResponse(): LibraryUpgradeResponse {
 }
 
 export const LibraryUpgradeResponse = {
-    encode(message: LibraryUpgradeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryUpgradeResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.progress !== undefined) {
-            DownloadProgress.encode(message.progress, writer.uint32(10).fork()).ldelim();
+            DownloadProgress.encode(
+                message.progress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.taskProgress !== undefined) {
-            TaskProgress.encode(message.taskProgress, writer.uint32(18).fork()).ldelim();
+            TaskProgress.encode(
+                message.taskProgress,
+                writer.uint32(18).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibraryUpgradeResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryUpgradeResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryUpgradeResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.progress = DownloadProgress.decode(reader, reader.uint32());
+                    message.progress = DownloadProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 case 2:
-                    message.taskProgress = TaskProgress.decode(reader, reader.uint32());
+                    message.taskProgress = TaskProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -921,21 +1062,31 @@ export const LibraryUpgradeResponse = {
 
     fromJSON(object: any): LibraryUpgradeResponse {
         return {
-            progress: isSet(object.progress) ? DownloadProgress.fromJSON(object.progress) : undefined,
-            taskProgress: isSet(object.taskProgress) ? TaskProgress.fromJSON(object.taskProgress) : undefined,
+            progress: isSet(object.progress)
+                ? DownloadProgress.fromJSON(object.progress)
+                : undefined,
+            taskProgress: isSet(object.taskProgress)
+                ? TaskProgress.fromJSON(object.taskProgress)
+                : undefined,
         };
     },
 
     toJSON(message: LibraryUpgradeResponse): unknown {
         const obj: any = {};
         message.progress !== undefined &&
-            (obj.progress = message.progress ? DownloadProgress.toJSON(message.progress) : undefined);
+            (obj.progress = message.progress
+                ? DownloadProgress.toJSON(message.progress)
+                : undefined);
         message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress ? TaskProgress.toJSON(message.taskProgress) : undefined);
+            (obj.taskProgress = message.taskProgress
+                ? TaskProgress.toJSON(message.taskProgress)
+                : undefined);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<LibraryUpgradeResponse>): LibraryUpgradeResponse {
+    fromPartial(
+        object: DeepPartial<LibraryUpgradeResponse>
+    ): LibraryUpgradeResponse {
         const message = createBaseLibraryUpgradeResponse();
         message.progress =
             object.progress !== undefined && object.progress !== null
@@ -954,9 +1105,15 @@ function createBaseLibraryUninstallRequest(): LibraryUninstallRequest {
 }
 
 export const LibraryUninstallRequest = {
-    encode(message: LibraryUninstallRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryUninstallRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.name !== '') {
             writer.uint32(18).string(message.name);
@@ -967,8 +1124,12 @@ export const LibraryUninstallRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibraryUninstallRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryUninstallRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryUninstallRequest();
         while (reader.pos < end) {
@@ -993,7 +1154,9 @@ export const LibraryUninstallRequest = {
 
     fromJSON(object: any): LibraryUninstallRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             name: isSet(object.name) ? String(object.name) : '',
             version: isSet(object.version) ? String(object.version) : '',
         };
@@ -1002,13 +1165,17 @@ export const LibraryUninstallRequest = {
     toJSON(message: LibraryUninstallRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.name !== undefined && (obj.name = message.name);
         message.version !== undefined && (obj.version = message.version);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<LibraryUninstallRequest>): LibraryUninstallRequest {
+    fromPartial(
+        object: DeepPartial<LibraryUninstallRequest>
+    ): LibraryUninstallRequest {
         const message = createBaseLibraryUninstallRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -1025,22 +1192,35 @@ function createBaseLibraryUninstallResponse(): LibraryUninstallResponse {
 }
 
 export const LibraryUninstallResponse = {
-    encode(message: LibraryUninstallResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryUninstallResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.taskProgress !== undefined) {
-            TaskProgress.encode(message.taskProgress, writer.uint32(10).fork()).ldelim();
+            TaskProgress.encode(
+                message.taskProgress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibraryUninstallResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryUninstallResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryUninstallResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.taskProgress = TaskProgress.decode(reader, reader.uint32());
+                    message.taskProgress = TaskProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1051,17 +1231,25 @@ export const LibraryUninstallResponse = {
     },
 
     fromJSON(object: any): LibraryUninstallResponse {
-        return { taskProgress: isSet(object.taskProgress) ? TaskProgress.fromJSON(object.taskProgress) : undefined };
+        return {
+            taskProgress: isSet(object.taskProgress)
+                ? TaskProgress.fromJSON(object.taskProgress)
+                : undefined,
+        };
     },
 
     toJSON(message: LibraryUninstallResponse): unknown {
         const obj: any = {};
         message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress ? TaskProgress.toJSON(message.taskProgress) : undefined);
+            (obj.taskProgress = message.taskProgress
+                ? TaskProgress.toJSON(message.taskProgress)
+                : undefined);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<LibraryUninstallResponse>): LibraryUninstallResponse {
+    fromPartial(
+        object: DeepPartial<LibraryUninstallResponse>
+    ): LibraryUninstallResponse {
         const message = createBaseLibraryUninstallResponse();
         message.taskProgress =
             object.taskProgress !== undefined && object.taskProgress !== null
@@ -1076,15 +1264,25 @@ function createBaseLibraryUpgradeAllRequest(): LibraryUpgradeAllRequest {
 }
 
 export const LibraryUpgradeAllRequest = {
-    encode(message: LibraryUpgradeAllRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryUpgradeAllRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibraryUpgradeAllRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryUpgradeAllRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryUpgradeAllRequest();
         while (reader.pos < end) {
@@ -1102,17 +1300,25 @@ export const LibraryUpgradeAllRequest = {
     },
 
     fromJSON(object: any): LibraryUpgradeAllRequest {
-        return { instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined };
+        return {
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+        };
     },
 
     toJSON(message: LibraryUpgradeAllRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<LibraryUpgradeAllRequest>): LibraryUpgradeAllRequest {
+    fromPartial(
+        object: DeepPartial<LibraryUpgradeAllRequest>
+    ): LibraryUpgradeAllRequest {
         const message = createBaseLibraryUpgradeAllRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -1127,28 +1333,47 @@ function createBaseLibraryUpgradeAllResponse(): LibraryUpgradeAllResponse {
 }
 
 export const LibraryUpgradeAllResponse = {
-    encode(message: LibraryUpgradeAllResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryUpgradeAllResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.progress !== undefined) {
-            DownloadProgress.encode(message.progress, writer.uint32(10).fork()).ldelim();
+            DownloadProgress.encode(
+                message.progress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.taskProgress !== undefined) {
-            TaskProgress.encode(message.taskProgress, writer.uint32(18).fork()).ldelim();
+            TaskProgress.encode(
+                message.taskProgress,
+                writer.uint32(18).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibraryUpgradeAllResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryUpgradeAllResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryUpgradeAllResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.progress = DownloadProgress.decode(reader, reader.uint32());
+                    message.progress = DownloadProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 case 2:
-                    message.taskProgress = TaskProgress.decode(reader, reader.uint32());
+                    message.taskProgress = TaskProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1160,21 +1385,31 @@ export const LibraryUpgradeAllResponse = {
 
     fromJSON(object: any): LibraryUpgradeAllResponse {
         return {
-            progress: isSet(object.progress) ? DownloadProgress.fromJSON(object.progress) : undefined,
-            taskProgress: isSet(object.taskProgress) ? TaskProgress.fromJSON(object.taskProgress) : undefined,
+            progress: isSet(object.progress)
+                ? DownloadProgress.fromJSON(object.progress)
+                : undefined,
+            taskProgress: isSet(object.taskProgress)
+                ? TaskProgress.fromJSON(object.taskProgress)
+                : undefined,
         };
     },
 
     toJSON(message: LibraryUpgradeAllResponse): unknown {
         const obj: any = {};
         message.progress !== undefined &&
-            (obj.progress = message.progress ? DownloadProgress.toJSON(message.progress) : undefined);
+            (obj.progress = message.progress
+                ? DownloadProgress.toJSON(message.progress)
+                : undefined);
         message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress ? TaskProgress.toJSON(message.taskProgress) : undefined);
+            (obj.taskProgress = message.taskProgress
+                ? TaskProgress.toJSON(message.taskProgress)
+                : undefined);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<LibraryUpgradeAllResponse>): LibraryUpgradeAllResponse {
+    fromPartial(
+        object: DeepPartial<LibraryUpgradeAllResponse>
+    ): LibraryUpgradeAllResponse {
         const message = createBaseLibraryUpgradeAllResponse();
         message.progress =
             object.progress !== undefined && object.progress !== null
@@ -1193,9 +1428,15 @@ function createBaseLibraryResolveDependenciesRequest(): LibraryResolveDependenci
 }
 
 export const LibraryResolveDependenciesRequest = {
-    encode(message: LibraryResolveDependenciesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryResolveDependenciesRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.name !== '') {
             writer.uint32(18).string(message.name);
@@ -1206,8 +1447,12 @@ export const LibraryResolveDependenciesRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibraryResolveDependenciesRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryResolveDependenciesRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryResolveDependenciesRequest();
         while (reader.pos < end) {
@@ -1232,7 +1477,9 @@ export const LibraryResolveDependenciesRequest = {
 
     fromJSON(object: any): LibraryResolveDependenciesRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             name: isSet(object.name) ? String(object.name) : '',
             version: isSet(object.version) ? String(object.version) : '',
         };
@@ -1241,13 +1488,17 @@ export const LibraryResolveDependenciesRequest = {
     toJSON(message: LibraryResolveDependenciesRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.name !== undefined && (obj.name = message.name);
         message.version !== undefined && (obj.version = message.version);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<LibraryResolveDependenciesRequest>): LibraryResolveDependenciesRequest {
+    fromPartial(
+        object: DeepPartial<LibraryResolveDependenciesRequest>
+    ): LibraryResolveDependenciesRequest {
         const message = createBaseLibraryResolveDependenciesRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -1264,22 +1515,34 @@ function createBaseLibraryResolveDependenciesResponse(): LibraryResolveDependenc
 }
 
 export const LibraryResolveDependenciesResponse = {
-    encode(message: LibraryResolveDependenciesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryResolveDependenciesResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         for (const v of message.dependencies) {
-            LibraryDependencyStatus.encode(v!, writer.uint32(10).fork()).ldelim();
+            LibraryDependencyStatus.encode(
+                v!,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibraryResolveDependenciesResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryResolveDependenciesResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryResolveDependenciesResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.dependencies.push(LibraryDependencyStatus.decode(reader, reader.uint32()));
+                    message.dependencies.push(
+                        LibraryDependencyStatus.decode(reader, reader.uint32())
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1292,7 +1555,9 @@ export const LibraryResolveDependenciesResponse = {
     fromJSON(object: any): LibraryResolveDependenciesResponse {
         return {
             dependencies: Array.isArray(object?.dependencies)
-                ? object.dependencies.map((e: any) => LibraryDependencyStatus.fromJSON(e))
+                ? object.dependencies.map((e: any) =>
+                      LibraryDependencyStatus.fromJSON(e)
+                  )
                 : [],
         };
     },
@@ -1300,16 +1565,23 @@ export const LibraryResolveDependenciesResponse = {
     toJSON(message: LibraryResolveDependenciesResponse): unknown {
         const obj: any = {};
         if (message.dependencies) {
-            obj.dependencies = message.dependencies.map((e) => (e ? LibraryDependencyStatus.toJSON(e) : undefined));
+            obj.dependencies = message.dependencies.map((e) =>
+                e ? LibraryDependencyStatus.toJSON(e) : undefined
+            );
         } else {
             obj.dependencies = [];
         }
         return obj;
     },
 
-    fromPartial(object: DeepPartial<LibraryResolveDependenciesResponse>): LibraryResolveDependenciesResponse {
+    fromPartial(
+        object: DeepPartial<LibraryResolveDependenciesResponse>
+    ): LibraryResolveDependenciesResponse {
         const message = createBaseLibraryResolveDependenciesResponse();
-        message.dependencies = object.dependencies?.map((e) => LibraryDependencyStatus.fromPartial(e)) || [];
+        message.dependencies =
+            object.dependencies?.map((e) =>
+                LibraryDependencyStatus.fromPartial(e)
+            ) || [];
         return message;
     },
 };
@@ -1319,7 +1591,10 @@ function createBaseLibraryDependencyStatus(): LibraryDependencyStatus {
 }
 
 export const LibraryDependencyStatus = {
-    encode(message: LibraryDependencyStatus, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryDependencyStatus,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.name !== '') {
             writer.uint32(10).string(message.name);
         }
@@ -1332,8 +1607,12 @@ export const LibraryDependencyStatus = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibraryDependencyStatus {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryDependencyStatus {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryDependencyStatus();
         while (reader.pos < end) {
@@ -1359,20 +1638,28 @@ export const LibraryDependencyStatus = {
     fromJSON(object: any): LibraryDependencyStatus {
         return {
             name: isSet(object.name) ? String(object.name) : '',
-            versionRequired: isSet(object.versionRequired) ? String(object.versionRequired) : '',
-            versionInstalled: isSet(object.versionInstalled) ? String(object.versionInstalled) : '',
+            versionRequired: isSet(object.versionRequired)
+                ? String(object.versionRequired)
+                : '',
+            versionInstalled: isSet(object.versionInstalled)
+                ? String(object.versionInstalled)
+                : '',
         };
     },
 
     toJSON(message: LibraryDependencyStatus): unknown {
         const obj: any = {};
         message.name !== undefined && (obj.name = message.name);
-        message.versionRequired !== undefined && (obj.versionRequired = message.versionRequired);
-        message.versionInstalled !== undefined && (obj.versionInstalled = message.versionInstalled);
+        message.versionRequired !== undefined &&
+            (obj.versionRequired = message.versionRequired);
+        message.versionInstalled !== undefined &&
+            (obj.versionInstalled = message.versionInstalled);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<LibraryDependencyStatus>): LibraryDependencyStatus {
+    fromPartial(
+        object: DeepPartial<LibraryDependencyStatus>
+    ): LibraryDependencyStatus {
         const message = createBaseLibraryDependencyStatus();
         message.name = object.name ?? '';
         message.versionRequired = object.versionRequired ?? '';
@@ -1386,9 +1673,15 @@ function createBaseLibrarySearchRequest(): LibrarySearchRequest {
 }
 
 export const LibrarySearchRequest = {
-    encode(message: LibrarySearchRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibrarySearchRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.query !== '') {
             writer.uint32(18).string(message.query);
@@ -1396,8 +1689,12 @@ export const LibrarySearchRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibrarySearchRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibrarySearchRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibrarySearchRequest();
         while (reader.pos < end) {
@@ -1419,7 +1716,9 @@ export const LibrarySearchRequest = {
 
     fromJSON(object: any): LibrarySearchRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             query: isSet(object.query) ? String(object.query) : '',
         };
     },
@@ -1427,12 +1726,16 @@ export const LibrarySearchRequest = {
     toJSON(message: LibrarySearchRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.query !== undefined && (obj.query = message.query);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<LibrarySearchRequest>): LibrarySearchRequest {
+    fromPartial(
+        object: DeepPartial<LibrarySearchRequest>
+    ): LibrarySearchRequest {
         const message = createBaseLibrarySearchRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -1448,7 +1751,10 @@ function createBaseLibrarySearchResponse(): LibrarySearchResponse {
 }
 
 export const LibrarySearchResponse = {
-    encode(message: LibrarySearchResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibrarySearchResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         for (const v of message.libraries) {
             SearchedLibrary.encode(v!, writer.uint32(10).fork()).ldelim();
         }
@@ -1458,15 +1764,21 @@ export const LibrarySearchResponse = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibrarySearchResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibrarySearchResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibrarySearchResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.libraries.push(SearchedLibrary.decode(reader, reader.uint32()));
+                    message.libraries.push(
+                        SearchedLibrary.decode(reader, reader.uint32())
+                    );
                     break;
                 case 2:
                     message.status = reader.int32() as any;
@@ -1484,24 +1796,32 @@ export const LibrarySearchResponse = {
             libraries: Array.isArray(object?.libraries)
                 ? object.libraries.map((e: any) => SearchedLibrary.fromJSON(e))
                 : [],
-            status: isSet(object.status) ? librarySearchStatusFromJSON(object.status) : 0,
+            status: isSet(object.status)
+                ? librarySearchStatusFromJSON(object.status)
+                : 0,
         };
     },
 
     toJSON(message: LibrarySearchResponse): unknown {
         const obj: any = {};
         if (message.libraries) {
-            obj.libraries = message.libraries.map((e) => (e ? SearchedLibrary.toJSON(e) : undefined));
+            obj.libraries = message.libraries.map((e) =>
+                e ? SearchedLibrary.toJSON(e) : undefined
+            );
         } else {
             obj.libraries = [];
         }
-        message.status !== undefined && (obj.status = librarySearchStatusToJSON(message.status));
+        message.status !== undefined &&
+            (obj.status = librarySearchStatusToJSON(message.status));
         return obj;
     },
 
-    fromPartial(object: DeepPartial<LibrarySearchResponse>): LibrarySearchResponse {
+    fromPartial(
+        object: DeepPartial<LibrarySearchResponse>
+    ): LibrarySearchResponse {
         const message = createBaseLibrarySearchResponse();
-        message.libraries = object.libraries?.map((e) => SearchedLibrary.fromPartial(e)) || [];
+        message.libraries =
+            object.libraries?.map((e) => SearchedLibrary.fromPartial(e)) || [];
         message.status = object.status ?? 0;
         return message;
     },
@@ -1512,21 +1832,31 @@ function createBaseSearchedLibrary(): SearchedLibrary {
 }
 
 export const SearchedLibrary = {
-    encode(message: SearchedLibrary, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: SearchedLibrary,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.name !== '') {
             writer.uint32(10).string(message.name);
         }
         Object.entries(message.releases).forEach(([key, value]) => {
-            SearchedLibrary_ReleasesEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
+            SearchedLibrary_ReleasesEntry.encode(
+                { key: key as any, value },
+                writer.uint32(18).fork()
+            ).ldelim();
         });
         if (message.latest !== undefined) {
-            LibraryRelease.encode(message.latest, writer.uint32(26).fork()).ldelim();
+            LibraryRelease.encode(
+                message.latest,
+                writer.uint32(26).fork()
+            ).ldelim();
         }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): SearchedLibrary {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseSearchedLibrary();
         while (reader.pos < end) {
@@ -1536,13 +1866,19 @@ export const SearchedLibrary = {
                     message.name = reader.string();
                     break;
                 case 2:
-                    const entry2 = SearchedLibrary_ReleasesEntry.decode(reader, reader.uint32());
+                    const entry2 = SearchedLibrary_ReleasesEntry.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     if (entry2.value !== undefined) {
                         message.releases[entry2.key] = entry2.value;
                     }
                     break;
                 case 3:
-                    message.latest = LibraryRelease.decode(reader, reader.uint32());
+                    message.latest = LibraryRelease.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1556,12 +1892,16 @@ export const SearchedLibrary = {
         return {
             name: isSet(object.name) ? String(object.name) : '',
             releases: isObject(object.releases)
-                ? Object.entries(object.releases).reduce<{ [key: string]: LibraryRelease }>((acc, [key, value]) => {
+                ? Object.entries(object.releases).reduce<{
+                      [key: string]: LibraryRelease;
+                  }>((acc, [key, value]) => {
                       acc[key] = LibraryRelease.fromJSON(value);
                       return acc;
                   }, {})
                 : {},
-            latest: isSet(object.latest) ? LibraryRelease.fromJSON(object.latest) : undefined,
+            latest: isSet(object.latest)
+                ? LibraryRelease.fromJSON(object.latest)
+                : undefined,
         };
     },
 
@@ -1575,22 +1915,23 @@ export const SearchedLibrary = {
             });
         }
         message.latest !== undefined &&
-            (obj.latest = message.latest ? LibraryRelease.toJSON(message.latest) : undefined);
+            (obj.latest = message.latest
+                ? LibraryRelease.toJSON(message.latest)
+                : undefined);
         return obj;
     },
 
     fromPartial(object: DeepPartial<SearchedLibrary>): SearchedLibrary {
         const message = createBaseSearchedLibrary();
         message.name = object.name ?? '';
-        message.releases = Object.entries(object.releases ?? {}).reduce<{ [key: string]: LibraryRelease }>(
-            (acc, [key, value]) => {
-                if (value !== undefined) {
-                    acc[key] = LibraryRelease.fromPartial(value);
-                }
-                return acc;
-            },
-            {}
-        );
+        message.releases = Object.entries(object.releases ?? {}).reduce<{
+            [key: string]: LibraryRelease;
+        }>((acc, [key, value]) => {
+            if (value !== undefined) {
+                acc[key] = LibraryRelease.fromPartial(value);
+            }
+            return acc;
+        }, {});
         message.latest =
             object.latest !== undefined && object.latest !== null
                 ? LibraryRelease.fromPartial(object.latest)
@@ -1604,18 +1945,28 @@ function createBaseSearchedLibrary_ReleasesEntry(): SearchedLibrary_ReleasesEntr
 }
 
 export const SearchedLibrary_ReleasesEntry = {
-    encode(message: SearchedLibrary_ReleasesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: SearchedLibrary_ReleasesEntry,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.key !== '') {
             writer.uint32(10).string(message.key);
         }
         if (message.value !== undefined) {
-            LibraryRelease.encode(message.value, writer.uint32(18).fork()).ldelim();
+            LibraryRelease.encode(
+                message.value,
+                writer.uint32(18).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): SearchedLibrary_ReleasesEntry {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): SearchedLibrary_ReleasesEntry {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseSearchedLibrary_ReleasesEntry();
         while (reader.pos < end) {
@@ -1625,7 +1976,10 @@ export const SearchedLibrary_ReleasesEntry = {
                     message.key = reader.string();
                     break;
                 case 2:
-                    message.value = LibraryRelease.decode(reader, reader.uint32());
+                    message.value = LibraryRelease.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1638,22 +1992,31 @@ export const SearchedLibrary_ReleasesEntry = {
     fromJSON(object: any): SearchedLibrary_ReleasesEntry {
         return {
             key: isSet(object.key) ? String(object.key) : '',
-            value: isSet(object.value) ? LibraryRelease.fromJSON(object.value) : undefined,
+            value: isSet(object.value)
+                ? LibraryRelease.fromJSON(object.value)
+                : undefined,
         };
     },
 
     toJSON(message: SearchedLibrary_ReleasesEntry): unknown {
         const obj: any = {};
         message.key !== undefined && (obj.key = message.key);
-        message.value !== undefined && (obj.value = message.value ? LibraryRelease.toJSON(message.value) : undefined);
+        message.value !== undefined &&
+            (obj.value = message.value
+                ? LibraryRelease.toJSON(message.value)
+                : undefined);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<SearchedLibrary_ReleasesEntry>): SearchedLibrary_ReleasesEntry {
+    fromPartial(
+        object: DeepPartial<SearchedLibrary_ReleasesEntry>
+    ): SearchedLibrary_ReleasesEntry {
         const message = createBaseSearchedLibrary_ReleasesEntry();
         message.key = object.key ?? '';
         message.value =
-            object.value !== undefined && object.value !== null ? LibraryRelease.fromPartial(object.value) : undefined;
+            object.value !== undefined && object.value !== null
+                ? LibraryRelease.fromPartial(object.value)
+                : undefined;
         return message;
     },
 };
@@ -1677,7 +2040,10 @@ function createBaseLibraryRelease(): LibraryRelease {
 }
 
 export const LibraryRelease = {
-    encode(message: LibraryRelease, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryRelease,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.author !== '') {
             writer.uint32(10).string(message.author);
         }
@@ -1706,7 +2072,10 @@ export const LibraryRelease = {
             writer.uint32(74).string(v!);
         }
         if (message.resources !== undefined) {
-            DownloadResource.encode(message.resources, writer.uint32(82).fork()).ldelim();
+            DownloadResource.encode(
+                message.resources,
+                writer.uint32(82).fork()
+            ).ldelim();
         }
         if (message.license !== '') {
             writer.uint32(90).string(message.license);
@@ -1721,7 +2090,8 @@ export const LibraryRelease = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): LibraryRelease {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryRelease();
         while (reader.pos < end) {
@@ -1755,7 +2125,10 @@ export const LibraryRelease = {
                     message.types.push(reader.string());
                     break;
                 case 10:
-                    message.resources = DownloadResource.decode(reader, reader.uint32());
+                    message.resources = DownloadResource.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 case 11:
                     message.license = reader.string();
@@ -1764,7 +2137,9 @@ export const LibraryRelease = {
                     message.providesIncludes.push(reader.string());
                     break;
                 case 13:
-                    message.dependencies.push(LibraryDependency.decode(reader, reader.uint32()));
+                    message.dependencies.push(
+                        LibraryDependency.decode(reader, reader.uint32())
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1778,20 +2153,30 @@ export const LibraryRelease = {
         return {
             author: isSet(object.author) ? String(object.author) : '',
             version: isSet(object.version) ? String(object.version) : '',
-            maintainer: isSet(object.maintainer) ? String(object.maintainer) : '',
+            maintainer: isSet(object.maintainer)
+                ? String(object.maintainer)
+                : '',
             sentence: isSet(object.sentence) ? String(object.sentence) : '',
             paragraph: isSet(object.paragraph) ? String(object.paragraph) : '',
             website: isSet(object.website) ? String(object.website) : '',
             category: isSet(object.category) ? String(object.category) : '',
-            architectures: Array.isArray(object?.architectures) ? object.architectures.map((e: any) => String(e)) : [],
-            types: Array.isArray(object?.types) ? object.types.map((e: any) => String(e)) : [],
-            resources: isSet(object.resources) ? DownloadResource.fromJSON(object.resources) : undefined,
+            architectures: Array.isArray(object?.architectures)
+                ? object.architectures.map((e: any) => String(e))
+                : [],
+            types: Array.isArray(object?.types)
+                ? object.types.map((e: any) => String(e))
+                : [],
+            resources: isSet(object.resources)
+                ? DownloadResource.fromJSON(object.resources)
+                : undefined,
             license: isSet(object.license) ? String(object.license) : '',
             providesIncludes: Array.isArray(object?.providesIncludes)
                 ? object.providesIncludes.map((e: any) => String(e))
                 : [],
             dependencies: Array.isArray(object?.dependencies)
-                ? object.dependencies.map((e: any) => LibraryDependency.fromJSON(e))
+                ? object.dependencies.map((e: any) =>
+                      LibraryDependency.fromJSON(e)
+                  )
                 : [],
         };
     },
@@ -1800,7 +2185,8 @@ export const LibraryRelease = {
         const obj: any = {};
         message.author !== undefined && (obj.author = message.author);
         message.version !== undefined && (obj.version = message.version);
-        message.maintainer !== undefined && (obj.maintainer = message.maintainer);
+        message.maintainer !== undefined &&
+            (obj.maintainer = message.maintainer);
         message.sentence !== undefined && (obj.sentence = message.sentence);
         message.paragraph !== undefined && (obj.paragraph = message.paragraph);
         message.website !== undefined && (obj.website = message.website);
@@ -1816,7 +2202,9 @@ export const LibraryRelease = {
             obj.types = [];
         }
         message.resources !== undefined &&
-            (obj.resources = message.resources ? DownloadResource.toJSON(message.resources) : undefined);
+            (obj.resources = message.resources
+                ? DownloadResource.toJSON(message.resources)
+                : undefined);
         message.license !== undefined && (obj.license = message.license);
         if (message.providesIncludes) {
             obj.providesIncludes = message.providesIncludes.map((e) => e);
@@ -1824,7 +2212,9 @@ export const LibraryRelease = {
             obj.providesIncludes = [];
         }
         if (message.dependencies) {
-            obj.dependencies = message.dependencies.map((e) => (e ? LibraryDependency.toJSON(e) : undefined));
+            obj.dependencies = message.dependencies.map((e) =>
+                e ? LibraryDependency.toJSON(e) : undefined
+            );
         } else {
             obj.dependencies = [];
         }
@@ -1848,7 +2238,9 @@ export const LibraryRelease = {
                 : undefined;
         message.license = object.license ?? '';
         message.providesIncludes = object.providesIncludes?.map((e) => e) || [];
-        message.dependencies = object.dependencies?.map((e) => LibraryDependency.fromPartial(e)) || [];
+        message.dependencies =
+            object.dependencies?.map((e) => LibraryDependency.fromPartial(e)) ||
+            [];
         return message;
     },
 };
@@ -1858,7 +2250,10 @@ function createBaseLibraryDependency(): LibraryDependency {
 }
 
 export const LibraryDependency = {
-    encode(message: LibraryDependency, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryDependency,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.name !== '') {
             writer.uint32(10).string(message.name);
         }
@@ -1869,7 +2264,8 @@ export const LibraryDependency = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): LibraryDependency {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryDependency();
         while (reader.pos < end) {
@@ -1892,14 +2288,17 @@ export const LibraryDependency = {
     fromJSON(object: any): LibraryDependency {
         return {
             name: isSet(object.name) ? String(object.name) : '',
-            versionConstraint: isSet(object.versionConstraint) ? String(object.versionConstraint) : '',
+            versionConstraint: isSet(object.versionConstraint)
+                ? String(object.versionConstraint)
+                : '',
         };
     },
 
     toJSON(message: LibraryDependency): unknown {
         const obj: any = {};
         message.name !== undefined && (obj.name = message.name);
-        message.versionConstraint !== undefined && (obj.versionConstraint = message.versionConstraint);
+        message.versionConstraint !== undefined &&
+            (obj.versionConstraint = message.versionConstraint);
         return obj;
     },
 
@@ -1912,11 +2311,20 @@ export const LibraryDependency = {
 };
 
 function createBaseDownloadResource(): DownloadResource {
-    return { url: '', archiveFilename: '', checksum: '', size: 0, cachePath: '' };
+    return {
+        url: '',
+        archiveFilename: '',
+        checksum: '',
+        size: 0,
+        cachePath: '',
+    };
 }
 
 export const DownloadResource = {
-    encode(message: DownloadResource, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: DownloadResource,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.url !== '') {
             writer.uint32(10).string(message.url);
         }
@@ -1936,7 +2344,8 @@ export const DownloadResource = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): DownloadResource {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDownloadResource();
         while (reader.pos < end) {
@@ -1968,7 +2377,9 @@ export const DownloadResource = {
     fromJSON(object: any): DownloadResource {
         return {
             url: isSet(object.url) ? String(object.url) : '',
-            archiveFilename: isSet(object.archiveFilename) ? String(object.archiveFilename) : '',
+            archiveFilename: isSet(object.archiveFilename)
+                ? String(object.archiveFilename)
+                : '',
             checksum: isSet(object.checksum) ? String(object.checksum) : '',
             size: isSet(object.size) ? Number(object.size) : 0,
             cachePath: isSet(object.cachePath) ? String(object.cachePath) : '',
@@ -1978,7 +2389,8 @@ export const DownloadResource = {
     toJSON(message: DownloadResource): unknown {
         const obj: any = {};
         message.url !== undefined && (obj.url = message.url);
-        message.archiveFilename !== undefined && (obj.archiveFilename = message.archiveFilename);
+        message.archiveFilename !== undefined &&
+            (obj.archiveFilename = message.archiveFilename);
         message.checksum !== undefined && (obj.checksum = message.checksum);
         message.size !== undefined && (obj.size = Math.round(message.size));
         message.cachePath !== undefined && (obj.cachePath = message.cachePath);
@@ -1997,13 +2409,25 @@ export const DownloadResource = {
 };
 
 function createBaseLibraryListRequest(): LibraryListRequest {
-    return { instance: undefined, all: false, updatable: false, name: '', fqbn: '' };
+    return {
+        instance: undefined,
+        all: false,
+        updatable: false,
+        name: '',
+        fqbn: '',
+    };
 }
 
 export const LibraryListRequest = {
-    encode(message: LibraryListRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryListRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.all === true) {
             writer.uint32(16).bool(message.all);
@@ -2020,8 +2444,12 @@ export const LibraryListRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibraryListRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryListRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryListRequest();
         while (reader.pos < end) {
@@ -2052,9 +2480,13 @@ export const LibraryListRequest = {
 
     fromJSON(object: any): LibraryListRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             all: isSet(object.all) ? Boolean(object.all) : false,
-            updatable: isSet(object.updatable) ? Boolean(object.updatable) : false,
+            updatable: isSet(object.updatable)
+                ? Boolean(object.updatable)
+                : false,
             name: isSet(object.name) ? String(object.name) : '',
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
         };
@@ -2063,7 +2495,9 @@ export const LibraryListRequest = {
     toJSON(message: LibraryListRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.all !== undefined && (obj.all = message.all);
         message.updatable !== undefined && (obj.updatable = message.updatable);
         message.name !== undefined && (obj.name = message.name);
@@ -2090,22 +2524,31 @@ function createBaseLibraryListResponse(): LibraryListResponse {
 }
 
 export const LibraryListResponse = {
-    encode(message: LibraryListResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LibraryListResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         for (const v of message.installedLibraries) {
             InstalledLibrary.encode(v!, writer.uint32(10).fork()).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LibraryListResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryListResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryListResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.installedLibraries.push(InstalledLibrary.decode(reader, reader.uint32()));
+                    message.installedLibraries.push(
+                        InstalledLibrary.decode(reader, reader.uint32())
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -2118,7 +2561,9 @@ export const LibraryListResponse = {
     fromJSON(object: any): LibraryListResponse {
         return {
             installedLibraries: Array.isArray(object?.installedLibraries)
-                ? object.installedLibraries.map((e: any) => InstalledLibrary.fromJSON(e))
+                ? object.installedLibraries.map((e: any) =>
+                      InstalledLibrary.fromJSON(e)
+                  )
                 : [],
         };
     },
@@ -2137,7 +2582,10 @@ export const LibraryListResponse = {
 
     fromPartial(object: DeepPartial<LibraryListResponse>): LibraryListResponse {
         const message = createBaseLibraryListResponse();
-        message.installedLibraries = object.installedLibraries?.map((e) => InstalledLibrary.fromPartial(e)) || [];
+        message.installedLibraries =
+            object.installedLibraries?.map((e) =>
+                InstalledLibrary.fromPartial(e)
+            ) || [];
         return message;
     },
 };
@@ -2147,18 +2595,25 @@ function createBaseInstalledLibrary(): InstalledLibrary {
 }
 
 export const InstalledLibrary = {
-    encode(message: InstalledLibrary, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: InstalledLibrary,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.library !== undefined) {
             Library.encode(message.library, writer.uint32(10).fork()).ldelim();
         }
         if (message.release !== undefined) {
-            LibraryRelease.encode(message.release, writer.uint32(18).fork()).ldelim();
+            LibraryRelease.encode(
+                message.release,
+                writer.uint32(18).fork()
+            ).ldelim();
         }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): InstalledLibrary {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseInstalledLibrary();
         while (reader.pos < end) {
@@ -2168,7 +2623,10 @@ export const InstalledLibrary = {
                     message.library = Library.decode(reader, reader.uint32());
                     break;
                 case 2:
-                    message.release = LibraryRelease.decode(reader, reader.uint32());
+                    message.release = LibraryRelease.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -2180,23 +2638,34 @@ export const InstalledLibrary = {
 
     fromJSON(object: any): InstalledLibrary {
         return {
-            library: isSet(object.library) ? Library.fromJSON(object.library) : undefined,
-            release: isSet(object.release) ? LibraryRelease.fromJSON(object.release) : undefined,
+            library: isSet(object.library)
+                ? Library.fromJSON(object.library)
+                : undefined,
+            release: isSet(object.release)
+                ? LibraryRelease.fromJSON(object.release)
+                : undefined,
         };
     },
 
     toJSON(message: InstalledLibrary): unknown {
         const obj: any = {};
-        message.library !== undefined && (obj.library = message.library ? Library.toJSON(message.library) : undefined);
+        message.library !== undefined &&
+            (obj.library = message.library
+                ? Library.toJSON(message.library)
+                : undefined);
         message.release !== undefined &&
-            (obj.release = message.release ? LibraryRelease.toJSON(message.release) : undefined);
+            (obj.release = message.release
+                ? LibraryRelease.toJSON(message.release)
+                : undefined);
         return obj;
     },
 
     fromPartial(object: DeepPartial<InstalledLibrary>): InstalledLibrary {
         const message = createBaseInstalledLibrary();
         message.library =
-            object.library !== undefined && object.library !== null ? Library.fromPartial(object.library) : undefined;
+            object.library !== undefined && object.library !== null
+                ? Library.fromPartial(object.library)
+                : undefined;
         message.release =
             object.release !== undefined && object.release !== null
                 ? LibraryRelease.fromPartial(object.release)
@@ -2232,11 +2701,15 @@ function createBaseLibrary(): Library {
         examples: [],
         providesIncludes: [],
         compatibleWith: {},
+        inDevelopment: false,
     };
 }
 
 export const Library = {
-    encode(message: Library, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: Library,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.name !== '') {
             writer.uint32(10).string(message.name);
         }
@@ -2295,7 +2768,10 @@ export const Library = {
             writer.uint32(178).string(message.license);
         }
         Object.entries(message.properties).forEach(([key, value]) => {
-            Library_PropertiesEntry.encode({ key: key as any, value }, writer.uint32(186).fork()).ldelim();
+            Library_PropertiesEntry.encode(
+                { key: key as any, value },
+                writer.uint32(186).fork()
+            ).ldelim();
         });
         if (message.location !== 0) {
             writer.uint32(192).int32(message.location);
@@ -2310,13 +2786,20 @@ export const Library = {
             writer.uint32(218).string(v!);
         }
         Object.entries(message.compatibleWith).forEach(([key, value]) => {
-            Library_CompatibleWithEntry.encode({ key: key as any, value }, writer.uint32(226).fork()).ldelim();
+            Library_CompatibleWithEntry.encode(
+                { key: key as any, value },
+                writer.uint32(226).fork()
+            ).ldelim();
         });
+        if (message.inDevelopment === true) {
+            writer.uint32(232).bool(message.inDevelopment);
+        }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Library {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibrary();
         while (reader.pos < end) {
@@ -2380,7 +2863,10 @@ export const Library = {
                     message.license = reader.string();
                     break;
                 case 23:
-                    const entry23 = Library_PropertiesEntry.decode(reader, reader.uint32());
+                    const entry23 = Library_PropertiesEntry.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     if (entry23.value !== undefined) {
                         message.properties[entry23.key] = entry23.value;
                     }
@@ -2398,10 +2884,16 @@ export const Library = {
                     message.providesIncludes.push(reader.string());
                     break;
                 case 28:
-                    const entry28 = Library_CompatibleWithEntry.decode(reader, reader.uint32());
+                    const entry28 = Library_CompatibleWithEntry.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     if (entry28.value !== undefined) {
                         message.compatibleWith[entry28.key] = entry28.value;
                     }
+                    break;
+                case 29:
+                    message.inDevelopment = reader.bool();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -2415,41 +2907,70 @@ export const Library = {
         return {
             name: isSet(object.name) ? String(object.name) : '',
             author: isSet(object.author) ? String(object.author) : '',
-            maintainer: isSet(object.maintainer) ? String(object.maintainer) : '',
+            maintainer: isSet(object.maintainer)
+                ? String(object.maintainer)
+                : '',
             sentence: isSet(object.sentence) ? String(object.sentence) : '',
             paragraph: isSet(object.paragraph) ? String(object.paragraph) : '',
             website: isSet(object.website) ? String(object.website) : '',
             category: isSet(object.category) ? String(object.category) : '',
-            architectures: Array.isArray(object?.architectures) ? object.architectures.map((e: any) => String(e)) : [],
-            types: Array.isArray(object?.types) ? object.types.map((e: any) => String(e)) : [],
-            installDir: isSet(object.installDir) ? String(object.installDir) : '',
+            architectures: Array.isArray(object?.architectures)
+                ? object.architectures.map((e: any) => String(e))
+                : [],
+            types: Array.isArray(object?.types)
+                ? object.types.map((e: any) => String(e))
+                : [],
+            installDir: isSet(object.installDir)
+                ? String(object.installDir)
+                : '',
             sourceDir: isSet(object.sourceDir) ? String(object.sourceDir) : '',
-            utilityDir: isSet(object.utilityDir) ? String(object.utilityDir) : '',
-            containerPlatform: isSet(object.containerPlatform) ? String(object.containerPlatform) : '',
-            dotALinkage: isSet(object.dotALinkage) ? Boolean(object.dotALinkage) : false,
-            precompiled: isSet(object.precompiled) ? Boolean(object.precompiled) : false,
+            utilityDir: isSet(object.utilityDir)
+                ? String(object.utilityDir)
+                : '',
+            containerPlatform: isSet(object.containerPlatform)
+                ? String(object.containerPlatform)
+                : '',
+            dotALinkage: isSet(object.dotALinkage)
+                ? Boolean(object.dotALinkage)
+                : false,
+            precompiled: isSet(object.precompiled)
+                ? Boolean(object.precompiled)
+                : false,
             ldFlags: isSet(object.ldFlags) ? String(object.ldFlags) : '',
             isLegacy: isSet(object.isLegacy) ? Boolean(object.isLegacy) : false,
             version: isSet(object.version) ? String(object.version) : '',
             license: isSet(object.license) ? String(object.license) : '',
             properties: isObject(object.properties)
-                ? Object.entries(object.properties).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+                ? Object.entries(object.properties).reduce<{
+                      [key: string]: string;
+                  }>((acc, [key, value]) => {
                       acc[key] = String(value);
                       return acc;
                   }, {})
                 : {},
-            location: isSet(object.location) ? libraryLocationFromJSON(object.location) : 0,
-            layout: isSet(object.layout) ? libraryLayoutFromJSON(object.layout) : 0,
-            examples: Array.isArray(object?.examples) ? object.examples.map((e: any) => String(e)) : [],
+            location: isSet(object.location)
+                ? libraryLocationFromJSON(object.location)
+                : 0,
+            layout: isSet(object.layout)
+                ? libraryLayoutFromJSON(object.layout)
+                : 0,
+            examples: Array.isArray(object?.examples)
+                ? object.examples.map((e: any) => String(e))
+                : [],
             providesIncludes: Array.isArray(object?.providesIncludes)
                 ? object.providesIncludes.map((e: any) => String(e))
                 : [],
             compatibleWith: isObject(object.compatibleWith)
-                ? Object.entries(object.compatibleWith).reduce<{ [key: string]: boolean }>((acc, [key, value]) => {
+                ? Object.entries(object.compatibleWith).reduce<{
+                      [key: string]: boolean;
+                  }>((acc, [key, value]) => {
                       acc[key] = Boolean(value);
                       return acc;
                   }, {})
                 : {},
+            inDevelopment: isSet(object.inDevelopment)
+                ? Boolean(object.inDevelopment)
+                : false,
         };
     },
 
@@ -2457,7 +2978,8 @@ export const Library = {
         const obj: any = {};
         message.name !== undefined && (obj.name = message.name);
         message.author !== undefined && (obj.author = message.author);
-        message.maintainer !== undefined && (obj.maintainer = message.maintainer);
+        message.maintainer !== undefined &&
+            (obj.maintainer = message.maintainer);
         message.sentence !== undefined && (obj.sentence = message.sentence);
         message.paragraph !== undefined && (obj.paragraph = message.paragraph);
         message.website !== undefined && (obj.website = message.website);
@@ -2472,12 +2994,17 @@ export const Library = {
         } else {
             obj.types = [];
         }
-        message.installDir !== undefined && (obj.installDir = message.installDir);
+        message.installDir !== undefined &&
+            (obj.installDir = message.installDir);
         message.sourceDir !== undefined && (obj.sourceDir = message.sourceDir);
-        message.utilityDir !== undefined && (obj.utilityDir = message.utilityDir);
-        message.containerPlatform !== undefined && (obj.containerPlatform = message.containerPlatform);
-        message.dotALinkage !== undefined && (obj.dotALinkage = message.dotALinkage);
-        message.precompiled !== undefined && (obj.precompiled = message.precompiled);
+        message.utilityDir !== undefined &&
+            (obj.utilityDir = message.utilityDir);
+        message.containerPlatform !== undefined &&
+            (obj.containerPlatform = message.containerPlatform);
+        message.dotALinkage !== undefined &&
+            (obj.dotALinkage = message.dotALinkage);
+        message.precompiled !== undefined &&
+            (obj.precompiled = message.precompiled);
         message.ldFlags !== undefined && (obj.ldFlags = message.ldFlags);
         message.isLegacy !== undefined && (obj.isLegacy = message.isLegacy);
         message.version !== undefined && (obj.version = message.version);
@@ -2488,8 +3015,10 @@ export const Library = {
                 obj.properties[k] = v;
             });
         }
-        message.location !== undefined && (obj.location = libraryLocationToJSON(message.location));
-        message.layout !== undefined && (obj.layout = libraryLayoutToJSON(message.layout));
+        message.location !== undefined &&
+            (obj.location = libraryLocationToJSON(message.location));
+        message.layout !== undefined &&
+            (obj.layout = libraryLayoutToJSON(message.layout));
         if (message.examples) {
             obj.examples = message.examples.map((e) => e);
         } else {
@@ -2506,6 +3035,8 @@ export const Library = {
                 obj.compatibleWith[k] = v;
             });
         }
+        message.inDevelopment !== undefined &&
+            (obj.inDevelopment = message.inDevelopment);
         return obj;
     },
 
@@ -2530,28 +3061,27 @@ export const Library = {
         message.isLegacy = object.isLegacy ?? false;
         message.version = object.version ?? '';
         message.license = object.license ?? '';
-        message.properties = Object.entries(object.properties ?? {}).reduce<{ [key: string]: string }>(
-            (acc, [key, value]) => {
-                if (value !== undefined) {
-                    acc[key] = String(value);
-                }
-                return acc;
-            },
-            {}
-        );
+        message.properties = Object.entries(object.properties ?? {}).reduce<{
+            [key: string]: string;
+        }>((acc, [key, value]) => {
+            if (value !== undefined) {
+                acc[key] = String(value);
+            }
+            return acc;
+        }, {});
         message.location = object.location ?? 0;
         message.layout = object.layout ?? 0;
         message.examples = object.examples?.map((e) => e) || [];
         message.providesIncludes = object.providesIncludes?.map((e) => e) || [];
-        message.compatibleWith = Object.entries(object.compatibleWith ?? {}).reduce<{ [key: string]: boolean }>(
-            (acc, [key, value]) => {
-                if (value !== undefined) {
-                    acc[key] = Boolean(value);
-                }
-                return acc;
-            },
-            {}
-        );
+        message.compatibleWith = Object.entries(
+            object.compatibleWith ?? {}
+        ).reduce<{ [key: string]: boolean }>((acc, [key, value]) => {
+            if (value !== undefined) {
+                acc[key] = Boolean(value);
+            }
+            return acc;
+        }, {});
+        message.inDevelopment = object.inDevelopment ?? false;
         return message;
     },
 };
@@ -2561,7 +3091,10 @@ function createBaseLibrary_PropertiesEntry(): Library_PropertiesEntry {
 }
 
 export const Library_PropertiesEntry = {
-    encode(message: Library_PropertiesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: Library_PropertiesEntry,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.key !== '') {
             writer.uint32(10).string(message.key);
         }
@@ -2571,8 +3104,12 @@ export const Library_PropertiesEntry = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): Library_PropertiesEntry {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): Library_PropertiesEntry {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibrary_PropertiesEntry();
         while (reader.pos < end) {
@@ -2606,7 +3143,9 @@ export const Library_PropertiesEntry = {
         return obj;
     },
 
-    fromPartial(object: DeepPartial<Library_PropertiesEntry>): Library_PropertiesEntry {
+    fromPartial(
+        object: DeepPartial<Library_PropertiesEntry>
+    ): Library_PropertiesEntry {
         const message = createBaseLibrary_PropertiesEntry();
         message.key = object.key ?? '';
         message.value = object.value ?? '';
@@ -2619,7 +3158,10 @@ function createBaseLibrary_CompatibleWithEntry(): Library_CompatibleWithEntry {
 }
 
 export const Library_CompatibleWithEntry = {
-    encode(message: Library_CompatibleWithEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: Library_CompatibleWithEntry,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.key !== '') {
             writer.uint32(10).string(message.key);
         }
@@ -2629,8 +3171,12 @@ export const Library_CompatibleWithEntry = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): Library_CompatibleWithEntry {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): Library_CompatibleWithEntry {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibrary_CompatibleWithEntry();
         while (reader.pos < end) {
@@ -2664,7 +3210,9 @@ export const Library_CompatibleWithEntry = {
         return obj;
     },
 
-    fromPartial(object: DeepPartial<Library_CompatibleWithEntry>): Library_CompatibleWithEntry {
+    fromPartial(
+        object: DeepPartial<Library_CompatibleWithEntry>
+    ): Library_CompatibleWithEntry {
         const message = createBaseLibrary_CompatibleWithEntry();
         message.key = object.key ?? '';
         message.value = object.value ?? false;
@@ -2677,9 +3225,15 @@ function createBaseZipLibraryInstallRequest(): ZipLibraryInstallRequest {
 }
 
 export const ZipLibraryInstallRequest = {
-    encode(message: ZipLibraryInstallRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: ZipLibraryInstallRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.path !== '') {
             writer.uint32(18).string(message.path);
@@ -2690,8 +3244,12 @@ export const ZipLibraryInstallRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): ZipLibraryInstallRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): ZipLibraryInstallRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseZipLibraryInstallRequest();
         while (reader.pos < end) {
@@ -2716,22 +3274,30 @@ export const ZipLibraryInstallRequest = {
 
     fromJSON(object: any): ZipLibraryInstallRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             path: isSet(object.path) ? String(object.path) : '',
-            overwrite: isSet(object.overwrite) ? Boolean(object.overwrite) : false,
+            overwrite: isSet(object.overwrite)
+                ? Boolean(object.overwrite)
+                : false,
         };
     },
 
     toJSON(message: ZipLibraryInstallRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.path !== undefined && (obj.path = message.path);
         message.overwrite !== undefined && (obj.overwrite = message.overwrite);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<ZipLibraryInstallRequest>): ZipLibraryInstallRequest {
+    fromPartial(
+        object: DeepPartial<ZipLibraryInstallRequest>
+    ): ZipLibraryInstallRequest {
         const message = createBaseZipLibraryInstallRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -2748,22 +3314,35 @@ function createBaseZipLibraryInstallResponse(): ZipLibraryInstallResponse {
 }
 
 export const ZipLibraryInstallResponse = {
-    encode(message: ZipLibraryInstallResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: ZipLibraryInstallResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.taskProgress !== undefined) {
-            TaskProgress.encode(message.taskProgress, writer.uint32(10).fork()).ldelim();
+            TaskProgress.encode(
+                message.taskProgress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): ZipLibraryInstallResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): ZipLibraryInstallResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseZipLibraryInstallResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.taskProgress = TaskProgress.decode(reader, reader.uint32());
+                    message.taskProgress = TaskProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -2774,17 +3353,25 @@ export const ZipLibraryInstallResponse = {
     },
 
     fromJSON(object: any): ZipLibraryInstallResponse {
-        return { taskProgress: isSet(object.taskProgress) ? TaskProgress.fromJSON(object.taskProgress) : undefined };
+        return {
+            taskProgress: isSet(object.taskProgress)
+                ? TaskProgress.fromJSON(object.taskProgress)
+                : undefined,
+        };
     },
 
     toJSON(message: ZipLibraryInstallResponse): unknown {
         const obj: any = {};
         message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress ? TaskProgress.toJSON(message.taskProgress) : undefined);
+            (obj.taskProgress = message.taskProgress
+                ? TaskProgress.toJSON(message.taskProgress)
+                : undefined);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<ZipLibraryInstallResponse>): ZipLibraryInstallResponse {
+    fromPartial(
+        object: DeepPartial<ZipLibraryInstallResponse>
+    ): ZipLibraryInstallResponse {
         const message = createBaseZipLibraryInstallResponse();
         message.taskProgress =
             object.taskProgress !== undefined && object.taskProgress !== null
@@ -2799,9 +3386,15 @@ function createBaseGitLibraryInstallRequest(): GitLibraryInstallRequest {
 }
 
 export const GitLibraryInstallRequest = {
-    encode(message: GitLibraryInstallRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: GitLibraryInstallRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.url !== '') {
             writer.uint32(18).string(message.url);
@@ -2812,8 +3405,12 @@ export const GitLibraryInstallRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): GitLibraryInstallRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): GitLibraryInstallRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseGitLibraryInstallRequest();
         while (reader.pos < end) {
@@ -2838,22 +3435,30 @@ export const GitLibraryInstallRequest = {
 
     fromJSON(object: any): GitLibraryInstallRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             url: isSet(object.url) ? String(object.url) : '',
-            overwrite: isSet(object.overwrite) ? Boolean(object.overwrite) : false,
+            overwrite: isSet(object.overwrite)
+                ? Boolean(object.overwrite)
+                : false,
         };
     },
 
     toJSON(message: GitLibraryInstallRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.url !== undefined && (obj.url = message.url);
         message.overwrite !== undefined && (obj.overwrite = message.overwrite);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<GitLibraryInstallRequest>): GitLibraryInstallRequest {
+    fromPartial(
+        object: DeepPartial<GitLibraryInstallRequest>
+    ): GitLibraryInstallRequest {
         const message = createBaseGitLibraryInstallRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -2870,22 +3475,35 @@ function createBaseGitLibraryInstallResponse(): GitLibraryInstallResponse {
 }
 
 export const GitLibraryInstallResponse = {
-    encode(message: GitLibraryInstallResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: GitLibraryInstallResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.taskProgress !== undefined) {
-            TaskProgress.encode(message.taskProgress, writer.uint32(10).fork()).ldelim();
+            TaskProgress.encode(
+                message.taskProgress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): GitLibraryInstallResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): GitLibraryInstallResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseGitLibraryInstallResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.taskProgress = TaskProgress.decode(reader, reader.uint32());
+                    message.taskProgress = TaskProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -2896,17 +3514,25 @@ export const GitLibraryInstallResponse = {
     },
 
     fromJSON(object: any): GitLibraryInstallResponse {
-        return { taskProgress: isSet(object.taskProgress) ? TaskProgress.fromJSON(object.taskProgress) : undefined };
+        return {
+            taskProgress: isSet(object.taskProgress)
+                ? TaskProgress.fromJSON(object.taskProgress)
+                : undefined,
+        };
     },
 
     toJSON(message: GitLibraryInstallResponse): unknown {
         const obj: any = {};
         message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress ? TaskProgress.toJSON(message.taskProgress) : undefined);
+            (obj.taskProgress = message.taskProgress
+                ? TaskProgress.toJSON(message.taskProgress)
+                : undefined);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<GitLibraryInstallResponse>): GitLibraryInstallResponse {
+    fromPartial(
+        object: DeepPartial<GitLibraryInstallResponse>
+    ): GitLibraryInstallResponse {
         const message = createBaseGitLibraryInstallResponse();
         message.taskProgress =
             object.taskProgress !== undefined && object.taskProgress !== null
@@ -2935,7 +3561,14 @@ var globalThis: any = (() => {
     throw 'Unable to locate global object';
 })();
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+    | Date
+    | Function
+    | Uint8Array
+    | string
+    | number
+    | boolean
+    | undefined;
 
 export type DeepPartial<T> = T extends Builtin
     ? T
@@ -2944,14 +3577,18 @@ export type DeepPartial<T> = T extends Builtin
     : T extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
     : T extends { $case: string }
-    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & { $case: T['$case'] }
+    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & {
+          $case: T['$case'];
+      }
     : T extends {}
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;
 
 function longToNumber(long: Long): number {
     if (long.gt(Number.MAX_SAFE_INTEGER)) {
-        throw new globalThis.Error('Value is larger than Number.MAX_SAFE_INTEGER');
+        throw new globalThis.Error(
+            'Value is larger than Number.MAX_SAFE_INTEGER'
+        );
     }
     return long.toNumber();
 }

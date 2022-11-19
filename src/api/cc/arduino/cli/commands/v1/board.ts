@@ -246,9 +246,15 @@ function createBaseBoardDetailsRequest(): BoardDetailsRequest {
 }
 
 export const BoardDetailsRequest = {
-    encode(message: BoardDetailsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BoardDetailsRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.fqbn !== '') {
             writer.uint32(18).string(message.fqbn);
@@ -256,8 +262,12 @@ export const BoardDetailsRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): BoardDetailsRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BoardDetailsRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardDetailsRequest();
         while (reader.pos < end) {
@@ -279,7 +289,9 @@ export const BoardDetailsRequest = {
 
     fromJSON(object: any): BoardDetailsRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
         };
     },
@@ -287,7 +299,9 @@ export const BoardDetailsRequest = {
     toJSON(message: BoardDetailsRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         return obj;
     },
@@ -323,7 +337,10 @@ function createBaseBoardDetailsResponse(): BoardDetailsResponse {
 }
 
 export const BoardDetailsResponse = {
-    encode(message: BoardDetailsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BoardDetailsResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.fqbn !== '') {
             writer.uint32(10).string(message.fqbn);
         }
@@ -349,7 +366,10 @@ export const BoardDetailsResponse = {
             Package.encode(message.package, writer.uint32(66).fork()).ldelim();
         }
         if (message.platform !== undefined) {
-            BoardPlatform.encode(message.platform, writer.uint32(74).fork()).ldelim();
+            BoardPlatform.encode(
+                message.platform,
+                writer.uint32(74).fork()
+            ).ldelim();
         }
         for (const v of message.toolsDependencies) {
             ToolsDependencies.encode(v!, writer.uint32(82).fork()).ldelim();
@@ -364,13 +384,20 @@ export const BoardDetailsResponse = {
             writer.uint32(112).bool(message.debuggingSupported);
         }
         for (const v of message.identificationProperties) {
-            BoardIdentificationProperties.encode(v!, writer.uint32(122).fork()).ldelim();
+            BoardIdentificationProperties.encode(
+                v!,
+                writer.uint32(122).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): BoardDetailsResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BoardDetailsResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardDetailsResponse();
         while (reader.pos < end) {
@@ -401,23 +428,35 @@ export const BoardDetailsResponse = {
                     message.package = Package.decode(reader, reader.uint32());
                     break;
                 case 9:
-                    message.platform = BoardPlatform.decode(reader, reader.uint32());
+                    message.platform = BoardPlatform.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 case 10:
-                    message.toolsDependencies.push(ToolsDependencies.decode(reader, reader.uint32()));
+                    message.toolsDependencies.push(
+                        ToolsDependencies.decode(reader, reader.uint32())
+                    );
                     break;
                 case 11:
-                    message.configOptions.push(ConfigOption.decode(reader, reader.uint32()));
+                    message.configOptions.push(
+                        ConfigOption.decode(reader, reader.uint32())
+                    );
                     break;
                 case 13:
-                    message.programmers.push(Programmer.decode(reader, reader.uint32()));
+                    message.programmers.push(
+                        Programmer.decode(reader, reader.uint32())
+                    );
                     break;
                 case 14:
                     message.debuggingSupported = reader.bool();
                     break;
                 case 15:
                     message.identificationProperties.push(
-                        BoardIdentificationProperties.decode(reader, reader.uint32())
+                        BoardIdentificationProperties.decode(
+                            reader,
+                            reader.uint32()
+                        )
                     );
                     break;
                 default:
@@ -433,14 +472,22 @@ export const BoardDetailsResponse = {
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
             name: isSet(object.name) ? String(object.name) : '',
             version: isSet(object.version) ? String(object.version) : '',
-            propertiesId: isSet(object.propertiesId) ? String(object.propertiesId) : '',
+            propertiesId: isSet(object.propertiesId)
+                ? String(object.propertiesId)
+                : '',
             alias: isSet(object.alias) ? String(object.alias) : '',
             official: isSet(object.official) ? Boolean(object.official) : false,
             pinout: isSet(object.pinout) ? String(object.pinout) : '',
-            package: isSet(object.package) ? Package.fromJSON(object.package) : undefined,
-            platform: isSet(object.platform) ? BoardPlatform.fromJSON(object.platform) : undefined,
+            package: isSet(object.package)
+                ? Package.fromJSON(object.package)
+                : undefined,
+            platform: isSet(object.platform)
+                ? BoardPlatform.fromJSON(object.platform)
+                : undefined,
             toolsDependencies: Array.isArray(object?.toolsDependencies)
-                ? object.toolsDependencies.map((e: any) => ToolsDependencies.fromJSON(e))
+                ? object.toolsDependencies.map((e: any) =>
+                      ToolsDependencies.fromJSON(e)
+                  )
                 : [],
             configOptions: Array.isArray(object?.configOptions)
                 ? object.configOptions.map((e: any) => ConfigOption.fromJSON(e))
@@ -448,9 +495,15 @@ export const BoardDetailsResponse = {
             programmers: Array.isArray(object?.programmers)
                 ? object.programmers.map((e: any) => Programmer.fromJSON(e))
                 : [],
-            debuggingSupported: isSet(object.debuggingSupported) ? Boolean(object.debuggingSupported) : false,
-            identificationProperties: Array.isArray(object?.identificationProperties)
-                ? object.identificationProperties.map((e: any) => BoardIdentificationProperties.fromJSON(e))
+            debuggingSupported: isSet(object.debuggingSupported)
+                ? Boolean(object.debuggingSupported)
+                : false,
+            identificationProperties: Array.isArray(
+                object?.identificationProperties
+            )
+                ? object.identificationProperties.map((e: any) =>
+                      BoardIdentificationProperties.fromJSON(e)
+                  )
                 : [],
         };
     },
@@ -460,32 +513,45 @@ export const BoardDetailsResponse = {
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         message.name !== undefined && (obj.name = message.name);
         message.version !== undefined && (obj.version = message.version);
-        message.propertiesId !== undefined && (obj.propertiesId = message.propertiesId);
+        message.propertiesId !== undefined &&
+            (obj.propertiesId = message.propertiesId);
         message.alias !== undefined && (obj.alias = message.alias);
         message.official !== undefined && (obj.official = message.official);
         message.pinout !== undefined && (obj.pinout = message.pinout);
-        message.package !== undefined && (obj.package = message.package ? Package.toJSON(message.package) : undefined);
+        message.package !== undefined &&
+            (obj.package = message.package
+                ? Package.toJSON(message.package)
+                : undefined);
         message.platform !== undefined &&
-            (obj.platform = message.platform ? BoardPlatform.toJSON(message.platform) : undefined);
+            (obj.platform = message.platform
+                ? BoardPlatform.toJSON(message.platform)
+                : undefined);
         if (message.toolsDependencies) {
-            obj.toolsDependencies = message.toolsDependencies.map((e) => (e ? ToolsDependencies.toJSON(e) : undefined));
+            obj.toolsDependencies = message.toolsDependencies.map((e) =>
+                e ? ToolsDependencies.toJSON(e) : undefined
+            );
         } else {
             obj.toolsDependencies = [];
         }
         if (message.configOptions) {
-            obj.configOptions = message.configOptions.map((e) => (e ? ConfigOption.toJSON(e) : undefined));
+            obj.configOptions = message.configOptions.map((e) =>
+                e ? ConfigOption.toJSON(e) : undefined
+            );
         } else {
             obj.configOptions = [];
         }
         if (message.programmers) {
-            obj.programmers = message.programmers.map((e) => (e ? Programmer.toJSON(e) : undefined));
+            obj.programmers = message.programmers.map((e) =>
+                e ? Programmer.toJSON(e) : undefined
+            );
         } else {
             obj.programmers = [];
         }
-        message.debuggingSupported !== undefined && (obj.debuggingSupported = message.debuggingSupported);
+        message.debuggingSupported !== undefined &&
+            (obj.debuggingSupported = message.debuggingSupported);
         if (message.identificationProperties) {
-            obj.identificationProperties = message.identificationProperties.map((e) =>
-                e ? BoardIdentificationProperties.toJSON(e) : undefined
+            obj.identificationProperties = message.identificationProperties.map(
+                (e) => (e ? BoardIdentificationProperties.toJSON(e) : undefined)
             );
         } else {
             obj.identificationProperties = [];
@@ -493,7 +559,9 @@ export const BoardDetailsResponse = {
         return obj;
     },
 
-    fromPartial(object: DeepPartial<BoardDetailsResponse>): BoardDetailsResponse {
+    fromPartial(
+        object: DeepPartial<BoardDetailsResponse>
+    ): BoardDetailsResponse {
         const message = createBaseBoardDetailsResponse();
         message.fqbn = object.fqbn ?? '';
         message.name = object.name ?? '';
@@ -503,17 +571,26 @@ export const BoardDetailsResponse = {
         message.official = object.official ?? false;
         message.pinout = object.pinout ?? '';
         message.package =
-            object.package !== undefined && object.package !== null ? Package.fromPartial(object.package) : undefined;
+            object.package !== undefined && object.package !== null
+                ? Package.fromPartial(object.package)
+                : undefined;
         message.platform =
             object.platform !== undefined && object.platform !== null
                 ? BoardPlatform.fromPartial(object.platform)
                 : undefined;
-        message.toolsDependencies = object.toolsDependencies?.map((e) => ToolsDependencies.fromPartial(e)) || [];
-        message.configOptions = object.configOptions?.map((e) => ConfigOption.fromPartial(e)) || [];
-        message.programmers = object.programmers?.map((e) => Programmer.fromPartial(e)) || [];
+        message.toolsDependencies =
+            object.toolsDependencies?.map((e) =>
+                ToolsDependencies.fromPartial(e)
+            ) || [];
+        message.configOptions =
+            object.configOptions?.map((e) => ConfigOption.fromPartial(e)) || [];
+        message.programmers =
+            object.programmers?.map((e) => Programmer.fromPartial(e)) || [];
         message.debuggingSupported = object.debuggingSupported ?? false;
         message.identificationProperties =
-            object.identificationProperties?.map((e) => BoardIdentificationProperties.fromPartial(e)) || [];
+            object.identificationProperties?.map((e) =>
+                BoardIdentificationProperties.fromPartial(e)
+            ) || [];
         return message;
     },
 };
@@ -523,7 +600,10 @@ function createBaseBoardIdentificationProperties(): BoardIdentificationPropertie
 }
 
 export const BoardIdentificationProperties = {
-    encode(message: BoardIdentificationProperties, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BoardIdentificationProperties,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         Object.entries(message.properties).forEach(([key, value]) => {
             BoardIdentificationProperties_PropertiesEntry.encode(
                 { key: key as any, value },
@@ -533,15 +613,23 @@ export const BoardIdentificationProperties = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): BoardIdentificationProperties {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BoardIdentificationProperties {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardIdentificationProperties();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    const entry1 = BoardIdentificationProperties_PropertiesEntry.decode(reader, reader.uint32());
+                    const entry1 =
+                        BoardIdentificationProperties_PropertiesEntry.decode(
+                            reader,
+                            reader.uint32()
+                        );
                     if (entry1.value !== undefined) {
                         message.properties[entry1.key] = entry1.value;
                     }
@@ -557,7 +645,9 @@ export const BoardIdentificationProperties = {
     fromJSON(object: any): BoardIdentificationProperties {
         return {
             properties: isObject(object.properties)
-                ? Object.entries(object.properties).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+                ? Object.entries(object.properties).reduce<{
+                      [key: string]: string;
+                  }>((acc, [key, value]) => {
                       acc[key] = String(value);
                       return acc;
                   }, {})
@@ -576,17 +666,18 @@ export const BoardIdentificationProperties = {
         return obj;
     },
 
-    fromPartial(object: DeepPartial<BoardIdentificationProperties>): BoardIdentificationProperties {
+    fromPartial(
+        object: DeepPartial<BoardIdentificationProperties>
+    ): BoardIdentificationProperties {
         const message = createBaseBoardIdentificationProperties();
-        message.properties = Object.entries(object.properties ?? {}).reduce<{ [key: string]: string }>(
-            (acc, [key, value]) => {
-                if (value !== undefined) {
-                    acc[key] = String(value);
-                }
-                return acc;
-            },
-            {}
-        );
+        message.properties = Object.entries(object.properties ?? {}).reduce<{
+            [key: string]: string;
+        }>((acc, [key, value]) => {
+            if (value !== undefined) {
+                acc[key] = String(value);
+            }
+            return acc;
+        }, {});
         return message;
     },
 };
@@ -609,10 +700,15 @@ export const BoardIdentificationProperties_PropertiesEntry = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): BoardIdentificationProperties_PropertiesEntry {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BoardIdentificationProperties_PropertiesEntry {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseBoardIdentificationProperties_PropertiesEntry();
+        const message =
+            createBaseBoardIdentificationProperties_PropertiesEntry();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
@@ -647,7 +743,8 @@ export const BoardIdentificationProperties_PropertiesEntry = {
     fromPartial(
         object: DeepPartial<BoardIdentificationProperties_PropertiesEntry>
     ): BoardIdentificationProperties_PropertiesEntry {
-        const message = createBaseBoardIdentificationProperties_PropertiesEntry();
+        const message =
+            createBaseBoardIdentificationProperties_PropertiesEntry();
         message.key = object.key ?? '';
         message.value = object.value ?? '';
         return message;
@@ -655,11 +752,21 @@ export const BoardIdentificationProperties_PropertiesEntry = {
 };
 
 function createBasePackage(): Package {
-    return { maintainer: '', url: '', websiteUrl: '', email: '', name: '', help: undefined };
+    return {
+        maintainer: '',
+        url: '',
+        websiteUrl: '',
+        email: '',
+        name: '',
+        help: undefined,
+    };
 }
 
 export const Package = {
-    encode(message: Package, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: Package,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.maintainer !== '') {
             writer.uint32(10).string(message.maintainer);
         }
@@ -682,7 +789,8 @@ export const Package = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Package {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePackage();
         while (reader.pos < end) {
@@ -716,9 +824,13 @@ export const Package = {
 
     fromJSON(object: any): Package {
         return {
-            maintainer: isSet(object.maintainer) ? String(object.maintainer) : '',
+            maintainer: isSet(object.maintainer)
+                ? String(object.maintainer)
+                : '',
             url: isSet(object.url) ? String(object.url) : '',
-            websiteUrl: isSet(object.websiteUrl) ? String(object.websiteUrl) : '',
+            websiteUrl: isSet(object.websiteUrl)
+                ? String(object.websiteUrl)
+                : '',
             email: isSet(object.email) ? String(object.email) : '',
             name: isSet(object.name) ? String(object.name) : '',
             help: isSet(object.help) ? Help.fromJSON(object.help) : undefined,
@@ -727,12 +839,15 @@ export const Package = {
 
     toJSON(message: Package): unknown {
         const obj: any = {};
-        message.maintainer !== undefined && (obj.maintainer = message.maintainer);
+        message.maintainer !== undefined &&
+            (obj.maintainer = message.maintainer);
         message.url !== undefined && (obj.url = message.url);
-        message.websiteUrl !== undefined && (obj.websiteUrl = message.websiteUrl);
+        message.websiteUrl !== undefined &&
+            (obj.websiteUrl = message.websiteUrl);
         message.email !== undefined && (obj.email = message.email);
         message.name !== undefined && (obj.name = message.name);
-        message.help !== undefined && (obj.help = message.help ? Help.toJSON(message.help) : undefined);
+        message.help !== undefined &&
+            (obj.help = message.help ? Help.toJSON(message.help) : undefined);
         return obj;
     },
 
@@ -743,7 +858,10 @@ export const Package = {
         message.websiteUrl = object.websiteUrl ?? '';
         message.email = object.email ?? '';
         message.name = object.name ?? '';
-        message.help = object.help !== undefined && object.help !== null ? Help.fromPartial(object.help) : undefined;
+        message.help =
+            object.help !== undefined && object.help !== null
+                ? Help.fromPartial(object.help)
+                : undefined;
         return message;
     },
 };
@@ -753,7 +871,10 @@ function createBaseHelp(): Help {
 }
 
 export const Help = {
-    encode(message: Help, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: Help,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.online !== '') {
             writer.uint32(10).string(message.online);
         }
@@ -761,7 +882,8 @@ export const Help = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Help {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseHelp();
         while (reader.pos < end) {
@@ -796,11 +918,22 @@ export const Help = {
 };
 
 function createBaseBoardPlatform(): BoardPlatform {
-    return { architecture: '', category: '', url: '', archiveFilename: '', checksum: '', size: 0, name: '' };
+    return {
+        architecture: '',
+        category: '',
+        url: '',
+        archiveFilename: '',
+        checksum: '',
+        size: 0,
+        name: '',
+    };
 }
 
 export const BoardPlatform = {
-    encode(message: BoardPlatform, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BoardPlatform,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.architecture !== '') {
             writer.uint32(10).string(message.architecture);
         }
@@ -826,7 +959,8 @@ export const BoardPlatform = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): BoardPlatform {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardPlatform();
         while (reader.pos < end) {
@@ -863,10 +997,14 @@ export const BoardPlatform = {
 
     fromJSON(object: any): BoardPlatform {
         return {
-            architecture: isSet(object.architecture) ? String(object.architecture) : '',
+            architecture: isSet(object.architecture)
+                ? String(object.architecture)
+                : '',
             category: isSet(object.category) ? String(object.category) : '',
             url: isSet(object.url) ? String(object.url) : '',
-            archiveFilename: isSet(object.archiveFilename) ? String(object.archiveFilename) : '',
+            archiveFilename: isSet(object.archiveFilename)
+                ? String(object.archiveFilename)
+                : '',
             checksum: isSet(object.checksum) ? String(object.checksum) : '',
             size: isSet(object.size) ? Number(object.size) : 0,
             name: isSet(object.name) ? String(object.name) : '',
@@ -875,10 +1013,12 @@ export const BoardPlatform = {
 
     toJSON(message: BoardPlatform): unknown {
         const obj: any = {};
-        message.architecture !== undefined && (obj.architecture = message.architecture);
+        message.architecture !== undefined &&
+            (obj.architecture = message.architecture);
         message.category !== undefined && (obj.category = message.category);
         message.url !== undefined && (obj.url = message.url);
-        message.archiveFilename !== undefined && (obj.archiveFilename = message.archiveFilename);
+        message.archiveFilename !== undefined &&
+            (obj.archiveFilename = message.archiveFilename);
         message.checksum !== undefined && (obj.checksum = message.checksum);
         message.size !== undefined && (obj.size = Math.round(message.size));
         message.name !== undefined && (obj.name = message.name);
@@ -903,7 +1043,10 @@ function createBaseToolsDependencies(): ToolsDependencies {
 }
 
 export const ToolsDependencies = {
-    encode(message: ToolsDependencies, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: ToolsDependencies,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.packager !== '') {
             writer.uint32(10).string(message.packager);
         }
@@ -920,7 +1063,8 @@ export const ToolsDependencies = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): ToolsDependencies {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseToolsDependencies();
         while (reader.pos < end) {
@@ -936,7 +1080,9 @@ export const ToolsDependencies = {
                     message.version = reader.string();
                     break;
                 case 4:
-                    message.systems.push(Systems.decode(reader, reader.uint32()));
+                    message.systems.push(
+                        Systems.decode(reader, reader.uint32())
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -951,7 +1097,9 @@ export const ToolsDependencies = {
             packager: isSet(object.packager) ? String(object.packager) : '',
             name: isSet(object.name) ? String(object.name) : '',
             version: isSet(object.version) ? String(object.version) : '',
-            systems: Array.isArray(object?.systems) ? object.systems.map((e: any) => Systems.fromJSON(e)) : [],
+            systems: Array.isArray(object?.systems)
+                ? object.systems.map((e: any) => Systems.fromJSON(e))
+                : [],
         };
     },
 
@@ -961,7 +1109,9 @@ export const ToolsDependencies = {
         message.name !== undefined && (obj.name = message.name);
         message.version !== undefined && (obj.version = message.version);
         if (message.systems) {
-            obj.systems = message.systems.map((e) => (e ? Systems.toJSON(e) : undefined));
+            obj.systems = message.systems.map((e) =>
+                e ? Systems.toJSON(e) : undefined
+            );
         } else {
             obj.systems = [];
         }
@@ -973,7 +1123,8 @@ export const ToolsDependencies = {
         message.packager = object.packager ?? '';
         message.name = object.name ?? '';
         message.version = object.version ?? '';
-        message.systems = object.systems?.map((e) => Systems.fromPartial(e)) || [];
+        message.systems =
+            object.systems?.map((e) => Systems.fromPartial(e)) || [];
         return message;
     },
 };
@@ -983,7 +1134,10 @@ function createBaseSystems(): Systems {
 }
 
 export const Systems = {
-    encode(message: Systems, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: Systems,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.checksum !== '') {
             writer.uint32(10).string(message.checksum);
         }
@@ -1003,7 +1157,8 @@ export const Systems = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Systems {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseSystems();
         while (reader.pos < end) {
@@ -1036,7 +1191,9 @@ export const Systems = {
         return {
             checksum: isSet(object.checksum) ? String(object.checksum) : '',
             host: isSet(object.host) ? String(object.host) : '',
-            archiveFilename: isSet(object.archiveFilename) ? String(object.archiveFilename) : '',
+            archiveFilename: isSet(object.archiveFilename)
+                ? String(object.archiveFilename)
+                : '',
             url: isSet(object.url) ? String(object.url) : '',
             size: isSet(object.size) ? Number(object.size) : 0,
         };
@@ -1046,7 +1203,8 @@ export const Systems = {
         const obj: any = {};
         message.checksum !== undefined && (obj.checksum = message.checksum);
         message.host !== undefined && (obj.host = message.host);
-        message.archiveFilename !== undefined && (obj.archiveFilename = message.archiveFilename);
+        message.archiveFilename !== undefined &&
+            (obj.archiveFilename = message.archiveFilename);
         message.url !== undefined && (obj.url = message.url);
         message.size !== undefined && (obj.size = Math.round(message.size));
         return obj;
@@ -1068,7 +1226,10 @@ function createBaseConfigOption(): ConfigOption {
 }
 
 export const ConfigOption = {
-    encode(message: ConfigOption, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: ConfigOption,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.option !== '') {
             writer.uint32(10).string(message.option);
         }
@@ -1082,7 +1243,8 @@ export const ConfigOption = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): ConfigOption {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseConfigOption();
         while (reader.pos < end) {
@@ -1095,7 +1257,9 @@ export const ConfigOption = {
                     message.optionLabel = reader.string();
                     break;
                 case 3:
-                    message.values.push(ConfigValue.decode(reader, reader.uint32()));
+                    message.values.push(
+                        ConfigValue.decode(reader, reader.uint32())
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1108,17 +1272,24 @@ export const ConfigOption = {
     fromJSON(object: any): ConfigOption {
         return {
             option: isSet(object.option) ? String(object.option) : '',
-            optionLabel: isSet(object.optionLabel) ? String(object.optionLabel) : '',
-            values: Array.isArray(object?.values) ? object.values.map((e: any) => ConfigValue.fromJSON(e)) : [],
+            optionLabel: isSet(object.optionLabel)
+                ? String(object.optionLabel)
+                : '',
+            values: Array.isArray(object?.values)
+                ? object.values.map((e: any) => ConfigValue.fromJSON(e))
+                : [],
         };
     },
 
     toJSON(message: ConfigOption): unknown {
         const obj: any = {};
         message.option !== undefined && (obj.option = message.option);
-        message.optionLabel !== undefined && (obj.optionLabel = message.optionLabel);
+        message.optionLabel !== undefined &&
+            (obj.optionLabel = message.optionLabel);
         if (message.values) {
-            obj.values = message.values.map((e) => (e ? ConfigValue.toJSON(e) : undefined));
+            obj.values = message.values.map((e) =>
+                e ? ConfigValue.toJSON(e) : undefined
+            );
         } else {
             obj.values = [];
         }
@@ -1129,7 +1300,8 @@ export const ConfigOption = {
         const message = createBaseConfigOption();
         message.option = object.option ?? '';
         message.optionLabel = object.optionLabel ?? '';
-        message.values = object.values?.map((e) => ConfigValue.fromPartial(e)) || [];
+        message.values =
+            object.values?.map((e) => ConfigValue.fromPartial(e)) || [];
         return message;
     },
 };
@@ -1139,7 +1311,10 @@ function createBaseConfigValue(): ConfigValue {
 }
 
 export const ConfigValue = {
-    encode(message: ConfigValue, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: ConfigValue,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.value !== '') {
             writer.uint32(10).string(message.value);
         }
@@ -1153,7 +1328,8 @@ export const ConfigValue = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): ConfigValue {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseConfigValue();
         while (reader.pos < end) {
@@ -1179,7 +1355,9 @@ export const ConfigValue = {
     fromJSON(object: any): ConfigValue {
         return {
             value: isSet(object.value) ? String(object.value) : '',
-            valueLabel: isSet(object.valueLabel) ? String(object.valueLabel) : '',
+            valueLabel: isSet(object.valueLabel)
+                ? String(object.valueLabel)
+                : '',
             selected: isSet(object.selected) ? Boolean(object.selected) : false,
         };
     },
@@ -1187,7 +1365,8 @@ export const ConfigValue = {
     toJSON(message: ConfigValue): unknown {
         const obj: any = {};
         message.value !== undefined && (obj.value = message.value);
-        message.valueLabel !== undefined && (obj.valueLabel = message.valueLabel);
+        message.valueLabel !== undefined &&
+            (obj.valueLabel = message.valueLabel);
         message.selected !== undefined && (obj.selected = message.selected);
         return obj;
     },
@@ -1202,13 +1381,24 @@ export const ConfigValue = {
 };
 
 function createBaseBoardAttachRequest(): BoardAttachRequest {
-    return { instance: undefined, boardUri: '', sketchPath: '', searchTimeout: '' };
+    return {
+        instance: undefined,
+        boardUri: '',
+        sketchPath: '',
+        searchTimeout: '',
+    };
 }
 
 export const BoardAttachRequest = {
-    encode(message: BoardAttachRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BoardAttachRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.boardUri !== '') {
             writer.uint32(18).string(message.boardUri);
@@ -1222,8 +1412,12 @@ export const BoardAttachRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): BoardAttachRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BoardAttachRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardAttachRequest();
         while (reader.pos < end) {
@@ -1251,20 +1445,30 @@ export const BoardAttachRequest = {
 
     fromJSON(object: any): BoardAttachRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             boardUri: isSet(object.boardUri) ? String(object.boardUri) : '',
-            sketchPath: isSet(object.sketchPath) ? String(object.sketchPath) : '',
-            searchTimeout: isSet(object.searchTimeout) ? String(object.searchTimeout) : '',
+            sketchPath: isSet(object.sketchPath)
+                ? String(object.sketchPath)
+                : '',
+            searchTimeout: isSet(object.searchTimeout)
+                ? String(object.searchTimeout)
+                : '',
         };
     },
 
     toJSON(message: BoardAttachRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.boardUri !== undefined && (obj.boardUri = message.boardUri);
-        message.sketchPath !== undefined && (obj.sketchPath = message.sketchPath);
-        message.searchTimeout !== undefined && (obj.searchTimeout = message.searchTimeout);
+        message.sketchPath !== undefined &&
+            (obj.sketchPath = message.sketchPath);
+        message.searchTimeout !== undefined &&
+            (obj.searchTimeout = message.searchTimeout);
         return obj;
     },
 
@@ -1286,22 +1490,35 @@ function createBaseBoardAttachResponse(): BoardAttachResponse {
 }
 
 export const BoardAttachResponse = {
-    encode(message: BoardAttachResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BoardAttachResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.taskProgress !== undefined) {
-            TaskProgress.encode(message.taskProgress, writer.uint32(10).fork()).ldelim();
+            TaskProgress.encode(
+                message.taskProgress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): BoardAttachResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BoardAttachResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardAttachResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.taskProgress = TaskProgress.decode(reader, reader.uint32());
+                    message.taskProgress = TaskProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1312,13 +1529,19 @@ export const BoardAttachResponse = {
     },
 
     fromJSON(object: any): BoardAttachResponse {
-        return { taskProgress: isSet(object.taskProgress) ? TaskProgress.fromJSON(object.taskProgress) : undefined };
+        return {
+            taskProgress: isSet(object.taskProgress)
+                ? TaskProgress.fromJSON(object.taskProgress)
+                : undefined,
+        };
     },
 
     toJSON(message: BoardAttachResponse): unknown {
         const obj: any = {};
         message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress ? TaskProgress.toJSON(message.taskProgress) : undefined);
+            (obj.taskProgress = message.taskProgress
+                ? TaskProgress.toJSON(message.taskProgress)
+                : undefined);
         return obj;
     },
 
@@ -1337,9 +1560,15 @@ function createBaseBoardListRequest(): BoardListRequest {
 }
 
 export const BoardListRequest = {
-    encode(message: BoardListRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BoardListRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.timeout !== 0) {
             writer.uint32(16).int64(message.timeout);
@@ -1348,7 +1577,8 @@ export const BoardListRequest = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): BoardListRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardListRequest();
         while (reader.pos < end) {
@@ -1370,7 +1600,9 @@ export const BoardListRequest = {
 
     fromJSON(object: any): BoardListRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             timeout: isSet(object.timeout) ? Number(object.timeout) : 0,
         };
     },
@@ -1378,8 +1610,11 @@ export const BoardListRequest = {
     toJSON(message: BoardListRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
-        message.timeout !== undefined && (obj.timeout = Math.round(message.timeout));
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
+        message.timeout !== undefined &&
+            (obj.timeout = Math.round(message.timeout));
         return obj;
     },
 
@@ -1399,7 +1634,10 @@ function createBaseBoardListResponse(): BoardListResponse {
 }
 
 export const BoardListResponse = {
-    encode(message: BoardListResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BoardListResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         for (const v of message.ports) {
             DetectedPort.encode(v!, writer.uint32(10).fork()).ldelim();
         }
@@ -1407,14 +1645,17 @@ export const BoardListResponse = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): BoardListResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardListResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.ports.push(DetectedPort.decode(reader, reader.uint32()));
+                    message.ports.push(
+                        DetectedPort.decode(reader, reader.uint32())
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1425,13 +1666,19 @@ export const BoardListResponse = {
     },
 
     fromJSON(object: any): BoardListResponse {
-        return { ports: Array.isArray(object?.ports) ? object.ports.map((e: any) => DetectedPort.fromJSON(e)) : [] };
+        return {
+            ports: Array.isArray(object?.ports)
+                ? object.ports.map((e: any) => DetectedPort.fromJSON(e))
+                : [],
+        };
     },
 
     toJSON(message: BoardListResponse): unknown {
         const obj: any = {};
         if (message.ports) {
-            obj.ports = message.ports.map((e) => (e ? DetectedPort.toJSON(e) : undefined));
+            obj.ports = message.ports.map((e) =>
+                e ? DetectedPort.toJSON(e) : undefined
+            );
         } else {
             obj.ports = [];
         }
@@ -1440,7 +1687,8 @@ export const BoardListResponse = {
 
     fromPartial(object: DeepPartial<BoardListResponse>): BoardListResponse {
         const message = createBaseBoardListResponse();
-        message.ports = object.ports?.map((e) => DetectedPort.fromPartial(e)) || [];
+        message.ports =
+            object.ports?.map((e) => DetectedPort.fromPartial(e)) || [];
         return message;
     },
 };
@@ -1450,7 +1698,10 @@ function createBaseDetectedPort(): DetectedPort {
 }
 
 export const DetectedPort = {
-    encode(message: DetectedPort, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: DetectedPort,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         for (const v of message.matchingBoards) {
             BoardListItem.encode(v!, writer.uint32(10).fork()).ldelim();
         }
@@ -1461,14 +1712,17 @@ export const DetectedPort = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): DetectedPort {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDetectedPort();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.matchingBoards.push(BoardListItem.decode(reader, reader.uint32()));
+                    message.matchingBoards.push(
+                        BoardListItem.decode(reader, reader.uint32())
+                    );
                     break;
                 case 2:
                     message.port = Port.decode(reader, reader.uint32());
@@ -1484,7 +1738,9 @@ export const DetectedPort = {
     fromJSON(object: any): DetectedPort {
         return {
             matchingBoards: Array.isArray(object?.matchingBoards)
-                ? object.matchingBoards.map((e: any) => BoardListItem.fromJSON(e))
+                ? object.matchingBoards.map((e: any) =>
+                      BoardListItem.fromJSON(e)
+                  )
                 : [],
             port: isSet(object.port) ? Port.fromJSON(object.port) : undefined,
         };
@@ -1493,18 +1749,26 @@ export const DetectedPort = {
     toJSON(message: DetectedPort): unknown {
         const obj: any = {};
         if (message.matchingBoards) {
-            obj.matchingBoards = message.matchingBoards.map((e) => (e ? BoardListItem.toJSON(e) : undefined));
+            obj.matchingBoards = message.matchingBoards.map((e) =>
+                e ? BoardListItem.toJSON(e) : undefined
+            );
         } else {
             obj.matchingBoards = [];
         }
-        message.port !== undefined && (obj.port = message.port ? Port.toJSON(message.port) : undefined);
+        message.port !== undefined &&
+            (obj.port = message.port ? Port.toJSON(message.port) : undefined);
         return obj;
     },
 
     fromPartial(object: DeepPartial<DetectedPort>): DetectedPort {
         const message = createBaseDetectedPort();
-        message.matchingBoards = object.matchingBoards?.map((e) => BoardListItem.fromPartial(e)) || [];
-        message.port = object.port !== undefined && object.port !== null ? Port.fromPartial(object.port) : undefined;
+        message.matchingBoards =
+            object.matchingBoards?.map((e) => BoardListItem.fromPartial(e)) ||
+            [];
+        message.port =
+            object.port !== undefined && object.port !== null
+                ? Port.fromPartial(object.port)
+                : undefined;
         return message;
     },
 };
@@ -1514,9 +1778,15 @@ function createBaseBoardListAllRequest(): BoardListAllRequest {
 }
 
 export const BoardListAllRequest = {
-    encode(message: BoardListAllRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BoardListAllRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         for (const v of message.searchArgs) {
             writer.uint32(18).string(v!);
@@ -1527,8 +1797,12 @@ export const BoardListAllRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): BoardListAllRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BoardListAllRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardListAllRequest();
         while (reader.pos < end) {
@@ -1553,22 +1827,31 @@ export const BoardListAllRequest = {
 
     fromJSON(object: any): BoardListAllRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
-            searchArgs: Array.isArray(object?.searchArgs) ? object.searchArgs.map((e: any) => String(e)) : [],
-            includeHiddenBoards: isSet(object.includeHiddenBoards) ? Boolean(object.includeHiddenBoards) : false,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+            searchArgs: Array.isArray(object?.searchArgs)
+                ? object.searchArgs.map((e: any) => String(e))
+                : [],
+            includeHiddenBoards: isSet(object.includeHiddenBoards)
+                ? Boolean(object.includeHiddenBoards)
+                : false,
         };
     },
 
     toJSON(message: BoardListAllRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         if (message.searchArgs) {
             obj.searchArgs = message.searchArgs.map((e) => e);
         } else {
             obj.searchArgs = [];
         }
-        message.includeHiddenBoards !== undefined && (obj.includeHiddenBoards = message.includeHiddenBoards);
+        message.includeHiddenBoards !== undefined &&
+            (obj.includeHiddenBoards = message.includeHiddenBoards);
         return obj;
     },
 
@@ -1589,22 +1872,31 @@ function createBaseBoardListAllResponse(): BoardListAllResponse {
 }
 
 export const BoardListAllResponse = {
-    encode(message: BoardListAllResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BoardListAllResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         for (const v of message.boards) {
             BoardListItem.encode(v!, writer.uint32(10).fork()).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): BoardListAllResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BoardListAllResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardListAllResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.boards.push(BoardListItem.decode(reader, reader.uint32()));
+                    message.boards.push(
+                        BoardListItem.decode(reader, reader.uint32())
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1616,23 +1908,30 @@ export const BoardListAllResponse = {
 
     fromJSON(object: any): BoardListAllResponse {
         return {
-            boards: Array.isArray(object?.boards) ? object.boards.map((e: any) => BoardListItem.fromJSON(e)) : [],
+            boards: Array.isArray(object?.boards)
+                ? object.boards.map((e: any) => BoardListItem.fromJSON(e))
+                : [],
         };
     },
 
     toJSON(message: BoardListAllResponse): unknown {
         const obj: any = {};
         if (message.boards) {
-            obj.boards = message.boards.map((e) => (e ? BoardListItem.toJSON(e) : undefined));
+            obj.boards = message.boards.map((e) =>
+                e ? BoardListItem.toJSON(e) : undefined
+            );
         } else {
             obj.boards = [];
         }
         return obj;
     },
 
-    fromPartial(object: DeepPartial<BoardListAllResponse>): BoardListAllResponse {
+    fromPartial(
+        object: DeepPartial<BoardListAllResponse>
+    ): BoardListAllResponse {
         const message = createBaseBoardListAllResponse();
-        message.boards = object.boards?.map((e) => BoardListItem.fromPartial(e)) || [];
+        message.boards =
+            object.boards?.map((e) => BoardListItem.fromPartial(e)) || [];
         return message;
     },
 };
@@ -1642,9 +1941,15 @@ function createBaseBoardListWatchRequest(): BoardListWatchRequest {
 }
 
 export const BoardListWatchRequest = {
-    encode(message: BoardListWatchRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BoardListWatchRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.interrupt === true) {
             writer.uint32(16).bool(message.interrupt);
@@ -1652,8 +1957,12 @@ export const BoardListWatchRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): BoardListWatchRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BoardListWatchRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardListWatchRequest();
         while (reader.pos < end) {
@@ -1675,20 +1984,28 @@ export const BoardListWatchRequest = {
 
     fromJSON(object: any): BoardListWatchRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
-            interrupt: isSet(object.interrupt) ? Boolean(object.interrupt) : false,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+            interrupt: isSet(object.interrupt)
+                ? Boolean(object.interrupt)
+                : false,
         };
     },
 
     toJSON(message: BoardListWatchRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.interrupt !== undefined && (obj.interrupt = message.interrupt);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<BoardListWatchRequest>): BoardListWatchRequest {
+    fromPartial(
+        object: DeepPartial<BoardListWatchRequest>
+    ): BoardListWatchRequest {
         const message = createBaseBoardListWatchRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -1704,12 +2021,18 @@ function createBaseBoardListWatchResponse(): BoardListWatchResponse {
 }
 
 export const BoardListWatchResponse = {
-    encode(message: BoardListWatchResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BoardListWatchResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.eventType !== '') {
             writer.uint32(10).string(message.eventType);
         }
         if (message.port !== undefined) {
-            DetectedPort.encode(message.port, writer.uint32(18).fork()).ldelim();
+            DetectedPort.encode(
+                message.port,
+                writer.uint32(18).fork()
+            ).ldelim();
         }
         if (message.error !== '') {
             writer.uint32(26).string(message.error);
@@ -1717,8 +2040,12 @@ export const BoardListWatchResponse = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): BoardListWatchResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BoardListWatchResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardListWatchResponse();
         while (reader.pos < end) {
@@ -1744,7 +2071,9 @@ export const BoardListWatchResponse = {
     fromJSON(object: any): BoardListWatchResponse {
         return {
             eventType: isSet(object.eventType) ? String(object.eventType) : '',
-            port: isSet(object.port) ? DetectedPort.fromJSON(object.port) : undefined,
+            port: isSet(object.port)
+                ? DetectedPort.fromJSON(object.port)
+                : undefined,
             error: isSet(object.error) ? String(object.error) : '',
         };
     },
@@ -1752,16 +2081,23 @@ export const BoardListWatchResponse = {
     toJSON(message: BoardListWatchResponse): unknown {
         const obj: any = {};
         message.eventType !== undefined && (obj.eventType = message.eventType);
-        message.port !== undefined && (obj.port = message.port ? DetectedPort.toJSON(message.port) : undefined);
+        message.port !== undefined &&
+            (obj.port = message.port
+                ? DetectedPort.toJSON(message.port)
+                : undefined);
         message.error !== undefined && (obj.error = message.error);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<BoardListWatchResponse>): BoardListWatchResponse {
+    fromPartial(
+        object: DeepPartial<BoardListWatchResponse>
+    ): BoardListWatchResponse {
         const message = createBaseBoardListWatchResponse();
         message.eventType = object.eventType ?? '';
         message.port =
-            object.port !== undefined && object.port !== null ? DetectedPort.fromPartial(object.port) : undefined;
+            object.port !== undefined && object.port !== null
+                ? DetectedPort.fromPartial(object.port)
+                : undefined;
         message.error = object.error ?? '';
         return message;
     },
@@ -1772,7 +2108,10 @@ function createBaseBoardListItem(): BoardListItem {
 }
 
 export const BoardListItem = {
-    encode(message: BoardListItem, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BoardListItem,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.name !== '') {
             writer.uint32(10).string(message.name);
         }
@@ -1783,13 +2122,17 @@ export const BoardListItem = {
             writer.uint32(24).bool(message.isHidden);
         }
         if (message.platform !== undefined) {
-            Platform.encode(message.platform, writer.uint32(50).fork()).ldelim();
+            Platform.encode(
+                message.platform,
+                writer.uint32(50).fork()
+            ).ldelim();
         }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): BoardListItem {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardListItem();
         while (reader.pos < end) {
@@ -1820,7 +2163,9 @@ export const BoardListItem = {
             name: isSet(object.name) ? String(object.name) : '',
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
             isHidden: isSet(object.isHidden) ? Boolean(object.isHidden) : false,
-            platform: isSet(object.platform) ? Platform.fromJSON(object.platform) : undefined,
+            platform: isSet(object.platform)
+                ? Platform.fromJSON(object.platform)
+                : undefined,
         };
     },
 
@@ -1830,7 +2175,9 @@ export const BoardListItem = {
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         message.isHidden !== undefined && (obj.isHidden = message.isHidden);
         message.platform !== undefined &&
-            (obj.platform = message.platform ? Platform.toJSON(message.platform) : undefined);
+            (obj.platform = message.platform
+                ? Platform.toJSON(message.platform)
+                : undefined);
         return obj;
     },
 
@@ -1852,9 +2199,15 @@ function createBaseBoardSearchRequest(): BoardSearchRequest {
 }
 
 export const BoardSearchRequest = {
-    encode(message: BoardSearchRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BoardSearchRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.searchArgs !== '') {
             writer.uint32(18).string(message.searchArgs);
@@ -1865,8 +2218,12 @@ export const BoardSearchRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): BoardSearchRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BoardSearchRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardSearchRequest();
         while (reader.pos < end) {
@@ -1891,18 +2248,28 @@ export const BoardSearchRequest = {
 
     fromJSON(object: any): BoardSearchRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
-            searchArgs: isSet(object.searchArgs) ? String(object.searchArgs) : '',
-            includeHiddenBoards: isSet(object.includeHiddenBoards) ? Boolean(object.includeHiddenBoards) : false,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+            searchArgs: isSet(object.searchArgs)
+                ? String(object.searchArgs)
+                : '',
+            includeHiddenBoards: isSet(object.includeHiddenBoards)
+                ? Boolean(object.includeHiddenBoards)
+                : false,
         };
     },
 
     toJSON(message: BoardSearchRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
-        message.searchArgs !== undefined && (obj.searchArgs = message.searchArgs);
-        message.includeHiddenBoards !== undefined && (obj.includeHiddenBoards = message.includeHiddenBoards);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
+        message.searchArgs !== undefined &&
+            (obj.searchArgs = message.searchArgs);
+        message.includeHiddenBoards !== undefined &&
+            (obj.includeHiddenBoards = message.includeHiddenBoards);
         return obj;
     },
 
@@ -1923,22 +2290,31 @@ function createBaseBoardSearchResponse(): BoardSearchResponse {
 }
 
 export const BoardSearchResponse = {
-    encode(message: BoardSearchResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: BoardSearchResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         for (const v of message.boards) {
             BoardListItem.encode(v!, writer.uint32(10).fork()).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): BoardSearchResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BoardSearchResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardSearchResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.boards.push(BoardListItem.decode(reader, reader.uint32()));
+                    message.boards.push(
+                        BoardListItem.decode(reader, reader.uint32())
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1950,14 +2326,18 @@ export const BoardSearchResponse = {
 
     fromJSON(object: any): BoardSearchResponse {
         return {
-            boards: Array.isArray(object?.boards) ? object.boards.map((e: any) => BoardListItem.fromJSON(e)) : [],
+            boards: Array.isArray(object?.boards)
+                ? object.boards.map((e: any) => BoardListItem.fromJSON(e))
+                : [],
         };
     },
 
     toJSON(message: BoardSearchResponse): unknown {
         const obj: any = {};
         if (message.boards) {
-            obj.boards = message.boards.map((e) => (e ? BoardListItem.toJSON(e) : undefined));
+            obj.boards = message.boards.map((e) =>
+                e ? BoardListItem.toJSON(e) : undefined
+            );
         } else {
             obj.boards = [];
         }
@@ -1966,7 +2346,8 @@ export const BoardSearchResponse = {
 
     fromPartial(object: DeepPartial<BoardSearchResponse>): BoardSearchResponse {
         const message = createBaseBoardSearchResponse();
-        message.boards = object.boards?.map((e) => BoardListItem.fromPartial(e)) || [];
+        message.boards =
+            object.boards?.map((e) => BoardListItem.fromPartial(e)) || [];
         return message;
     },
 };
@@ -1990,7 +2371,14 @@ var globalThis: any = (() => {
     throw 'Unable to locate global object';
 })();
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+    | Date
+    | Function
+    | Uint8Array
+    | string
+    | number
+    | boolean
+    | undefined;
 
 export type DeepPartial<T> = T extends Builtin
     ? T
@@ -1999,14 +2387,18 @@ export type DeepPartial<T> = T extends Builtin
     : T extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
     : T extends { $case: string }
-    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & { $case: T['$case'] }
+    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & {
+          $case: T['$case'];
+      }
     : T extends {}
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;
 
 function longToNumber(long: Long): number {
     if (long.gt(Number.MAX_SAFE_INTEGER)) {
-        throw new globalThis.Error('Value is larger than Number.MAX_SAFE_INTEGER');
+        throw new globalThis.Error(
+            'Value is larger than Number.MAX_SAFE_INTEGER'
+        );
     }
     return long.toNumber();
 }

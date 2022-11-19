@@ -138,9 +138,15 @@ function createBasePlatformInstallRequest(): PlatformInstallRequest {
 }
 
 export const PlatformInstallRequest = {
-    encode(message: PlatformInstallRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: PlatformInstallRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.platformPackage !== '') {
             writer.uint32(18).string(message.platformPackage);
@@ -160,8 +166,12 @@ export const PlatformInstallRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): PlatformInstallRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformInstallRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformInstallRequest();
         while (reader.pos < end) {
@@ -195,28 +205,46 @@ export const PlatformInstallRequest = {
 
     fromJSON(object: any): PlatformInstallRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
-            platformPackage: isSet(object.platformPackage) ? String(object.platformPackage) : '',
-            architecture: isSet(object.architecture) ? String(object.architecture) : '',
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+            platformPackage: isSet(object.platformPackage)
+                ? String(object.platformPackage)
+                : '',
+            architecture: isSet(object.architecture)
+                ? String(object.architecture)
+                : '',
             version: isSet(object.version) ? String(object.version) : '',
-            skipPostInstall: isSet(object.skipPostInstall) ? Boolean(object.skipPostInstall) : false,
-            noOverwrite: isSet(object.noOverwrite) ? Boolean(object.noOverwrite) : false,
+            skipPostInstall: isSet(object.skipPostInstall)
+                ? Boolean(object.skipPostInstall)
+                : false,
+            noOverwrite: isSet(object.noOverwrite)
+                ? Boolean(object.noOverwrite)
+                : false,
         };
     },
 
     toJSON(message: PlatformInstallRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
-        message.platformPackage !== undefined && (obj.platformPackage = message.platformPackage);
-        message.architecture !== undefined && (obj.architecture = message.architecture);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
+        message.platformPackage !== undefined &&
+            (obj.platformPackage = message.platformPackage);
+        message.architecture !== undefined &&
+            (obj.architecture = message.architecture);
         message.version !== undefined && (obj.version = message.version);
-        message.skipPostInstall !== undefined && (obj.skipPostInstall = message.skipPostInstall);
-        message.noOverwrite !== undefined && (obj.noOverwrite = message.noOverwrite);
+        message.skipPostInstall !== undefined &&
+            (obj.skipPostInstall = message.skipPostInstall);
+        message.noOverwrite !== undefined &&
+            (obj.noOverwrite = message.noOverwrite);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<PlatformInstallRequest>): PlatformInstallRequest {
+    fromPartial(
+        object: DeepPartial<PlatformInstallRequest>
+    ): PlatformInstallRequest {
         const message = createBasePlatformInstallRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -236,28 +264,47 @@ function createBasePlatformInstallResponse(): PlatformInstallResponse {
 }
 
 export const PlatformInstallResponse = {
-    encode(message: PlatformInstallResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: PlatformInstallResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.progress !== undefined) {
-            DownloadProgress.encode(message.progress, writer.uint32(10).fork()).ldelim();
+            DownloadProgress.encode(
+                message.progress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.taskProgress !== undefined) {
-            TaskProgress.encode(message.taskProgress, writer.uint32(18).fork()).ldelim();
+            TaskProgress.encode(
+                message.taskProgress,
+                writer.uint32(18).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): PlatformInstallResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformInstallResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformInstallResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.progress = DownloadProgress.decode(reader, reader.uint32());
+                    message.progress = DownloadProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 case 2:
-                    message.taskProgress = TaskProgress.decode(reader, reader.uint32());
+                    message.taskProgress = TaskProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -269,21 +316,31 @@ export const PlatformInstallResponse = {
 
     fromJSON(object: any): PlatformInstallResponse {
         return {
-            progress: isSet(object.progress) ? DownloadProgress.fromJSON(object.progress) : undefined,
-            taskProgress: isSet(object.taskProgress) ? TaskProgress.fromJSON(object.taskProgress) : undefined,
+            progress: isSet(object.progress)
+                ? DownloadProgress.fromJSON(object.progress)
+                : undefined,
+            taskProgress: isSet(object.taskProgress)
+                ? TaskProgress.fromJSON(object.taskProgress)
+                : undefined,
         };
     },
 
     toJSON(message: PlatformInstallResponse): unknown {
         const obj: any = {};
         message.progress !== undefined &&
-            (obj.progress = message.progress ? DownloadProgress.toJSON(message.progress) : undefined);
+            (obj.progress = message.progress
+                ? DownloadProgress.toJSON(message.progress)
+                : undefined);
         message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress ? TaskProgress.toJSON(message.taskProgress) : undefined);
+            (obj.taskProgress = message.taskProgress
+                ? TaskProgress.toJSON(message.taskProgress)
+                : undefined);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<PlatformInstallResponse>): PlatformInstallResponse {
+    fromPartial(
+        object: DeepPartial<PlatformInstallResponse>
+    ): PlatformInstallResponse {
         const message = createBasePlatformInstallResponse();
         message.progress =
             object.progress !== undefined && object.progress !== null
@@ -298,13 +355,24 @@ export const PlatformInstallResponse = {
 };
 
 function createBasePlatformDownloadRequest(): PlatformDownloadRequest {
-    return { instance: undefined, platformPackage: '', architecture: '', version: '' };
+    return {
+        instance: undefined,
+        platformPackage: '',
+        architecture: '',
+        version: '',
+    };
 }
 
 export const PlatformDownloadRequest = {
-    encode(message: PlatformDownloadRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: PlatformDownloadRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.platformPackage !== '') {
             writer.uint32(18).string(message.platformPackage);
@@ -318,8 +386,12 @@ export const PlatformDownloadRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): PlatformDownloadRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformDownloadRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformDownloadRequest();
         while (reader.pos < end) {
@@ -347,9 +419,15 @@ export const PlatformDownloadRequest = {
 
     fromJSON(object: any): PlatformDownloadRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
-            platformPackage: isSet(object.platformPackage) ? String(object.platformPackage) : '',
-            architecture: isSet(object.architecture) ? String(object.architecture) : '',
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+            platformPackage: isSet(object.platformPackage)
+                ? String(object.platformPackage)
+                : '',
+            architecture: isSet(object.architecture)
+                ? String(object.architecture)
+                : '',
             version: isSet(object.version) ? String(object.version) : '',
         };
     },
@@ -357,14 +435,20 @@ export const PlatformDownloadRequest = {
     toJSON(message: PlatformDownloadRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
-        message.platformPackage !== undefined && (obj.platformPackage = message.platformPackage);
-        message.architecture !== undefined && (obj.architecture = message.architecture);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
+        message.platformPackage !== undefined &&
+            (obj.platformPackage = message.platformPackage);
+        message.architecture !== undefined &&
+            (obj.architecture = message.architecture);
         message.version !== undefined && (obj.version = message.version);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<PlatformDownloadRequest>): PlatformDownloadRequest {
+    fromPartial(
+        object: DeepPartial<PlatformDownloadRequest>
+    ): PlatformDownloadRequest {
         const message = createBasePlatformDownloadRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -382,22 +466,35 @@ function createBasePlatformDownloadResponse(): PlatformDownloadResponse {
 }
 
 export const PlatformDownloadResponse = {
-    encode(message: PlatformDownloadResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: PlatformDownloadResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.progress !== undefined) {
-            DownloadProgress.encode(message.progress, writer.uint32(10).fork()).ldelim();
+            DownloadProgress.encode(
+                message.progress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): PlatformDownloadResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformDownloadResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformDownloadResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.progress = DownloadProgress.decode(reader, reader.uint32());
+                    message.progress = DownloadProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -408,17 +505,25 @@ export const PlatformDownloadResponse = {
     },
 
     fromJSON(object: any): PlatformDownloadResponse {
-        return { progress: isSet(object.progress) ? DownloadProgress.fromJSON(object.progress) : undefined };
+        return {
+            progress: isSet(object.progress)
+                ? DownloadProgress.fromJSON(object.progress)
+                : undefined,
+        };
     },
 
     toJSON(message: PlatformDownloadResponse): unknown {
         const obj: any = {};
         message.progress !== undefined &&
-            (obj.progress = message.progress ? DownloadProgress.toJSON(message.progress) : undefined);
+            (obj.progress = message.progress
+                ? DownloadProgress.toJSON(message.progress)
+                : undefined);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<PlatformDownloadResponse>): PlatformDownloadResponse {
+    fromPartial(
+        object: DeepPartial<PlatformDownloadResponse>
+    ): PlatformDownloadResponse {
         const message = createBasePlatformDownloadResponse();
         message.progress =
             object.progress !== undefined && object.progress !== null
@@ -433,9 +538,15 @@ function createBasePlatformUninstallRequest(): PlatformUninstallRequest {
 }
 
 export const PlatformUninstallRequest = {
-    encode(message: PlatformUninstallRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: PlatformUninstallRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.platformPackage !== '') {
             writer.uint32(18).string(message.platformPackage);
@@ -446,8 +557,12 @@ export const PlatformUninstallRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): PlatformUninstallRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformUninstallRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformUninstallRequest();
         while (reader.pos < end) {
@@ -472,22 +587,34 @@ export const PlatformUninstallRequest = {
 
     fromJSON(object: any): PlatformUninstallRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
-            platformPackage: isSet(object.platformPackage) ? String(object.platformPackage) : '',
-            architecture: isSet(object.architecture) ? String(object.architecture) : '',
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+            platformPackage: isSet(object.platformPackage)
+                ? String(object.platformPackage)
+                : '',
+            architecture: isSet(object.architecture)
+                ? String(object.architecture)
+                : '',
         };
     },
 
     toJSON(message: PlatformUninstallRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
-        message.platformPackage !== undefined && (obj.platformPackage = message.platformPackage);
-        message.architecture !== undefined && (obj.architecture = message.architecture);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
+        message.platformPackage !== undefined &&
+            (obj.platformPackage = message.platformPackage);
+        message.architecture !== undefined &&
+            (obj.architecture = message.architecture);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<PlatformUninstallRequest>): PlatformUninstallRequest {
+    fromPartial(
+        object: DeepPartial<PlatformUninstallRequest>
+    ): PlatformUninstallRequest {
         const message = createBasePlatformUninstallRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -504,22 +631,35 @@ function createBasePlatformUninstallResponse(): PlatformUninstallResponse {
 }
 
 export const PlatformUninstallResponse = {
-    encode(message: PlatformUninstallResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: PlatformUninstallResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.taskProgress !== undefined) {
-            TaskProgress.encode(message.taskProgress, writer.uint32(10).fork()).ldelim();
+            TaskProgress.encode(
+                message.taskProgress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): PlatformUninstallResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformUninstallResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformUninstallResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.taskProgress = TaskProgress.decode(reader, reader.uint32());
+                    message.taskProgress = TaskProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -530,17 +670,25 @@ export const PlatformUninstallResponse = {
     },
 
     fromJSON(object: any): PlatformUninstallResponse {
-        return { taskProgress: isSet(object.taskProgress) ? TaskProgress.fromJSON(object.taskProgress) : undefined };
+        return {
+            taskProgress: isSet(object.taskProgress)
+                ? TaskProgress.fromJSON(object.taskProgress)
+                : undefined,
+        };
     },
 
     toJSON(message: PlatformUninstallResponse): unknown {
         const obj: any = {};
         message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress ? TaskProgress.toJSON(message.taskProgress) : undefined);
+            (obj.taskProgress = message.taskProgress
+                ? TaskProgress.toJSON(message.taskProgress)
+                : undefined);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<PlatformUninstallResponse>): PlatformUninstallResponse {
+    fromPartial(
+        object: DeepPartial<PlatformUninstallResponse>
+    ): PlatformUninstallResponse {
         const message = createBasePlatformUninstallResponse();
         message.taskProgress =
             object.taskProgress !== undefined && object.taskProgress !== null
@@ -555,12 +703,19 @@ function createBaseAlreadyAtLatestVersionError(): AlreadyAtLatestVersionError {
 }
 
 export const AlreadyAtLatestVersionError = {
-    encode(_: AlreadyAtLatestVersionError, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        _: AlreadyAtLatestVersionError,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): AlreadyAtLatestVersionError {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): AlreadyAtLatestVersionError {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseAlreadyAtLatestVersionError();
         while (reader.pos < end) {
@@ -583,20 +738,33 @@ export const AlreadyAtLatestVersionError = {
         return obj;
     },
 
-    fromPartial(_: DeepPartial<AlreadyAtLatestVersionError>): AlreadyAtLatestVersionError {
+    fromPartial(
+        _: DeepPartial<AlreadyAtLatestVersionError>
+    ): AlreadyAtLatestVersionError {
         const message = createBaseAlreadyAtLatestVersionError();
         return message;
     },
 };
 
 function createBasePlatformUpgradeRequest(): PlatformUpgradeRequest {
-    return { instance: undefined, platformPackage: '', architecture: '', skipPostInstall: false };
+    return {
+        instance: undefined,
+        platformPackage: '',
+        architecture: '',
+        skipPostInstall: false,
+    };
 }
 
 export const PlatformUpgradeRequest = {
-    encode(message: PlatformUpgradeRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: PlatformUpgradeRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.platformPackage !== '') {
             writer.uint32(18).string(message.platformPackage);
@@ -610,8 +778,12 @@ export const PlatformUpgradeRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): PlatformUpgradeRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformUpgradeRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformUpgradeRequest();
         while (reader.pos < end) {
@@ -639,24 +811,39 @@ export const PlatformUpgradeRequest = {
 
     fromJSON(object: any): PlatformUpgradeRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
-            platformPackage: isSet(object.platformPackage) ? String(object.platformPackage) : '',
-            architecture: isSet(object.architecture) ? String(object.architecture) : '',
-            skipPostInstall: isSet(object.skipPostInstall) ? Boolean(object.skipPostInstall) : false,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+            platformPackage: isSet(object.platformPackage)
+                ? String(object.platformPackage)
+                : '',
+            architecture: isSet(object.architecture)
+                ? String(object.architecture)
+                : '',
+            skipPostInstall: isSet(object.skipPostInstall)
+                ? Boolean(object.skipPostInstall)
+                : false,
         };
     },
 
     toJSON(message: PlatformUpgradeRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
-        message.platformPackage !== undefined && (obj.platformPackage = message.platformPackage);
-        message.architecture !== undefined && (obj.architecture = message.architecture);
-        message.skipPostInstall !== undefined && (obj.skipPostInstall = message.skipPostInstall);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
+        message.platformPackage !== undefined &&
+            (obj.platformPackage = message.platformPackage);
+        message.architecture !== undefined &&
+            (obj.architecture = message.architecture);
+        message.skipPostInstall !== undefined &&
+            (obj.skipPostInstall = message.skipPostInstall);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<PlatformUpgradeRequest>): PlatformUpgradeRequest {
+    fromPartial(
+        object: DeepPartial<PlatformUpgradeRequest>
+    ): PlatformUpgradeRequest {
         const message = createBasePlatformUpgradeRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -674,28 +861,47 @@ function createBasePlatformUpgradeResponse(): PlatformUpgradeResponse {
 }
 
 export const PlatformUpgradeResponse = {
-    encode(message: PlatformUpgradeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: PlatformUpgradeResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.progress !== undefined) {
-            DownloadProgress.encode(message.progress, writer.uint32(10).fork()).ldelim();
+            DownloadProgress.encode(
+                message.progress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.taskProgress !== undefined) {
-            TaskProgress.encode(message.taskProgress, writer.uint32(18).fork()).ldelim();
+            TaskProgress.encode(
+                message.taskProgress,
+                writer.uint32(18).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): PlatformUpgradeResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformUpgradeResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformUpgradeResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.progress = DownloadProgress.decode(reader, reader.uint32());
+                    message.progress = DownloadProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 case 2:
-                    message.taskProgress = TaskProgress.decode(reader, reader.uint32());
+                    message.taskProgress = TaskProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -707,21 +913,31 @@ export const PlatformUpgradeResponse = {
 
     fromJSON(object: any): PlatformUpgradeResponse {
         return {
-            progress: isSet(object.progress) ? DownloadProgress.fromJSON(object.progress) : undefined,
-            taskProgress: isSet(object.taskProgress) ? TaskProgress.fromJSON(object.taskProgress) : undefined,
+            progress: isSet(object.progress)
+                ? DownloadProgress.fromJSON(object.progress)
+                : undefined,
+            taskProgress: isSet(object.taskProgress)
+                ? TaskProgress.fromJSON(object.taskProgress)
+                : undefined,
         };
     },
 
     toJSON(message: PlatformUpgradeResponse): unknown {
         const obj: any = {};
         message.progress !== undefined &&
-            (obj.progress = message.progress ? DownloadProgress.toJSON(message.progress) : undefined);
+            (obj.progress = message.progress
+                ? DownloadProgress.toJSON(message.progress)
+                : undefined);
         message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress ? TaskProgress.toJSON(message.taskProgress) : undefined);
+            (obj.taskProgress = message.taskProgress
+                ? TaskProgress.toJSON(message.taskProgress)
+                : undefined);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<PlatformUpgradeResponse>): PlatformUpgradeResponse {
+    fromPartial(
+        object: DeepPartial<PlatformUpgradeResponse>
+    ): PlatformUpgradeResponse {
         const message = createBasePlatformUpgradeResponse();
         message.progress =
             object.progress !== undefined && object.progress !== null
@@ -740,9 +956,15 @@ function createBasePlatformSearchRequest(): PlatformSearchRequest {
 }
 
 export const PlatformSearchRequest = {
-    encode(message: PlatformSearchRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: PlatformSearchRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.searchArgs !== '') {
             writer.uint32(18).string(message.searchArgs);
@@ -753,8 +975,12 @@ export const PlatformSearchRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): PlatformSearchRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformSearchRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformSearchRequest();
         while (reader.pos < end) {
@@ -779,22 +1005,34 @@ export const PlatformSearchRequest = {
 
     fromJSON(object: any): PlatformSearchRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
-            searchArgs: isSet(object.searchArgs) ? String(object.searchArgs) : '',
-            allVersions: isSet(object.allVersions) ? Boolean(object.allVersions) : false,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+            searchArgs: isSet(object.searchArgs)
+                ? String(object.searchArgs)
+                : '',
+            allVersions: isSet(object.allVersions)
+                ? Boolean(object.allVersions)
+                : false,
         };
     },
 
     toJSON(message: PlatformSearchRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
-        message.searchArgs !== undefined && (obj.searchArgs = message.searchArgs);
-        message.allVersions !== undefined && (obj.allVersions = message.allVersions);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
+        message.searchArgs !== undefined &&
+            (obj.searchArgs = message.searchArgs);
+        message.allVersions !== undefined &&
+            (obj.allVersions = message.allVersions);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<PlatformSearchRequest>): PlatformSearchRequest {
+    fromPartial(
+        object: DeepPartial<PlatformSearchRequest>
+    ): PlatformSearchRequest {
         const message = createBasePlatformSearchRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -811,22 +1049,31 @@ function createBasePlatformSearchResponse(): PlatformSearchResponse {
 }
 
 export const PlatformSearchResponse = {
-    encode(message: PlatformSearchResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: PlatformSearchResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         for (const v of message.searchOutput) {
             Platform.encode(v!, writer.uint32(10).fork()).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): PlatformSearchResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformSearchResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformSearchResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.searchOutput.push(Platform.decode(reader, reader.uint32()));
+                    message.searchOutput.push(
+                        Platform.decode(reader, reader.uint32())
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -847,16 +1094,21 @@ export const PlatformSearchResponse = {
     toJSON(message: PlatformSearchResponse): unknown {
         const obj: any = {};
         if (message.searchOutput) {
-            obj.searchOutput = message.searchOutput.map((e) => (e ? Platform.toJSON(e) : undefined));
+            obj.searchOutput = message.searchOutput.map((e) =>
+                e ? Platform.toJSON(e) : undefined
+            );
         } else {
             obj.searchOutput = [];
         }
         return obj;
     },
 
-    fromPartial(object: DeepPartial<PlatformSearchResponse>): PlatformSearchResponse {
+    fromPartial(
+        object: DeepPartial<PlatformSearchResponse>
+    ): PlatformSearchResponse {
         const message = createBasePlatformSearchResponse();
-        message.searchOutput = object.searchOutput?.map((e) => Platform.fromPartial(e)) || [];
+        message.searchOutput =
+            object.searchOutput?.map((e) => Platform.fromPartial(e)) || [];
         return message;
     },
 };
@@ -866,9 +1118,15 @@ function createBasePlatformListRequest(): PlatformListRequest {
 }
 
 export const PlatformListRequest = {
-    encode(message: PlatformListRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: PlatformListRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.updatableOnly === true) {
             writer.uint32(16).bool(message.updatableOnly);
@@ -879,8 +1137,12 @@ export const PlatformListRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): PlatformListRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformListRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformListRequest();
         while (reader.pos < end) {
@@ -905,8 +1167,12 @@ export const PlatformListRequest = {
 
     fromJSON(object: any): PlatformListRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
-            updatableOnly: isSet(object.updatableOnly) ? Boolean(object.updatableOnly) : false,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+            updatableOnly: isSet(object.updatableOnly)
+                ? Boolean(object.updatableOnly)
+                : false,
             all: isSet(object.all) ? Boolean(object.all) : false,
         };
     },
@@ -914,8 +1180,11 @@ export const PlatformListRequest = {
     toJSON(message: PlatformListRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
-        message.updatableOnly !== undefined && (obj.updatableOnly = message.updatableOnly);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
+        message.updatableOnly !== undefined &&
+            (obj.updatableOnly = message.updatableOnly);
         message.all !== undefined && (obj.all = message.all);
         return obj;
     },
@@ -937,22 +1206,31 @@ function createBasePlatformListResponse(): PlatformListResponse {
 }
 
 export const PlatformListResponse = {
-    encode(message: PlatformListResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: PlatformListResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         for (const v of message.installedPlatforms) {
             Platform.encode(v!, writer.uint32(10).fork()).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): PlatformListResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformListResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformListResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.installedPlatforms.push(Platform.decode(reader, reader.uint32()));
+                    message.installedPlatforms.push(
+                        Platform.decode(reader, reader.uint32())
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -965,7 +1243,9 @@ export const PlatformListResponse = {
     fromJSON(object: any): PlatformListResponse {
         return {
             installedPlatforms: Array.isArray(object?.installedPlatforms)
-                ? object.installedPlatforms.map((e: any) => Platform.fromJSON(e))
+                ? object.installedPlatforms.map((e: any) =>
+                      Platform.fromJSON(e)
+                  )
                 : [],
         };
     },
@@ -973,21 +1253,34 @@ export const PlatformListResponse = {
     toJSON(message: PlatformListResponse): unknown {
         const obj: any = {};
         if (message.installedPlatforms) {
-            obj.installedPlatforms = message.installedPlatforms.map((e) => (e ? Platform.toJSON(e) : undefined));
+            obj.installedPlatforms = message.installedPlatforms.map((e) =>
+                e ? Platform.toJSON(e) : undefined
+            );
         } else {
             obj.installedPlatforms = [];
         }
         return obj;
     },
 
-    fromPartial(object: DeepPartial<PlatformListResponse>): PlatformListResponse {
+    fromPartial(
+        object: DeepPartial<PlatformListResponse>
+    ): PlatformListResponse {
         const message = createBasePlatformListResponse();
-        message.installedPlatforms = object.installedPlatforms?.map((e) => Platform.fromPartial(e)) || [];
+        message.installedPlatforms =
+            object.installedPlatforms?.map((e) => Platform.fromPartial(e)) ||
+            [];
         return message;
     },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+    | Date
+    | Function
+    | Uint8Array
+    | string
+    | number
+    | boolean
+    | undefined;
 
 export type DeepPartial<T> = T extends Builtin
     ? T
@@ -996,7 +1289,9 @@ export type DeepPartial<T> = T extends Builtin
     : T extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
     : T extends { $case: string }
-    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & { $case: T['$case'] }
+    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & {
+          $case: T['$case'];
+      }
     : T extends {}
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;

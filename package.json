@@ -1,6 +1,6 @@
 {
   "name": "ardunno-cli",
-  "version": "0.1.0-beta.14",
+  "version": "0.1.0-beta.17",
   "description": "nice-grpc API for the Arduino CLI",
   "main": "./dist/api/index.js",
   "exports": {
@@ -43,14 +43,14 @@
     "url": "git+https://github.com/dankeboy36/ardunno-cli.git"
   },
   "scripts": {
-    "generate:api": "ardunno-cli generate 0.28.0 -o src/api -f",
+    "generate:api": "ardunno-cli generate 0.29.0 -o src/api -f",
     "index:api": "ctix single -p ./tsconfig.json -o ./src/api/index.ts -w && replace ' type' '' ./src/api/index.ts ",
     "generate:schema": "ts-json-schema-generator --path ./src/config/index.ts --type Config --expose none --no-top-ref --tsconfig ./tsconfig.json --out ./schemas/arduino-cli-schema.json",
     "compile": "tsc -p ./",
     "watch": "tsc -p ./ -w",
     "format": "prettier --write .",
     "lint": "eslint ./src --ext ts",
-    "prepublishOnly": "npm run generate:api && npm run index:api && npm run generate:schema && npm run compile && npm run lint && npm run format"
+    "prepublishOnly": "npm run generate:api && npm run index:api && npm run generate:schema && npm run compile && npm run format && npm run lint"
   },
   "dependencies": {
     "nice-grpc-common": "^2.0.0",
@@ -60,11 +60,13 @@
     "@types/is-valid-path": "^0.1.0",
     "@types/rimraf": "^3.0.2",
     "@types/semver": "^7.3.13",
-    "@typescript-eslint/eslint-plugin": "^5.40.0",
-    "@typescript-eslint/parser": "^5.40.0",
-    "ardunno-cli-gen": "^0.1.0-beta.10",
+    "@typescript-eslint/eslint-plugin": "^5.43.0",
+    "@typescript-eslint/parser": "^5.43.0",
+    "ardunno-cli-gen": "^0.1.0-beta.12",
     "ctix": "^1.5.0",
     "eslint": "^8.25.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.7.1",
     "replace": "^0.2.2",
     "ts-json-schema-generator": "^1.1.2",

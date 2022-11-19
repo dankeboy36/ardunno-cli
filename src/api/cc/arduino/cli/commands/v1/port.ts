@@ -23,11 +23,20 @@ export interface Port_PropertiesEntry {
 }
 
 function createBasePort(): Port {
-    return { address: '', label: '', protocol: '', protocolLabel: '', properties: {} };
+    return {
+        address: '',
+        label: '',
+        protocol: '',
+        protocolLabel: '',
+        properties: {},
+    };
 }
 
 export const Port = {
-    encode(message: Port, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: Port,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.address !== '') {
             writer.uint32(10).string(message.address);
         }
@@ -41,13 +50,17 @@ export const Port = {
             writer.uint32(34).string(message.protocolLabel);
         }
         Object.entries(message.properties).forEach(([key, value]) => {
-            Port_PropertiesEntry.encode({ key: key as any, value }, writer.uint32(42).fork()).ldelim();
+            Port_PropertiesEntry.encode(
+                { key: key as any, value },
+                writer.uint32(42).fork()
+            ).ldelim();
         });
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Port {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePort();
         while (reader.pos < end) {
@@ -66,7 +79,10 @@ export const Port = {
                     message.protocolLabel = reader.string();
                     break;
                 case 5:
-                    const entry5 = Port_PropertiesEntry.decode(reader, reader.uint32());
+                    const entry5 = Port_PropertiesEntry.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     if (entry5.value !== undefined) {
                         message.properties[entry5.key] = entry5.value;
                     }
@@ -84,9 +100,13 @@ export const Port = {
             address: isSet(object.address) ? String(object.address) : '',
             label: isSet(object.label) ? String(object.label) : '',
             protocol: isSet(object.protocol) ? String(object.protocol) : '',
-            protocolLabel: isSet(object.protocolLabel) ? String(object.protocolLabel) : '',
+            protocolLabel: isSet(object.protocolLabel)
+                ? String(object.protocolLabel)
+                : '',
             properties: isObject(object.properties)
-                ? Object.entries(object.properties).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+                ? Object.entries(object.properties).reduce<{
+                      [key: string]: string;
+                  }>((acc, [key, value]) => {
                       acc[key] = String(value);
                       return acc;
                   }, {})
@@ -99,7 +119,8 @@ export const Port = {
         message.address !== undefined && (obj.address = message.address);
         message.label !== undefined && (obj.label = message.label);
         message.protocol !== undefined && (obj.protocol = message.protocol);
-        message.protocolLabel !== undefined && (obj.protocolLabel = message.protocolLabel);
+        message.protocolLabel !== undefined &&
+            (obj.protocolLabel = message.protocolLabel);
         obj.properties = {};
         if (message.properties) {
             Object.entries(message.properties).forEach(([k, v]) => {
@@ -115,15 +136,14 @@ export const Port = {
         message.label = object.label ?? '';
         message.protocol = object.protocol ?? '';
         message.protocolLabel = object.protocolLabel ?? '';
-        message.properties = Object.entries(object.properties ?? {}).reduce<{ [key: string]: string }>(
-            (acc, [key, value]) => {
-                if (value !== undefined) {
-                    acc[key] = String(value);
-                }
-                return acc;
-            },
-            {}
-        );
+        message.properties = Object.entries(object.properties ?? {}).reduce<{
+            [key: string]: string;
+        }>((acc, [key, value]) => {
+            if (value !== undefined) {
+                acc[key] = String(value);
+            }
+            return acc;
+        }, {});
         return message;
     },
 };
@@ -133,7 +153,10 @@ function createBasePort_PropertiesEntry(): Port_PropertiesEntry {
 }
 
 export const Port_PropertiesEntry = {
-    encode(message: Port_PropertiesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: Port_PropertiesEntry,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.key !== '') {
             writer.uint32(10).string(message.key);
         }
@@ -143,8 +166,12 @@ export const Port_PropertiesEntry = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): Port_PropertiesEntry {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): Port_PropertiesEntry {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePort_PropertiesEntry();
         while (reader.pos < end) {
@@ -178,7 +205,9 @@ export const Port_PropertiesEntry = {
         return obj;
     },
 
-    fromPartial(object: DeepPartial<Port_PropertiesEntry>): Port_PropertiesEntry {
+    fromPartial(
+        object: DeepPartial<Port_PropertiesEntry>
+    ): Port_PropertiesEntry {
         const message = createBasePort_PropertiesEntry();
         message.key = object.key ?? '';
         message.value = object.value ?? '';
@@ -186,7 +215,14 @@ export const Port_PropertiesEntry = {
     },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+    | Date
+    | Function
+    | Uint8Array
+    | string
+    | number
+    | boolean
+    | undefined;
 
 export type DeepPartial<T> = T extends Builtin
     ? T
@@ -195,7 +231,9 @@ export type DeepPartial<T> = T extends Builtin
     : T extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
     : T extends { $case: string }
-    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & { $case: T['$case'] }
+    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & {
+          $case: T['$case'];
+      }
     : T extends {}
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;

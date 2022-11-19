@@ -95,13 +95,23 @@ export interface GetDebugConfigResponse_ServerConfigurationEntry {
 }
 
 function createBaseDebugRequest(): DebugRequest {
-    return { debugRequest: undefined, data: new Uint8Array(), sendInterrupt: false };
+    return {
+        debugRequest: undefined,
+        data: new Uint8Array(),
+        sendInterrupt: false,
+    };
 }
 
 export const DebugRequest = {
-    encode(message: DebugRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: DebugRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.debugRequest !== undefined) {
-            DebugConfigRequest.encode(message.debugRequest, writer.uint32(10).fork()).ldelim();
+            DebugConfigRequest.encode(
+                message.debugRequest,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.data.length !== 0) {
             writer.uint32(18).bytes(message.data);
@@ -113,14 +123,18 @@ export const DebugRequest = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): DebugRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDebugRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.debugRequest = DebugConfigRequest.decode(reader, reader.uint32());
+                    message.debugRequest = DebugConfigRequest.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 case 2:
                     message.data = reader.bytes();
@@ -138,19 +152,30 @@ export const DebugRequest = {
 
     fromJSON(object: any): DebugRequest {
         return {
-            debugRequest: isSet(object.debugRequest) ? DebugConfigRequest.fromJSON(object.debugRequest) : undefined,
-            data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(),
-            sendInterrupt: isSet(object.sendInterrupt) ? Boolean(object.sendInterrupt) : false,
+            debugRequest: isSet(object.debugRequest)
+                ? DebugConfigRequest.fromJSON(object.debugRequest)
+                : undefined,
+            data: isSet(object.data)
+                ? bytesFromBase64(object.data)
+                : new Uint8Array(),
+            sendInterrupt: isSet(object.sendInterrupt)
+                ? Boolean(object.sendInterrupt)
+                : false,
         };
     },
 
     toJSON(message: DebugRequest): unknown {
         const obj: any = {};
         message.debugRequest !== undefined &&
-            (obj.debugRequest = message.debugRequest ? DebugConfigRequest.toJSON(message.debugRequest) : undefined);
+            (obj.debugRequest = message.debugRequest
+                ? DebugConfigRequest.toJSON(message.debugRequest)
+                : undefined);
         message.data !== undefined &&
-            (obj.data = base64FromBytes(message.data !== undefined ? message.data : new Uint8Array()));
-        message.sendInterrupt !== undefined && (obj.sendInterrupt = message.sendInterrupt);
+            (obj.data = base64FromBytes(
+                message.data !== undefined ? message.data : new Uint8Array()
+            ));
+        message.sendInterrupt !== undefined &&
+            (obj.sendInterrupt = message.sendInterrupt);
         return obj;
     },
 
@@ -179,9 +204,15 @@ function createBaseDebugConfigRequest(): DebugConfigRequest {
 }
 
 export const DebugConfigRequest = {
-    encode(message: DebugConfigRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: DebugConfigRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.fqbn !== '') {
             writer.uint32(18).string(message.fqbn);
@@ -204,8 +235,12 @@ export const DebugConfigRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): DebugConfigRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): DebugConfigRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDebugConfigRequest();
         while (reader.pos < end) {
@@ -242,26 +277,40 @@ export const DebugConfigRequest = {
 
     fromJSON(object: any): DebugConfigRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
-            sketchPath: isSet(object.sketchPath) ? String(object.sketchPath) : '',
+            sketchPath: isSet(object.sketchPath)
+                ? String(object.sketchPath)
+                : '',
             port: isSet(object.port) ? Port.fromJSON(object.port) : undefined,
-            interpreter: isSet(object.interpreter) ? String(object.interpreter) : '',
+            interpreter: isSet(object.interpreter)
+                ? String(object.interpreter)
+                : '',
             importDir: isSet(object.importDir) ? String(object.importDir) : '',
-            programmer: isSet(object.programmer) ? String(object.programmer) : '',
+            programmer: isSet(object.programmer)
+                ? String(object.programmer)
+                : '',
         };
     },
 
     toJSON(message: DebugConfigRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
-        message.sketchPath !== undefined && (obj.sketchPath = message.sketchPath);
-        message.port !== undefined && (obj.port = message.port ? Port.toJSON(message.port) : undefined);
-        message.interpreter !== undefined && (obj.interpreter = message.interpreter);
+        message.sketchPath !== undefined &&
+            (obj.sketchPath = message.sketchPath);
+        message.port !== undefined &&
+            (obj.port = message.port ? Port.toJSON(message.port) : undefined);
+        message.interpreter !== undefined &&
+            (obj.interpreter = message.interpreter);
         message.importDir !== undefined && (obj.importDir = message.importDir);
-        message.programmer !== undefined && (obj.programmer = message.programmer);
+        message.programmer !== undefined &&
+            (obj.programmer = message.programmer);
         return obj;
     },
 
@@ -273,7 +322,10 @@ export const DebugConfigRequest = {
                 : undefined;
         message.fqbn = object.fqbn ?? '';
         message.sketchPath = object.sketchPath ?? '';
-        message.port = object.port !== undefined && object.port !== null ? Port.fromPartial(object.port) : undefined;
+        message.port =
+            object.port !== undefined && object.port !== null
+                ? Port.fromPartial(object.port)
+                : undefined;
         message.interpreter = object.interpreter ?? '';
         message.importDir = object.importDir ?? '';
         message.programmer = object.programmer ?? '';
@@ -286,7 +338,10 @@ function createBaseDebugResponse(): DebugResponse {
 }
 
 export const DebugResponse = {
-    encode(message: DebugResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: DebugResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.data.length !== 0) {
             writer.uint32(10).bytes(message.data);
         }
@@ -297,7 +352,8 @@ export const DebugResponse = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): DebugResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDebugResponse();
         while (reader.pos < end) {
@@ -319,7 +375,9 @@ export const DebugResponse = {
 
     fromJSON(object: any): DebugResponse {
         return {
-            data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(),
+            data: isSet(object.data)
+                ? bytesFromBase64(object.data)
+                : new Uint8Array(),
             error: isSet(object.error) ? String(object.error) : '',
         };
     },
@@ -327,7 +385,9 @@ export const DebugResponse = {
     toJSON(message: DebugResponse): unknown {
         const obj: any = {};
         message.data !== undefined &&
-            (obj.data = base64FromBytes(message.data !== undefined ? message.data : new Uint8Array()));
+            (obj.data = base64FromBytes(
+                message.data !== undefined ? message.data : new Uint8Array()
+            ));
         message.error !== undefined && (obj.error = message.error);
         return obj;
     },
@@ -354,7 +414,10 @@ function createBaseGetDebugConfigResponse(): GetDebugConfigResponse {
 }
 
 export const GetDebugConfigResponse = {
-    encode(message: GetDebugConfigResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: GetDebugConfigResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.executable !== '') {
             writer.uint32(10).string(message.executable);
         }
@@ -373,12 +436,14 @@ export const GetDebugConfigResponse = {
         if (message.serverPath !== '') {
             writer.uint32(50).string(message.serverPath);
         }
-        Object.entries(message.toolchainConfiguration).forEach(([key, value]) => {
-            GetDebugConfigResponse_ToolchainConfigurationEntry.encode(
-                { key: key as any, value },
-                writer.uint32(58).fork()
-            ).ldelim();
-        });
+        Object.entries(message.toolchainConfiguration).forEach(
+            ([key, value]) => {
+                GetDebugConfigResponse_ToolchainConfigurationEntry.encode(
+                    { key: key as any, value },
+                    writer.uint32(58).fork()
+                ).ldelim();
+            }
+        );
         Object.entries(message.serverConfiguration).forEach(([key, value]) => {
             GetDebugConfigResponse_ServerConfigurationEntry.encode(
                 { key: key as any, value },
@@ -388,8 +453,12 @@ export const GetDebugConfigResponse = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetDebugConfigResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): GetDebugConfigResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseGetDebugConfigResponse();
         while (reader.pos < end) {
@@ -414,13 +483,22 @@ export const GetDebugConfigResponse = {
                     message.serverPath = reader.string();
                     break;
                 case 7:
-                    const entry7 = GetDebugConfigResponse_ToolchainConfigurationEntry.decode(reader, reader.uint32());
+                    const entry7 =
+                        GetDebugConfigResponse_ToolchainConfigurationEntry.decode(
+                            reader,
+                            reader.uint32()
+                        );
                     if (entry7.value !== undefined) {
-                        message.toolchainConfiguration[entry7.key] = entry7.value;
+                        message.toolchainConfiguration[entry7.key] =
+                            entry7.value;
                     }
                     break;
                 case 8:
-                    const entry8 = GetDebugConfigResponse_ServerConfigurationEntry.decode(reader, reader.uint32());
+                    const entry8 =
+                        GetDebugConfigResponse_ServerConfigurationEntry.decode(
+                            reader,
+                            reader.uint32()
+                        );
                     if (entry8.value !== undefined) {
                         message.serverConfiguration[entry8.key] = entry8.value;
                     }
@@ -435,23 +513,32 @@ export const GetDebugConfigResponse = {
 
     fromJSON(object: any): GetDebugConfigResponse {
         return {
-            executable: isSet(object.executable) ? String(object.executable) : '',
+            executable: isSet(object.executable)
+                ? String(object.executable)
+                : '',
             toolchain: isSet(object.toolchain) ? String(object.toolchain) : '',
-            toolchainPath: isSet(object.toolchainPath) ? String(object.toolchainPath) : '',
-            toolchainPrefix: isSet(object.toolchainPrefix) ? String(object.toolchainPrefix) : '',
+            toolchainPath: isSet(object.toolchainPath)
+                ? String(object.toolchainPath)
+                : '',
+            toolchainPrefix: isSet(object.toolchainPrefix)
+                ? String(object.toolchainPrefix)
+                : '',
             server: isSet(object.server) ? String(object.server) : '',
-            serverPath: isSet(object.serverPath) ? String(object.serverPath) : '',
+            serverPath: isSet(object.serverPath)
+                ? String(object.serverPath)
+                : '',
             toolchainConfiguration: isObject(object.toolchainConfiguration)
-                ? Object.entries(object.toolchainConfiguration).reduce<{ [key: string]: string }>(
-                      (acc, [key, value]) => {
-                          acc[key] = String(value);
-                          return acc;
-                      },
-                      {}
-                  )
+                ? Object.entries(object.toolchainConfiguration).reduce<{
+                      [key: string]: string;
+                  }>((acc, [key, value]) => {
+                      acc[key] = String(value);
+                      return acc;
+                  }, {})
                 : {},
             serverConfiguration: isObject(object.serverConfiguration)
-                ? Object.entries(object.serverConfiguration).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+                ? Object.entries(object.serverConfiguration).reduce<{
+                      [key: string]: string;
+                  }>((acc, [key, value]) => {
                       acc[key] = String(value);
                       return acc;
                   }, {})
@@ -461,12 +548,16 @@ export const GetDebugConfigResponse = {
 
     toJSON(message: GetDebugConfigResponse): unknown {
         const obj: any = {};
-        message.executable !== undefined && (obj.executable = message.executable);
+        message.executable !== undefined &&
+            (obj.executable = message.executable);
         message.toolchain !== undefined && (obj.toolchain = message.toolchain);
-        message.toolchainPath !== undefined && (obj.toolchainPath = message.toolchainPath);
-        message.toolchainPrefix !== undefined && (obj.toolchainPrefix = message.toolchainPrefix);
+        message.toolchainPath !== undefined &&
+            (obj.toolchainPath = message.toolchainPath);
+        message.toolchainPrefix !== undefined &&
+            (obj.toolchainPrefix = message.toolchainPrefix);
         message.server !== undefined && (obj.server = message.server);
-        message.serverPath !== undefined && (obj.serverPath = message.serverPath);
+        message.serverPath !== undefined &&
+            (obj.serverPath = message.serverPath);
         obj.toolchainConfiguration = {};
         if (message.toolchainConfiguration) {
             Object.entries(message.toolchainConfiguration).forEach(([k, v]) => {
@@ -482,7 +573,9 @@ export const GetDebugConfigResponse = {
         return obj;
     },
 
-    fromPartial(object: DeepPartial<GetDebugConfigResponse>): GetDebugConfigResponse {
+    fromPartial(
+        object: DeepPartial<GetDebugConfigResponse>
+    ): GetDebugConfigResponse {
         const message = createBaseGetDebugConfigResponse();
         message.executable = object.executable ?? '';
         message.toolchain = object.toolchain ?? '';
@@ -490,17 +583,17 @@ export const GetDebugConfigResponse = {
         message.toolchainPrefix = object.toolchainPrefix ?? '';
         message.server = object.server ?? '';
         message.serverPath = object.serverPath ?? '';
-        message.toolchainConfiguration = Object.entries(object.toolchainConfiguration ?? {}).reduce<{
-            [key: string]: string;
-        }>((acc, [key, value]) => {
+        message.toolchainConfiguration = Object.entries(
+            object.toolchainConfiguration ?? {}
+        ).reduce<{ [key: string]: string }>((acc, [key, value]) => {
             if (value !== undefined) {
                 acc[key] = String(value);
             }
             return acc;
         }, {});
-        message.serverConfiguration = Object.entries(object.serverConfiguration ?? {}).reduce<{
-            [key: string]: string;
-        }>((acc, [key, value]) => {
+        message.serverConfiguration = Object.entries(
+            object.serverConfiguration ?? {}
+        ).reduce<{ [key: string]: string }>((acc, [key, value]) => {
             if (value !== undefined) {
                 acc[key] = String(value);
             }
@@ -528,10 +621,15 @@ export const GetDebugConfigResponse_ToolchainConfigurationEntry = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetDebugConfigResponse_ToolchainConfigurationEntry {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): GetDebugConfigResponse_ToolchainConfigurationEntry {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseGetDebugConfigResponse_ToolchainConfigurationEntry();
+        const message =
+            createBaseGetDebugConfigResponse_ToolchainConfigurationEntry();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
@@ -556,7 +654,9 @@ export const GetDebugConfigResponse_ToolchainConfigurationEntry = {
         };
     },
 
-    toJSON(message: GetDebugConfigResponse_ToolchainConfigurationEntry): unknown {
+    toJSON(
+        message: GetDebugConfigResponse_ToolchainConfigurationEntry
+    ): unknown {
         const obj: any = {};
         message.key !== undefined && (obj.key = message.key);
         message.value !== undefined && (obj.value = message.value);
@@ -566,7 +666,8 @@ export const GetDebugConfigResponse_ToolchainConfigurationEntry = {
     fromPartial(
         object: DeepPartial<GetDebugConfigResponse_ToolchainConfigurationEntry>
     ): GetDebugConfigResponse_ToolchainConfigurationEntry {
-        const message = createBaseGetDebugConfigResponse_ToolchainConfigurationEntry();
+        const message =
+            createBaseGetDebugConfigResponse_ToolchainConfigurationEntry();
         message.key = object.key ?? '';
         message.value = object.value ?? '';
         return message;
@@ -591,10 +692,15 @@ export const GetDebugConfigResponse_ServerConfigurationEntry = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): GetDebugConfigResponse_ServerConfigurationEntry {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): GetDebugConfigResponse_ServerConfigurationEntry {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseGetDebugConfigResponse_ServerConfigurationEntry();
+        const message =
+            createBaseGetDebugConfigResponse_ServerConfigurationEntry();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
@@ -629,7 +735,8 @@ export const GetDebugConfigResponse_ServerConfigurationEntry = {
     fromPartial(
         object: DeepPartial<GetDebugConfigResponse_ServerConfigurationEntry>
     ): GetDebugConfigResponse_ServerConfigurationEntry {
-        const message = createBaseGetDebugConfigResponse_ServerConfigurationEntry();
+        const message =
+            createBaseGetDebugConfigResponse_ServerConfigurationEntry();
         message.key = object.key ?? '';
         message.value = object.value ?? '';
         return message;
@@ -730,7 +837,14 @@ function base64FromBytes(arr: Uint8Array): string {
     }
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+    | Date
+    | Function
+    | Uint8Array
+    | string
+    | number
+    | boolean
+    | undefined;
 
 export type DeepPartial<T> = T extends Builtin
     ? T
@@ -739,7 +853,9 @@ export type DeepPartial<T> = T extends Builtin
     : T extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
     : T extends { $case: string }
-    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & { $case: T['$case'] }
+    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & {
+          $case: T['$case'];
+      }
     : T extends {}
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;
@@ -752,4 +868,6 @@ function isSet(value: any): boolean {
     return value !== null && value !== undefined;
 }
 
-export type ServerStreamingMethodResult<Response> = { [Symbol.asyncIterator](): AsyncIterator<Response, void> };
+export type ServerStreamingMethodResult<Response> = {
+    [Symbol.asyncIterator](): AsyncIterator<Response, void>;
+};

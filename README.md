@@ -47,7 +47,10 @@ for await (const { message } of client.init({ instance })) {
 Search platforms:
 
 ```ts
-const { searchOutput } = await client.platformSearch({ instance, searchArgs: 'SAMD' });
+const { searchOutput } = await client.platformSearch({
+    instance,
+    searchArgs: 'SAMD',
+});
 searchOutput.forEach(({ id, latest }) => console.log(`${id}@${latest}`));
 
 // arduino:samd@1.8.13

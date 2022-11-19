@@ -137,7 +137,8 @@ export const Any = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Any {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseAny();
         while (reader.pos < end) {
@@ -160,7 +161,9 @@ export const Any = {
     fromJSON(object: any): Any {
         return {
             typeUrl: isSet(object.typeUrl) ? String(object.typeUrl) : '',
-            value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array(),
+            value: isSet(object.value)
+                ? bytesFromBase64(object.value)
+                : new Uint8Array(),
         };
     },
 
@@ -168,7 +171,9 @@ export const Any = {
         const obj: any = {};
         message.typeUrl !== undefined && (obj.typeUrl = message.typeUrl);
         message.value !== undefined &&
-            (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()));
+            (obj.value = base64FromBytes(
+                message.value !== undefined ? message.value : new Uint8Array()
+            ));
         return obj;
     },
 
@@ -224,7 +229,14 @@ function base64FromBytes(arr: Uint8Array): string {
     }
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+    | Date
+    | Function
+    | Uint8Array
+    | string
+    | number
+    | boolean
+    | undefined;
 
 export type DeepPartial<T> = T extends Builtin
     ? T
@@ -233,7 +245,9 @@ export type DeepPartial<T> = T extends Builtin
     : T extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
     : T extends { $case: string }
-    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & { $case: T['$case'] }
+    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & {
+          $case: T['$case'];
+      }
     : T extends {}
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;

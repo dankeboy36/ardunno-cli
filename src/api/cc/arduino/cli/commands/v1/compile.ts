@@ -162,9 +162,15 @@ function createBaseCompileRequest(): CompileRequest {
 }
 
 export const CompileRequest = {
-    encode(message: CompileRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: CompileRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.fqbn !== '') {
             writer.uint32(18).string(message.fqbn);
@@ -218,10 +224,16 @@ export const CompileRequest = {
             writer.uint32(168).bool(message.createCompilationDatabaseOnly);
         }
         Object.entries(message.sourceOverride).forEach(([key, value]) => {
-            CompileRequest_SourceOverrideEntry.encode({ key: key as any, value }, writer.uint32(178).fork()).ldelim();
+            CompileRequest_SourceOverrideEntry.encode(
+                { key: key as any, value },
+                writer.uint32(178).fork()
+            ).ldelim();
         });
         if (message.exportBinaries !== undefined) {
-            BoolValue.encode({ value: message.exportBinaries! }, writer.uint32(186).fork()).ldelim();
+            BoolValue.encode(
+                { value: message.exportBinaries! },
+                writer.uint32(186).fork()
+            ).ldelim();
         }
         for (const v of message.library) {
             writer.uint32(194).string(v!);
@@ -242,7 +254,8 @@ export const CompileRequest = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): CompileRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseCompileRequest();
         while (reader.pos < end) {
@@ -303,13 +316,19 @@ export const CompileRequest = {
                     message.createCompilationDatabaseOnly = reader.bool();
                     break;
                 case 22:
-                    const entry22 = CompileRequest_SourceOverrideEntry.decode(reader, reader.uint32());
+                    const entry22 = CompileRequest_SourceOverrideEntry.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     if (entry22.value !== undefined) {
                         message.sourceOverride[entry22.key] = entry22.value;
                     }
                     break;
                 case 23:
-                    message.exportBinaries = BoolValue.decode(reader, reader.uint32()).value;
+                    message.exportBinaries = BoolValue.decode(
+                        reader,
+                        reader.uint32()
+                    ).value;
                     break;
                 case 24:
                     message.library.push(reader.string());
@@ -336,12 +355,22 @@ export const CompileRequest = {
 
     fromJSON(object: any): CompileRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
-            sketchPath: isSet(object.sketchPath) ? String(object.sketchPath) : '',
-            showProperties: isSet(object.showProperties) ? Boolean(object.showProperties) : false,
-            preprocess: isSet(object.preprocess) ? Boolean(object.preprocess) : false,
-            buildCachePath: isSet(object.buildCachePath) ? String(object.buildCachePath) : '',
+            sketchPath: isSet(object.sketchPath)
+                ? String(object.sketchPath)
+                : '',
+            showProperties: isSet(object.showProperties)
+                ? Boolean(object.showProperties)
+                : false,
+            preprocess: isSet(object.preprocess)
+                ? Boolean(object.preprocess)
+                : false,
+            buildCachePath: isSet(object.buildCachePath)
+                ? String(object.buildCachePath)
+                : '',
             buildPath: isSet(object.buildPath) ? String(object.buildPath) : '',
             buildProperties: Array.isArray(object?.buildProperties)
                 ? object.buildProperties.map((e: any) => String(e))
@@ -351,24 +380,40 @@ export const CompileRequest = {
             quiet: isSet(object.quiet) ? Boolean(object.quiet) : false,
             vidPid: isSet(object.vidPid) ? String(object.vidPid) : '',
             jobs: isSet(object.jobs) ? Number(object.jobs) : 0,
-            libraries: Array.isArray(object?.libraries) ? object.libraries.map((e: any) => String(e)) : [],
-            optimizeForDebug: isSet(object.optimizeForDebug) ? Boolean(object.optimizeForDebug) : false,
+            libraries: Array.isArray(object?.libraries)
+                ? object.libraries.map((e: any) => String(e))
+                : [],
+            optimizeForDebug: isSet(object.optimizeForDebug)
+                ? Boolean(object.optimizeForDebug)
+                : false,
             exportDir: isSet(object.exportDir) ? String(object.exportDir) : '',
             clean: isSet(object.clean) ? Boolean(object.clean) : false,
-            createCompilationDatabaseOnly: isSet(object.createCompilationDatabaseOnly)
+            createCompilationDatabaseOnly: isSet(
+                object.createCompilationDatabaseOnly
+            )
                 ? Boolean(object.createCompilationDatabaseOnly)
                 : false,
             sourceOverride: isObject(object.sourceOverride)
-                ? Object.entries(object.sourceOverride).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+                ? Object.entries(object.sourceOverride).reduce<{
+                      [key: string]: string;
+                  }>((acc, [key, value]) => {
                       acc[key] = String(value);
                       return acc;
                   }, {})
                 : {},
-            exportBinaries: isSet(object.exportBinaries) ? Boolean(object.exportBinaries) : undefined,
-            library: Array.isArray(object?.library) ? object.library.map((e: any) => String(e)) : [],
-            keysKeychain: isSet(object.keysKeychain) ? String(object.keysKeychain) : '',
+            exportBinaries: isSet(object.exportBinaries)
+                ? Boolean(object.exportBinaries)
+                : undefined,
+            library: Array.isArray(object?.library)
+                ? object.library.map((e: any) => String(e))
+                : [],
+            keysKeychain: isSet(object.keysKeychain)
+                ? String(object.keysKeychain)
+                : '',
             signKey: isSet(object.signKey) ? String(object.signKey) : '',
-            encryptKey: isSet(object.encryptKey) ? String(object.encryptKey) : '',
+            encryptKey: isSet(object.encryptKey)
+                ? String(object.encryptKey)
+                : '',
             skipLibrariesDiscovery: isSet(object.skipLibrariesDiscovery)
                 ? Boolean(object.skipLibrariesDiscovery)
                 : false,
@@ -378,12 +423,18 @@ export const CompileRequest = {
     toJSON(message: CompileRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
-        message.sketchPath !== undefined && (obj.sketchPath = message.sketchPath);
-        message.showProperties !== undefined && (obj.showProperties = message.showProperties);
-        message.preprocess !== undefined && (obj.preprocess = message.preprocess);
-        message.buildCachePath !== undefined && (obj.buildCachePath = message.buildCachePath);
+        message.sketchPath !== undefined &&
+            (obj.sketchPath = message.sketchPath);
+        message.showProperties !== undefined &&
+            (obj.showProperties = message.showProperties);
+        message.preprocess !== undefined &&
+            (obj.preprocess = message.preprocess);
+        message.buildCachePath !== undefined &&
+            (obj.buildCachePath = message.buildCachePath);
         message.buildPath !== undefined && (obj.buildPath = message.buildPath);
         if (message.buildProperties) {
             obj.buildProperties = message.buildProperties.map((e) => e);
@@ -400,27 +451,33 @@ export const CompileRequest = {
         } else {
             obj.libraries = [];
         }
-        message.optimizeForDebug !== undefined && (obj.optimizeForDebug = message.optimizeForDebug);
+        message.optimizeForDebug !== undefined &&
+            (obj.optimizeForDebug = message.optimizeForDebug);
         message.exportDir !== undefined && (obj.exportDir = message.exportDir);
         message.clean !== undefined && (obj.clean = message.clean);
         message.createCompilationDatabaseOnly !== undefined &&
-            (obj.createCompilationDatabaseOnly = message.createCompilationDatabaseOnly);
+            (obj.createCompilationDatabaseOnly =
+                message.createCompilationDatabaseOnly);
         obj.sourceOverride = {};
         if (message.sourceOverride) {
             Object.entries(message.sourceOverride).forEach(([k, v]) => {
                 obj.sourceOverride[k] = v;
             });
         }
-        message.exportBinaries !== undefined && (obj.exportBinaries = message.exportBinaries);
+        message.exportBinaries !== undefined &&
+            (obj.exportBinaries = message.exportBinaries);
         if (message.library) {
             obj.library = message.library.map((e) => e);
         } else {
             obj.library = [];
         }
-        message.keysKeychain !== undefined && (obj.keysKeychain = message.keysKeychain);
+        message.keysKeychain !== undefined &&
+            (obj.keysKeychain = message.keysKeychain);
         message.signKey !== undefined && (obj.signKey = message.signKey);
-        message.encryptKey !== undefined && (obj.encryptKey = message.encryptKey);
-        message.skipLibrariesDiscovery !== undefined && (obj.skipLibrariesDiscovery = message.skipLibrariesDiscovery);
+        message.encryptKey !== undefined &&
+            (obj.encryptKey = message.encryptKey);
+        message.skipLibrariesDiscovery !== undefined &&
+            (obj.skipLibrariesDiscovery = message.skipLibrariesDiscovery);
         return obj;
     },
 
@@ -446,16 +503,16 @@ export const CompileRequest = {
         message.optimizeForDebug = object.optimizeForDebug ?? false;
         message.exportDir = object.exportDir ?? '';
         message.clean = object.clean ?? false;
-        message.createCompilationDatabaseOnly = object.createCompilationDatabaseOnly ?? false;
-        message.sourceOverride = Object.entries(object.sourceOverride ?? {}).reduce<{ [key: string]: string }>(
-            (acc, [key, value]) => {
-                if (value !== undefined) {
-                    acc[key] = String(value);
-                }
-                return acc;
-            },
-            {}
-        );
+        message.createCompilationDatabaseOnly =
+            object.createCompilationDatabaseOnly ?? false;
+        message.sourceOverride = Object.entries(
+            object.sourceOverride ?? {}
+        ).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+            if (value !== undefined) {
+                acc[key] = String(value);
+            }
+            return acc;
+        }, {});
         message.exportBinaries = object.exportBinaries ?? undefined;
         message.library = object.library?.map((e) => e) || [];
         message.keysKeychain = object.keysKeychain ?? '';
@@ -471,7 +528,10 @@ function createBaseCompileRequest_SourceOverrideEntry(): CompileRequest_SourceOv
 }
 
 export const CompileRequest_SourceOverrideEntry = {
-    encode(message: CompileRequest_SourceOverrideEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: CompileRequest_SourceOverrideEntry,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.key !== '') {
             writer.uint32(10).string(message.key);
         }
@@ -481,8 +541,12 @@ export const CompileRequest_SourceOverrideEntry = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): CompileRequest_SourceOverrideEntry {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): CompileRequest_SourceOverrideEntry {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseCompileRequest_SourceOverrideEntry();
         while (reader.pos < end) {
@@ -516,7 +580,9 @@ export const CompileRequest_SourceOverrideEntry = {
         return obj;
     },
 
-    fromPartial(object: DeepPartial<CompileRequest_SourceOverrideEntry>): CompileRequest_SourceOverrideEntry {
+    fromPartial(
+        object: DeepPartial<CompileRequest_SourceOverrideEntry>
+    ): CompileRequest_SourceOverrideEntry {
         const message = createBaseCompileRequest_SourceOverrideEntry();
         message.key = object.key ?? '';
         message.value = object.value ?? '';
@@ -538,7 +604,10 @@ function createBaseCompileResponse(): CompileResponse {
 }
 
 export const CompileResponse = {
-    encode(message: CompileResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: CompileResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.outStream.length !== 0) {
             writer.uint32(10).bytes(message.outStream);
         }
@@ -555,19 +624,29 @@ export const CompileResponse = {
             ExecutableSectionSize.encode(v!, writer.uint32(42).fork()).ldelim();
         }
         if (message.boardPlatform !== undefined) {
-            InstalledPlatformReference.encode(message.boardPlatform, writer.uint32(50).fork()).ldelim();
+            InstalledPlatformReference.encode(
+                message.boardPlatform,
+                writer.uint32(50).fork()
+            ).ldelim();
         }
         if (message.buildPlatform !== undefined) {
-            InstalledPlatformReference.encode(message.buildPlatform, writer.uint32(58).fork()).ldelim();
+            InstalledPlatformReference.encode(
+                message.buildPlatform,
+                writer.uint32(58).fork()
+            ).ldelim();
         }
         if (message.progress !== undefined) {
-            TaskProgress.encode(message.progress, writer.uint32(66).fork()).ldelim();
+            TaskProgress.encode(
+                message.progress,
+                writer.uint32(66).fork()
+            ).ldelim();
         }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): CompileResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseCompileResponse();
         while (reader.pos < end) {
@@ -583,19 +662,32 @@ export const CompileResponse = {
                     message.buildPath = reader.string();
                     break;
                 case 4:
-                    message.usedLibraries.push(Library.decode(reader, reader.uint32()));
+                    message.usedLibraries.push(
+                        Library.decode(reader, reader.uint32())
+                    );
                     break;
                 case 5:
-                    message.executableSectionsSize.push(ExecutableSectionSize.decode(reader, reader.uint32()));
+                    message.executableSectionsSize.push(
+                        ExecutableSectionSize.decode(reader, reader.uint32())
+                    );
                     break;
                 case 6:
-                    message.boardPlatform = InstalledPlatformReference.decode(reader, reader.uint32());
+                    message.boardPlatform = InstalledPlatformReference.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 case 7:
-                    message.buildPlatform = InstalledPlatformReference.decode(reader, reader.uint32());
+                    message.buildPlatform = InstalledPlatformReference.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 case 8:
-                    message.progress = TaskProgress.decode(reader, reader.uint32());
+                    message.progress = TaskProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -607,14 +699,22 @@ export const CompileResponse = {
 
     fromJSON(object: any): CompileResponse {
         return {
-            outStream: isSet(object.outStream) ? bytesFromBase64(object.outStream) : new Uint8Array(),
-            errStream: isSet(object.errStream) ? bytesFromBase64(object.errStream) : new Uint8Array(),
+            outStream: isSet(object.outStream)
+                ? bytesFromBase64(object.outStream)
+                : new Uint8Array(),
+            errStream: isSet(object.errStream)
+                ? bytesFromBase64(object.errStream)
+                : new Uint8Array(),
             buildPath: isSet(object.buildPath) ? String(object.buildPath) : '',
             usedLibraries: Array.isArray(object?.usedLibraries)
                 ? object.usedLibraries.map((e: any) => Library.fromJSON(e))
                 : [],
-            executableSectionsSize: Array.isArray(object?.executableSectionsSize)
-                ? object.executableSectionsSize.map((e: any) => ExecutableSectionSize.fromJSON(e))
+            executableSectionsSize: Array.isArray(
+                object?.executableSectionsSize
+            )
+                ? object.executableSectionsSize.map((e: any) =>
+                      ExecutableSectionSize.fromJSON(e)
+                  )
                 : [],
             boardPlatform: isSet(object.boardPlatform)
                 ? InstalledPlatformReference.fromJSON(object.boardPlatform)
@@ -622,25 +722,37 @@ export const CompileResponse = {
             buildPlatform: isSet(object.buildPlatform)
                 ? InstalledPlatformReference.fromJSON(object.buildPlatform)
                 : undefined,
-            progress: isSet(object.progress) ? TaskProgress.fromJSON(object.progress) : undefined,
+            progress: isSet(object.progress)
+                ? TaskProgress.fromJSON(object.progress)
+                : undefined,
         };
     },
 
     toJSON(message: CompileResponse): unknown {
         const obj: any = {};
         message.outStream !== undefined &&
-            (obj.outStream = base64FromBytes(message.outStream !== undefined ? message.outStream : new Uint8Array()));
+            (obj.outStream = base64FromBytes(
+                message.outStream !== undefined
+                    ? message.outStream
+                    : new Uint8Array()
+            ));
         message.errStream !== undefined &&
-            (obj.errStream = base64FromBytes(message.errStream !== undefined ? message.errStream : new Uint8Array()));
+            (obj.errStream = base64FromBytes(
+                message.errStream !== undefined
+                    ? message.errStream
+                    : new Uint8Array()
+            ));
         message.buildPath !== undefined && (obj.buildPath = message.buildPath);
         if (message.usedLibraries) {
-            obj.usedLibraries = message.usedLibraries.map((e) => (e ? Library.toJSON(e) : undefined));
+            obj.usedLibraries = message.usedLibraries.map((e) =>
+                e ? Library.toJSON(e) : undefined
+            );
         } else {
             obj.usedLibraries = [];
         }
         if (message.executableSectionsSize) {
-            obj.executableSectionsSize = message.executableSectionsSize.map((e) =>
-                e ? ExecutableSectionSize.toJSON(e) : undefined
+            obj.executableSectionsSize = message.executableSectionsSize.map(
+                (e) => (e ? ExecutableSectionSize.toJSON(e) : undefined)
             );
         } else {
             obj.executableSectionsSize = [];
@@ -654,7 +766,9 @@ export const CompileResponse = {
                 ? InstalledPlatformReference.toJSON(message.buildPlatform)
                 : undefined);
         message.progress !== undefined &&
-            (obj.progress = message.progress ? TaskProgress.toJSON(message.progress) : undefined);
+            (obj.progress = message.progress
+                ? TaskProgress.toJSON(message.progress)
+                : undefined);
         return obj;
     },
 
@@ -663,9 +777,12 @@ export const CompileResponse = {
         message.outStream = object.outStream ?? new Uint8Array();
         message.errStream = object.errStream ?? new Uint8Array();
         message.buildPath = object.buildPath ?? '';
-        message.usedLibraries = object.usedLibraries?.map((e) => Library.fromPartial(e)) || [];
+        message.usedLibraries =
+            object.usedLibraries?.map((e) => Library.fromPartial(e)) || [];
         message.executableSectionsSize =
-            object.executableSectionsSize?.map((e) => ExecutableSectionSize.fromPartial(e)) || [];
+            object.executableSectionsSize?.map((e) =>
+                ExecutableSectionSize.fromPartial(e)
+            ) || [];
         message.boardPlatform =
             object.boardPlatform !== undefined && object.boardPlatform !== null
                 ? InstalledPlatformReference.fromPartial(object.boardPlatform)
@@ -687,7 +804,10 @@ function createBaseExecutableSectionSize(): ExecutableSectionSize {
 }
 
 export const ExecutableSectionSize = {
-    encode(message: ExecutableSectionSize, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: ExecutableSectionSize,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.name !== '') {
             writer.uint32(10).string(message.name);
         }
@@ -700,8 +820,12 @@ export const ExecutableSectionSize = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): ExecutableSectionSize {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): ExecutableSectionSize {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseExecutableSectionSize();
         while (reader.pos < end) {
@@ -736,11 +860,14 @@ export const ExecutableSectionSize = {
         const obj: any = {};
         message.name !== undefined && (obj.name = message.name);
         message.size !== undefined && (obj.size = Math.round(message.size));
-        message.maxSize !== undefined && (obj.maxSize = Math.round(message.maxSize));
+        message.maxSize !== undefined &&
+            (obj.maxSize = Math.round(message.maxSize));
         return obj;
     },
 
-    fromPartial(object: DeepPartial<ExecutableSectionSize>): ExecutableSectionSize {
+    fromPartial(
+        object: DeepPartial<ExecutableSectionSize>
+    ): ExecutableSectionSize {
         const message = createBaseExecutableSectionSize();
         message.name = object.name ?? '';
         message.size = object.size ?? 0;
@@ -793,7 +920,14 @@ function base64FromBytes(arr: Uint8Array): string {
     }
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+    | Date
+    | Function
+    | Uint8Array
+    | string
+    | number
+    | boolean
+    | undefined;
 
 export type DeepPartial<T> = T extends Builtin
     ? T
@@ -802,14 +936,18 @@ export type DeepPartial<T> = T extends Builtin
     : T extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
     : T extends { $case: string }
-    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & { $case: T['$case'] }
+    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & {
+          $case: T['$case'];
+      }
     : T extends {}
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;
 
 function longToNumber(long: Long): number {
     if (long.gt(Number.MAX_SAFE_INTEGER)) {
-        throw new globalThis.Error('Value is larger than Number.MAX_SAFE_INTEGER');
+        throw new globalThis.Error(
+            'Value is larger than Number.MAX_SAFE_INTEGER'
+        );
     }
     return long.toNumber();
 }

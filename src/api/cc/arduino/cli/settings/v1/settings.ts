@@ -51,7 +51,10 @@ function createBaseGetAllResponse(): GetAllResponse {
 }
 
 export const GetAllResponse = {
-    encode(message: GetAllResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: GetAllResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.jsonData !== '') {
             writer.uint32(10).string(message.jsonData);
         }
@@ -59,7 +62,8 @@ export const GetAllResponse = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): GetAllResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseGetAllResponse();
         while (reader.pos < end) {
@@ -77,7 +81,9 @@ export const GetAllResponse = {
     },
 
     fromJSON(object: any): GetAllResponse {
-        return { jsonData: isSet(object.jsonData) ? String(object.jsonData) : '' };
+        return {
+            jsonData: isSet(object.jsonData) ? String(object.jsonData) : '',
+        };
     },
 
     toJSON(message: GetAllResponse): unknown {
@@ -98,7 +104,10 @@ function createBaseMergeRequest(): MergeRequest {
 }
 
 export const MergeRequest = {
-    encode(message: MergeRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: MergeRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.jsonData !== '') {
             writer.uint32(10).string(message.jsonData);
         }
@@ -106,7 +115,8 @@ export const MergeRequest = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): MergeRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseMergeRequest();
         while (reader.pos < end) {
@@ -124,7 +134,9 @@ export const MergeRequest = {
     },
 
     fromJSON(object: any): MergeRequest {
-        return { jsonData: isSet(object.jsonData) ? String(object.jsonData) : '' };
+        return {
+            jsonData: isSet(object.jsonData) ? String(object.jsonData) : '',
+        };
     },
 
     toJSON(message: MergeRequest): unknown {
@@ -145,7 +157,10 @@ function createBaseGetValueResponse(): GetValueResponse {
 }
 
 export const GetValueResponse = {
-    encode(message: GetValueResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: GetValueResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.key !== '') {
             writer.uint32(10).string(message.key);
         }
@@ -156,7 +171,8 @@ export const GetValueResponse = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): GetValueResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseGetValueResponse();
         while (reader.pos < end) {
@@ -203,7 +219,10 @@ function createBaseSetValueRequest(): SetValueRequest {
 }
 
 export const SetValueRequest = {
-    encode(message: SetValueRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: SetValueRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.key !== '') {
             writer.uint32(10).string(message.key);
         }
@@ -214,7 +233,8 @@ export const SetValueRequest = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): SetValueRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseSetValueRequest();
         while (reader.pos < end) {
@@ -261,12 +281,16 @@ function createBaseGetAllRequest(): GetAllRequest {
 }
 
 export const GetAllRequest = {
-    encode(_: GetAllRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        _: GetAllRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): GetAllRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseGetAllRequest();
         while (reader.pos < end) {
@@ -300,7 +324,10 @@ function createBaseGetValueRequest(): GetValueRequest {
 }
 
 export const GetValueRequest = {
-    encode(message: GetValueRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: GetValueRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.key !== '') {
             writer.uint32(10).string(message.key);
         }
@@ -308,7 +335,8 @@ export const GetValueRequest = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): GetValueRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseGetValueRequest();
         while (reader.pos < end) {
@@ -347,12 +375,16 @@ function createBaseMergeResponse(): MergeResponse {
 }
 
 export const MergeResponse = {
-    encode(_: MergeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        _: MergeResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): MergeResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseMergeResponse();
         while (reader.pos < end) {
@@ -386,12 +418,16 @@ function createBaseSetValueResponse(): SetValueResponse {
 }
 
 export const SetValueResponse = {
-    encode(_: SetValueResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        _: SetValueResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): SetValueResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseSetValueResponse();
         while (reader.pos < end) {
@@ -425,7 +461,10 @@ function createBaseWriteRequest(): WriteRequest {
 }
 
 export const WriteRequest = {
-    encode(message: WriteRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: WriteRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.filePath !== '') {
             writer.uint32(10).string(message.filePath);
         }
@@ -433,7 +472,8 @@ export const WriteRequest = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): WriteRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseWriteRequest();
         while (reader.pos < end) {
@@ -451,7 +491,9 @@ export const WriteRequest = {
     },
 
     fromJSON(object: any): WriteRequest {
-        return { filePath: isSet(object.filePath) ? String(object.filePath) : '' };
+        return {
+            filePath: isSet(object.filePath) ? String(object.filePath) : '',
+        };
     },
 
     toJSON(message: WriteRequest): unknown {
@@ -472,12 +514,16 @@ function createBaseWriteResponse(): WriteResponse {
 }
 
 export const WriteResponse = {
-    encode(_: WriteResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        _: WriteResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): WriteResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseWriteResponse();
         while (reader.pos < end) {
@@ -565,31 +611,68 @@ export const SettingsServiceDefinition = {
 
 export interface SettingsServiceServiceImplementation<CallContextExt = {}> {
     /** List all the settings. */
-    getAll(request: GetAllRequest, context: CallContext & CallContextExt): Promise<DeepPartial<GetAllResponse>>;
+    getAll(
+        request: GetAllRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<GetAllResponse>>;
     /** Set multiple settings values at once. */
-    merge(request: MergeRequest, context: CallContext & CallContextExt): Promise<DeepPartial<MergeResponse>>;
+    merge(
+        request: MergeRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<MergeResponse>>;
     /** Get the value of a specific setting. */
-    getValue(request: GetValueRequest, context: CallContext & CallContextExt): Promise<DeepPartial<GetValueResponse>>;
+    getValue(
+        request: GetValueRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<GetValueResponse>>;
     /** Set the value of a specific setting. */
-    setValue(request: SetValueRequest, context: CallContext & CallContextExt): Promise<DeepPartial<SetValueResponse>>;
+    setValue(
+        request: SetValueRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<SetValueResponse>>;
     /** Writes to file settings currently stored in memory */
-    write(request: WriteRequest, context: CallContext & CallContextExt): Promise<DeepPartial<WriteResponse>>;
+    write(
+        request: WriteRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<WriteResponse>>;
 }
 
 export interface SettingsServiceClient<CallOptionsExt = {}> {
     /** List all the settings. */
-    getAll(request: DeepPartial<GetAllRequest>, options?: CallOptions & CallOptionsExt): Promise<GetAllResponse>;
+    getAll(
+        request: DeepPartial<GetAllRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<GetAllResponse>;
     /** Set multiple settings values at once. */
-    merge(request: DeepPartial<MergeRequest>, options?: CallOptions & CallOptionsExt): Promise<MergeResponse>;
+    merge(
+        request: DeepPartial<MergeRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<MergeResponse>;
     /** Get the value of a specific setting. */
-    getValue(request: DeepPartial<GetValueRequest>, options?: CallOptions & CallOptionsExt): Promise<GetValueResponse>;
+    getValue(
+        request: DeepPartial<GetValueRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<GetValueResponse>;
     /** Set the value of a specific setting. */
-    setValue(request: DeepPartial<SetValueRequest>, options?: CallOptions & CallOptionsExt): Promise<SetValueResponse>;
+    setValue(
+        request: DeepPartial<SetValueRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<SetValueResponse>;
     /** Writes to file settings currently stored in memory */
-    write(request: DeepPartial<WriteRequest>, options?: CallOptions & CallOptionsExt): Promise<WriteResponse>;
+    write(
+        request: DeepPartial<WriteRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<WriteResponse>;
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+    | Date
+    | Function
+    | Uint8Array
+    | string
+    | number
+    | boolean
+    | undefined;
 
 export type DeepPartial<T> = T extends Builtin
     ? T
@@ -598,7 +681,9 @@ export type DeepPartial<T> = T extends Builtin
     : T extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
     : T extends { $case: string }
-    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & { $case: T['$case'] }
+    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & {
+          $case: T['$case'];
+      }
     : T extends {}
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;

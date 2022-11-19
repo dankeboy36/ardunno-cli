@@ -38,7 +38,10 @@ function createBaseStatus(): Status {
 }
 
 export const Status = {
-    encode(message: Status, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: Status,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.code !== 0) {
             writer.uint32(8).int32(message.code);
         }
@@ -52,7 +55,8 @@ export const Status = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Status {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseStatus();
         while (reader.pos < end) {
@@ -79,7 +83,9 @@ export const Status = {
         return {
             code: isSet(object.code) ? Number(object.code) : 0,
             message: isSet(object.message) ? String(object.message) : '',
-            details: Array.isArray(object?.details) ? object.details.map((e: any) => Any.fromJSON(e)) : [],
+            details: Array.isArray(object?.details)
+                ? object.details.map((e: any) => Any.fromJSON(e))
+                : [],
         };
     },
 
@@ -88,7 +94,9 @@ export const Status = {
         message.code !== undefined && (obj.code = Math.round(message.code));
         message.message !== undefined && (obj.message = message.message);
         if (message.details) {
-            obj.details = message.details.map((e) => (e ? Any.toJSON(e) : undefined));
+            obj.details = message.details.map((e) =>
+                e ? Any.toJSON(e) : undefined
+            );
         } else {
             obj.details = [];
         }
@@ -104,7 +112,14 @@ export const Status = {
     },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+    | Date
+    | Function
+    | Uint8Array
+    | string
+    | number
+    | boolean
+    | undefined;
 
 export type DeepPartial<T> = T extends Builtin
     ? T
@@ -113,7 +128,9 @@ export type DeepPartial<T> = T extends Builtin
     : T extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
     : T extends { $case: string }
-    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & { $case: T['$case'] }
+    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & {
+          $case: T['$case'];
+      }
     : T extends {}
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;

@@ -129,7 +129,10 @@ function createBaseInstance(): Instance {
 }
 
 export const Instance = {
-    encode(message: Instance, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: Instance,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.id !== 0) {
             writer.uint32(8).int32(message.id);
         }
@@ -137,7 +140,8 @@ export const Instance = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Instance {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseInstance();
         while (reader.pos < end) {
@@ -176,37 +180,65 @@ function createBaseDownloadProgress(): DownloadProgress {
 }
 
 export const DownloadProgress = {
-    encode(message: DownloadProgress, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: DownloadProgress,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.message?.$case === 'start') {
-            DownloadProgressStart.encode(message.message.start, writer.uint32(10).fork()).ldelim();
+            DownloadProgressStart.encode(
+                message.message.start,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.message?.$case === 'update') {
-            DownloadProgressUpdate.encode(message.message.update, writer.uint32(18).fork()).ldelim();
+            DownloadProgressUpdate.encode(
+                message.message.update,
+                writer.uint32(18).fork()
+            ).ldelim();
         }
         if (message.message?.$case === 'end') {
-            DownloadProgressEnd.encode(message.message.end, writer.uint32(26).fork()).ldelim();
+            DownloadProgressEnd.encode(
+                message.message.end,
+                writer.uint32(26).fork()
+            ).ldelim();
         }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): DownloadProgress {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDownloadProgress();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.message = { $case: 'start', start: DownloadProgressStart.decode(reader, reader.uint32()) };
+                    message.message = {
+                        $case: 'start',
+                        start: DownloadProgressStart.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     break;
                 case 2:
                     message.message = {
                         $case: 'update',
-                        update: DownloadProgressUpdate.decode(reader, reader.uint32()),
+                        update: DownloadProgressUpdate.decode(
+                            reader,
+                            reader.uint32()
+                        ),
                     };
                     break;
                 case 3:
-                    message.message = { $case: 'end', end: DownloadProgressEnd.decode(reader, reader.uint32()) };
+                    message.message = {
+                        $case: 'end',
+                        end: DownloadProgressEnd.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -219,11 +251,20 @@ export const DownloadProgress = {
     fromJSON(object: any): DownloadProgress {
         return {
             message: isSet(object.start)
-                ? { $case: 'start', start: DownloadProgressStart.fromJSON(object.start) }
+                ? {
+                      $case: 'start',
+                      start: DownloadProgressStart.fromJSON(object.start),
+                  }
                 : isSet(object.update)
-                ? { $case: 'update', update: DownloadProgressUpdate.fromJSON(object.update) }
+                ? {
+                      $case: 'update',
+                      update: DownloadProgressUpdate.fromJSON(object.update),
+                  }
                 : isSet(object.end)
-                ? { $case: 'end', end: DownloadProgressEnd.fromJSON(object.end) }
+                ? {
+                      $case: 'end',
+                      end: DownloadProgressEnd.fromJSON(object.end),
+                  }
                 : undefined,
         };
     },
@@ -231,11 +272,17 @@ export const DownloadProgress = {
     toJSON(message: DownloadProgress): unknown {
         const obj: any = {};
         message.message?.$case === 'start' &&
-            (obj.start = message.message?.start ? DownloadProgressStart.toJSON(message.message?.start) : undefined);
+            (obj.start = message.message?.start
+                ? DownloadProgressStart.toJSON(message.message?.start)
+                : undefined);
         message.message?.$case === 'update' &&
-            (obj.update = message.message?.update ? DownloadProgressUpdate.toJSON(message.message?.update) : undefined);
+            (obj.update = message.message?.update
+                ? DownloadProgressUpdate.toJSON(message.message?.update)
+                : undefined);
         message.message?.$case === 'end' &&
-            (obj.end = message.message?.end ? DownloadProgressEnd.toJSON(message.message?.end) : undefined);
+            (obj.end = message.message?.end
+                ? DownloadProgressEnd.toJSON(message.message?.end)
+                : undefined);
         return obj;
     },
 
@@ -246,17 +293,32 @@ export const DownloadProgress = {
             object.message?.start !== undefined &&
             object.message?.start !== null
         ) {
-            message.message = { $case: 'start', start: DownloadProgressStart.fromPartial(object.message.start) };
+            message.message = {
+                $case: 'start',
+                start: DownloadProgressStart.fromPartial(object.message.start),
+            };
         }
         if (
             object.message?.$case === 'update' &&
             object.message?.update !== undefined &&
             object.message?.update !== null
         ) {
-            message.message = { $case: 'update', update: DownloadProgressUpdate.fromPartial(object.message.update) };
+            message.message = {
+                $case: 'update',
+                update: DownloadProgressUpdate.fromPartial(
+                    object.message.update
+                ),
+            };
         }
-        if (object.message?.$case === 'end' && object.message?.end !== undefined && object.message?.end !== null) {
-            message.message = { $case: 'end', end: DownloadProgressEnd.fromPartial(object.message.end) };
+        if (
+            object.message?.$case === 'end' &&
+            object.message?.end !== undefined &&
+            object.message?.end !== null
+        ) {
+            message.message = {
+                $case: 'end',
+                end: DownloadProgressEnd.fromPartial(object.message.end),
+            };
         }
         return message;
     },
@@ -267,7 +329,10 @@ function createBaseDownloadProgressStart(): DownloadProgressStart {
 }
 
 export const DownloadProgressStart = {
-    encode(message: DownloadProgressStart, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: DownloadProgressStart,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.url !== '') {
             writer.uint32(10).string(message.url);
         }
@@ -277,8 +342,12 @@ export const DownloadProgressStart = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): DownloadProgressStart {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): DownloadProgressStart {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDownloadProgressStart();
         while (reader.pos < end) {
@@ -312,7 +381,9 @@ export const DownloadProgressStart = {
         return obj;
     },
 
-    fromPartial(object: DeepPartial<DownloadProgressStart>): DownloadProgressStart {
+    fromPartial(
+        object: DeepPartial<DownloadProgressStart>
+    ): DownloadProgressStart {
         const message = createBaseDownloadProgressStart();
         message.url = object.url ?? '';
         message.label = object.label ?? '';
@@ -325,7 +396,10 @@ function createBaseDownloadProgressUpdate(): DownloadProgressUpdate {
 }
 
 export const DownloadProgressUpdate = {
-    encode(message: DownloadProgressUpdate, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: DownloadProgressUpdate,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.downloaded !== 0) {
             writer.uint32(8).int64(message.downloaded);
         }
@@ -335,8 +409,12 @@ export const DownloadProgressUpdate = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): DownloadProgressUpdate {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): DownloadProgressUpdate {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDownloadProgressUpdate();
         while (reader.pos < end) {
@@ -358,19 +436,25 @@ export const DownloadProgressUpdate = {
 
     fromJSON(object: any): DownloadProgressUpdate {
         return {
-            downloaded: isSet(object.downloaded) ? Number(object.downloaded) : 0,
+            downloaded: isSet(object.downloaded)
+                ? Number(object.downloaded)
+                : 0,
             totalSize: isSet(object.totalSize) ? Number(object.totalSize) : 0,
         };
     },
 
     toJSON(message: DownloadProgressUpdate): unknown {
         const obj: any = {};
-        message.downloaded !== undefined && (obj.downloaded = Math.round(message.downloaded));
-        message.totalSize !== undefined && (obj.totalSize = Math.round(message.totalSize));
+        message.downloaded !== undefined &&
+            (obj.downloaded = Math.round(message.downloaded));
+        message.totalSize !== undefined &&
+            (obj.totalSize = Math.round(message.totalSize));
         return obj;
     },
 
-    fromPartial(object: DeepPartial<DownloadProgressUpdate>): DownloadProgressUpdate {
+    fromPartial(
+        object: DeepPartial<DownloadProgressUpdate>
+    ): DownloadProgressUpdate {
         const message = createBaseDownloadProgressUpdate();
         message.downloaded = object.downloaded ?? 0;
         message.totalSize = object.totalSize ?? 0;
@@ -383,7 +467,10 @@ function createBaseDownloadProgressEnd(): DownloadProgressEnd {
 }
 
 export const DownloadProgressEnd = {
-    encode(message: DownloadProgressEnd, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: DownloadProgressEnd,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.success === true) {
             writer.uint32(8).bool(message.success);
         }
@@ -393,8 +480,12 @@ export const DownloadProgressEnd = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): DownloadProgressEnd {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): DownloadProgressEnd {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDownloadProgressEnd();
         while (reader.pos < end) {
@@ -441,7 +532,10 @@ function createBaseTaskProgress(): TaskProgress {
 }
 
 export const TaskProgress = {
-    encode(message: TaskProgress, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: TaskProgress,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.name !== '') {
             writer.uint32(10).string(message.name);
         }
@@ -458,7 +552,8 @@ export const TaskProgress = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): TaskProgress {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseTaskProgress();
         while (reader.pos < end) {
@@ -488,7 +583,9 @@ export const TaskProgress = {
         return {
             name: isSet(object.name) ? String(object.name) : '',
             message: isSet(object.message) ? String(object.message) : '',
-            completed: isSet(object.completed) ? Boolean(object.completed) : false,
+            completed: isSet(object.completed)
+                ? Boolean(object.completed)
+                : false,
             percent: isSet(object.percent) ? Number(object.percent) : 0,
         };
     },
@@ -517,7 +614,10 @@ function createBaseProgrammer(): Programmer {
 }
 
 export const Programmer = {
-    encode(message: Programmer, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: Programmer,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.platform !== '') {
             writer.uint32(10).string(message.platform);
         }
@@ -531,7 +631,8 @@ export const Programmer = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Programmer {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseProgrammer();
         while (reader.pos < end) {
@@ -596,7 +697,10 @@ function createBasePlatform(): Platform {
 }
 
 export const Platform = {
-    encode(message: Platform, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: Platform,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.id !== '') {
             writer.uint32(10).string(message.id);
         }
@@ -634,7 +738,8 @@ export const Platform = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Platform {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatform();
         while (reader.pos < end) {
@@ -687,13 +792,23 @@ export const Platform = {
             installed: isSet(object.installed) ? String(object.installed) : '',
             latest: isSet(object.latest) ? String(object.latest) : '',
             name: isSet(object.name) ? String(object.name) : '',
-            maintainer: isSet(object.maintainer) ? String(object.maintainer) : '',
+            maintainer: isSet(object.maintainer)
+                ? String(object.maintainer)
+                : '',
             website: isSet(object.website) ? String(object.website) : '',
             email: isSet(object.email) ? String(object.email) : '',
-            boards: Array.isArray(object?.boards) ? object.boards.map((e: any) => Board.fromJSON(e)) : [],
-            manuallyInstalled: isSet(object.manuallyInstalled) ? Boolean(object.manuallyInstalled) : false,
-            deprecated: isSet(object.deprecated) ? Boolean(object.deprecated) : false,
-            type: Array.isArray(object?.type) ? object.type.map((e: any) => String(e)) : [],
+            boards: Array.isArray(object?.boards)
+                ? object.boards.map((e: any) => Board.fromJSON(e))
+                : [],
+            manuallyInstalled: isSet(object.manuallyInstalled)
+                ? Boolean(object.manuallyInstalled)
+                : false,
+            deprecated: isSet(object.deprecated)
+                ? Boolean(object.deprecated)
+                : false,
+            type: Array.isArray(object?.type)
+                ? object.type.map((e: any) => String(e))
+                : [],
         };
     },
 
@@ -703,16 +818,21 @@ export const Platform = {
         message.installed !== undefined && (obj.installed = message.installed);
         message.latest !== undefined && (obj.latest = message.latest);
         message.name !== undefined && (obj.name = message.name);
-        message.maintainer !== undefined && (obj.maintainer = message.maintainer);
+        message.maintainer !== undefined &&
+            (obj.maintainer = message.maintainer);
         message.website !== undefined && (obj.website = message.website);
         message.email !== undefined && (obj.email = message.email);
         if (message.boards) {
-            obj.boards = message.boards.map((e) => (e ? Board.toJSON(e) : undefined));
+            obj.boards = message.boards.map((e) =>
+                e ? Board.toJSON(e) : undefined
+            );
         } else {
             obj.boards = [];
         }
-        message.manuallyInstalled !== undefined && (obj.manuallyInstalled = message.manuallyInstalled);
-        message.deprecated !== undefined && (obj.deprecated = message.deprecated);
+        message.manuallyInstalled !== undefined &&
+            (obj.manuallyInstalled = message.manuallyInstalled);
+        message.deprecated !== undefined &&
+            (obj.deprecated = message.deprecated);
         if (message.type) {
             obj.type = message.type.map((e) => e);
         } else {
@@ -743,7 +863,10 @@ function createBaseInstalledPlatformReference(): InstalledPlatformReference {
 }
 
 export const InstalledPlatformReference = {
-    encode(message: InstalledPlatformReference, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: InstalledPlatformReference,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.id !== '') {
             writer.uint32(10).string(message.id);
         }
@@ -759,8 +882,12 @@ export const InstalledPlatformReference = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): InstalledPlatformReference {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): InstalledPlatformReference {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseInstalledPlatformReference();
         while (reader.pos < end) {
@@ -790,8 +917,12 @@ export const InstalledPlatformReference = {
         return {
             id: isSet(object.id) ? String(object.id) : '',
             version: isSet(object.version) ? String(object.version) : '',
-            installDir: isSet(object.installDir) ? String(object.installDir) : '',
-            packageUrl: isSet(object.packageUrl) ? String(object.packageUrl) : '',
+            installDir: isSet(object.installDir)
+                ? String(object.installDir)
+                : '',
+            packageUrl: isSet(object.packageUrl)
+                ? String(object.packageUrl)
+                : '',
         };
     },
 
@@ -799,12 +930,16 @@ export const InstalledPlatformReference = {
         const obj: any = {};
         message.id !== undefined && (obj.id = message.id);
         message.version !== undefined && (obj.version = message.version);
-        message.installDir !== undefined && (obj.installDir = message.installDir);
-        message.packageUrl !== undefined && (obj.packageUrl = message.packageUrl);
+        message.installDir !== undefined &&
+            (obj.installDir = message.installDir);
+        message.packageUrl !== undefined &&
+            (obj.packageUrl = message.packageUrl);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<InstalledPlatformReference>): InstalledPlatformReference {
+    fromPartial(
+        object: DeepPartial<InstalledPlatformReference>
+    ): InstalledPlatformReference {
         const message = createBaseInstalledPlatformReference();
         message.id = object.id ?? '';
         message.version = object.version ?? '';
@@ -819,7 +954,10 @@ function createBaseBoard(): Board {
 }
 
 export const Board = {
-    encode(message: Board, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: Board,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.name !== '') {
             writer.uint32(10).string(message.name);
         }
@@ -830,7 +968,8 @@ export const Board = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Board {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoard();
         while (reader.pos < end) {
@@ -877,7 +1016,10 @@ function createBaseProfile(): Profile {
 }
 
 export const Profile = {
-    encode(message: Profile, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: Profile,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.name !== '') {
             writer.uint32(10).string(message.name);
         }
@@ -888,7 +1030,8 @@ export const Profile = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Profile {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseProfile();
         while (reader.pos < end) {
@@ -949,7 +1092,14 @@ var globalThis: any = (() => {
     throw 'Unable to locate global object';
 })();
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+    | Date
+    | Function
+    | Uint8Array
+    | string
+    | number
+    | boolean
+    | undefined;
 
 export type DeepPartial<T> = T extends Builtin
     ? T
@@ -958,14 +1108,18 @@ export type DeepPartial<T> = T extends Builtin
     : T extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
     : T extends { $case: string }
-    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & { $case: T['$case'] }
+    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & {
+          $case: T['$case'];
+      }
     : T extends {}
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;
 
 function longToNumber(long: Long): number {
     if (long.gt(Number.MAX_SAFE_INTEGER)) {
-        throw new globalThis.Error('Value is larger than Number.MAX_SAFE_INTEGER');
+        throw new globalThis.Error(
+            'Value is larger than Number.MAX_SAFE_INTEGER'
+        );
     }
     return long.toNumber();
 }

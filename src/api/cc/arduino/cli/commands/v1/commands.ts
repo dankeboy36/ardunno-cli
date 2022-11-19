@@ -16,7 +16,7 @@ import {
     BoardSearchRequest,
     BoardSearchResponse,
 } from './board';
-import { DownloadProgress, Instance, Platform, Profile, TaskProgress } from './common';
+import { DownloadProgress, Instance, Profile, TaskProgress } from './common';
 import { CompileRequest, CompileResponse } from './compile';
 import {
     PlatformDownloadRequest,
@@ -35,7 +35,6 @@ import {
 import {
     GitLibraryInstallRequest,
     GitLibraryInstallResponse,
-    InstalledLibrary,
     LibraryDownloadRequest,
     LibraryDownloadResponse,
     LibraryInstallRequest,
@@ -138,42 +137,6 @@ export interface UpdateLibrariesIndexResponse {
     downloadProgress: DownloadProgress | undefined;
 }
 
-export interface UpdateCoreLibrariesIndexRequest {
-    /** Arduino Core Service instance from the Init response. */
-    instance: Instance | undefined;
-}
-
-export interface UpdateCoreLibrariesIndexResponse {
-    /** Progress of the index download. */
-    downloadProgress: DownloadProgress | undefined;
-}
-
-export interface OutdatedRequest {
-    /** Arduino Core Service instance from the Init response. */
-    instance: Instance | undefined;
-}
-
-export interface OutdatedResponse {
-    /** List of installed libraries that can be updated. */
-    outdatedLibraries: InstalledLibrary[];
-    /** List of installed cores that can be updated. */
-    outdatedPlatforms: Platform[];
-}
-
-export interface UpgradeRequest {
-    /** Arduino Core Service instance from the Init response. */
-    instance: Instance | undefined;
-    /** Set to true to not run (eventual) post install scripts */
-    skipPostInstall: boolean;
-}
-
-export interface UpgradeResponse {
-    /** Progress of the downloads of the platforms and libraries files. */
-    progress: DownloadProgress | undefined;
-    /** Description of the current stage of the upgrade. */
-    taskProgress: TaskProgress | undefined;
-}
-
 export interface VersionRequest {}
 
 export interface VersionResponse {
@@ -242,12 +205,16 @@ function createBaseCreateRequest(): CreateRequest {
 }
 
 export const CreateRequest = {
-    encode(_: CreateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        _: CreateRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): CreateRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseCreateRequest();
         while (reader.pos < end) {
@@ -281,15 +248,22 @@ function createBaseCreateResponse(): CreateResponse {
 }
 
 export const CreateResponse = {
-    encode(message: CreateResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: CreateResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): CreateResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseCreateResponse();
         while (reader.pos < end) {
@@ -307,13 +281,19 @@ export const CreateResponse = {
     },
 
     fromJSON(object: any): CreateResponse {
-        return { instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined };
+        return {
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+        };
     },
 
     toJSON(message: CreateResponse): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         return obj;
     },
 
@@ -332,9 +312,15 @@ function createBaseInitRequest(): InitRequest {
 }
 
 export const InitRequest = {
-    encode(message: InitRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: InitRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.profile !== '') {
             writer.uint32(18).string(message.profile);
@@ -346,7 +332,8 @@ export const InitRequest = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): InitRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseInitRequest();
         while (reader.pos < end) {
@@ -371,18 +358,25 @@ export const InitRequest = {
 
     fromJSON(object: any): InitRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             profile: isSet(object.profile) ? String(object.profile) : '',
-            sketchPath: isSet(object.sketchPath) ? String(object.sketchPath) : '',
+            sketchPath: isSet(object.sketchPath)
+                ? String(object.sketchPath)
+                : '',
         };
     },
 
     toJSON(message: InitRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.profile !== undefined && (obj.profile = message.profile);
-        message.sketchPath !== undefined && (obj.sketchPath = message.sketchPath);
+        message.sketchPath !== undefined &&
+            (obj.sketchPath = message.sketchPath);
         return obj;
     },
 
@@ -403,21 +397,34 @@ function createBaseInitResponse(): InitResponse {
 }
 
 export const InitResponse = {
-    encode(message: InitResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: InitResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.message?.$case === 'initProgress') {
-            InitResponse_Progress.encode(message.message.initProgress, writer.uint32(10).fork()).ldelim();
+            InitResponse_Progress.encode(
+                message.message.initProgress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.message?.$case === 'error') {
-            Status.encode(message.message.error, writer.uint32(18).fork()).ldelim();
+            Status.encode(
+                message.message.error,
+                writer.uint32(18).fork()
+            ).ldelim();
         }
         if (message.message?.$case === 'profile') {
-            Profile.encode(message.message.profile, writer.uint32(26).fork()).ldelim();
+            Profile.encode(
+                message.message.profile,
+                writer.uint32(26).fork()
+            ).ldelim();
         }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): InitResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseInitResponse();
         while (reader.pos < end) {
@@ -426,14 +433,23 @@ export const InitResponse = {
                 case 1:
                     message.message = {
                         $case: 'initProgress',
-                        initProgress: InitResponse_Progress.decode(reader, reader.uint32()),
+                        initProgress: InitResponse_Progress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
                     };
                     break;
                 case 2:
-                    message.message = { $case: 'error', error: Status.decode(reader, reader.uint32()) };
+                    message.message = {
+                        $case: 'error',
+                        error: Status.decode(reader, reader.uint32()),
+                    };
                     break;
                 case 3:
-                    message.message = { $case: 'profile', profile: Profile.decode(reader, reader.uint32()) };
+                    message.message = {
+                        $case: 'profile',
+                        profile: Profile.decode(reader, reader.uint32()),
+                    };
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -446,11 +462,19 @@ export const InitResponse = {
     fromJSON(object: any): InitResponse {
         return {
             message: isSet(object.initProgress)
-                ? { $case: 'initProgress', initProgress: InitResponse_Progress.fromJSON(object.initProgress) }
+                ? {
+                      $case: 'initProgress',
+                      initProgress: InitResponse_Progress.fromJSON(
+                          object.initProgress
+                      ),
+                  }
                 : isSet(object.error)
                 ? { $case: 'error', error: Status.fromJSON(object.error) }
                 : isSet(object.profile)
-                ? { $case: 'profile', profile: Profile.fromJSON(object.profile) }
+                ? {
+                      $case: 'profile',
+                      profile: Profile.fromJSON(object.profile),
+                  }
                 : undefined,
         };
     },
@@ -462,9 +486,13 @@ export const InitResponse = {
                 ? InitResponse_Progress.toJSON(message.message?.initProgress)
                 : undefined);
         message.message?.$case === 'error' &&
-            (obj.error = message.message?.error ? Status.toJSON(message.message?.error) : undefined);
+            (obj.error = message.message?.error
+                ? Status.toJSON(message.message?.error)
+                : undefined);
         message.message?.$case === 'profile' &&
-            (obj.profile = message.message?.profile ? Profile.toJSON(message.message?.profile) : undefined);
+            (obj.profile = message.message?.profile
+                ? Profile.toJSON(message.message?.profile)
+                : undefined);
         return obj;
     },
 
@@ -477,7 +505,9 @@ export const InitResponse = {
         ) {
             message.message = {
                 $case: 'initProgress',
-                initProgress: InitResponse_Progress.fromPartial(object.message.initProgress),
+                initProgress: InitResponse_Progress.fromPartial(
+                    object.message.initProgress
+                ),
             };
         }
         if (
@@ -485,14 +515,20 @@ export const InitResponse = {
             object.message?.error !== undefined &&
             object.message?.error !== null
         ) {
-            message.message = { $case: 'error', error: Status.fromPartial(object.message.error) };
+            message.message = {
+                $case: 'error',
+                error: Status.fromPartial(object.message.error),
+            };
         }
         if (
             object.message?.$case === 'profile' &&
             object.message?.profile !== undefined &&
             object.message?.profile !== null
         ) {
-            message.message = { $case: 'profile', profile: Profile.fromPartial(object.message.profile) };
+            message.message = {
+                $case: 'profile',
+                profile: Profile.fromPartial(object.message.profile),
+            };
         }
         return message;
     },
@@ -503,28 +539,47 @@ function createBaseInitResponse_Progress(): InitResponse_Progress {
 }
 
 export const InitResponse_Progress = {
-    encode(message: InitResponse_Progress, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: InitResponse_Progress,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.downloadProgress !== undefined) {
-            DownloadProgress.encode(message.downloadProgress, writer.uint32(10).fork()).ldelim();
+            DownloadProgress.encode(
+                message.downloadProgress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.taskProgress !== undefined) {
-            TaskProgress.encode(message.taskProgress, writer.uint32(18).fork()).ldelim();
+            TaskProgress.encode(
+                message.taskProgress,
+                writer.uint32(18).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): InitResponse_Progress {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): InitResponse_Progress {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseInitResponse_Progress();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.downloadProgress = DownloadProgress.decode(reader, reader.uint32());
+                    message.downloadProgress = DownloadProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 case 2:
-                    message.taskProgress = TaskProgress.decode(reader, reader.uint32());
+                    message.taskProgress = TaskProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -539,7 +594,9 @@ export const InitResponse_Progress = {
             downloadProgress: isSet(object.downloadProgress)
                 ? DownloadProgress.fromJSON(object.downloadProgress)
                 : undefined,
-            taskProgress: isSet(object.taskProgress) ? TaskProgress.fromJSON(object.taskProgress) : undefined,
+            taskProgress: isSet(object.taskProgress)
+                ? TaskProgress.fromJSON(object.taskProgress)
+                : undefined,
         };
     },
 
@@ -550,14 +607,19 @@ export const InitResponse_Progress = {
                 ? DownloadProgress.toJSON(message.downloadProgress)
                 : undefined);
         message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress ? TaskProgress.toJSON(message.taskProgress) : undefined);
+            (obj.taskProgress = message.taskProgress
+                ? TaskProgress.toJSON(message.taskProgress)
+                : undefined);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<InitResponse_Progress>): InitResponse_Progress {
+    fromPartial(
+        object: DeepPartial<InitResponse_Progress>
+    ): InitResponse_Progress {
         const message = createBaseInitResponse_Progress();
         message.downloadProgress =
-            object.downloadProgress !== undefined && object.downloadProgress !== null
+            object.downloadProgress !== undefined &&
+            object.downloadProgress !== null
                 ? DownloadProgress.fromPartial(object.downloadProgress)
                 : undefined;
         message.taskProgress =
@@ -573,15 +635,22 @@ function createBaseDestroyRequest(): DestroyRequest {
 }
 
 export const DestroyRequest = {
-    encode(message: DestroyRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: DestroyRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): DestroyRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDestroyRequest();
         while (reader.pos < end) {
@@ -599,13 +668,19 @@ export const DestroyRequest = {
     },
 
     fromJSON(object: any): DestroyRequest {
-        return { instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined };
+        return {
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+        };
     },
 
     toJSON(message: DestroyRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         return obj;
     },
 
@@ -624,12 +699,16 @@ function createBaseDestroyResponse(): DestroyResponse {
 }
 
 export const DestroyResponse = {
-    encode(_: DestroyResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        _: DestroyResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): DestroyResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDestroyResponse();
         while (reader.pos < end) {
@@ -663,9 +742,15 @@ function createBaseUpdateIndexRequest(): UpdateIndexRequest {
 }
 
 export const UpdateIndexRequest = {
-    encode(message: UpdateIndexRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: UpdateIndexRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.ignoreCustomPackageIndexes === true) {
             writer.uint32(16).bool(message.ignoreCustomPackageIndexes);
@@ -673,8 +758,12 @@ export const UpdateIndexRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): UpdateIndexRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): UpdateIndexRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUpdateIndexRequest();
         while (reader.pos < end) {
@@ -696,7 +785,9 @@ export const UpdateIndexRequest = {
 
     fromJSON(object: any): UpdateIndexRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
             ignoreCustomPackageIndexes: isSet(object.ignoreCustomPackageIndexes)
                 ? Boolean(object.ignoreCustomPackageIndexes)
                 : false,
@@ -706,9 +797,12 @@ export const UpdateIndexRequest = {
     toJSON(message: UpdateIndexRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         message.ignoreCustomPackageIndexes !== undefined &&
-            (obj.ignoreCustomPackageIndexes = message.ignoreCustomPackageIndexes);
+            (obj.ignoreCustomPackageIndexes =
+                message.ignoreCustomPackageIndexes);
         return obj;
     },
 
@@ -718,7 +812,8 @@ export const UpdateIndexRequest = {
             object.instance !== undefined && object.instance !== null
                 ? Instance.fromPartial(object.instance)
                 : undefined;
-        message.ignoreCustomPackageIndexes = object.ignoreCustomPackageIndexes ?? false;
+        message.ignoreCustomPackageIndexes =
+            object.ignoreCustomPackageIndexes ?? false;
         return message;
     },
 };
@@ -728,22 +823,35 @@ function createBaseUpdateIndexResponse(): UpdateIndexResponse {
 }
 
 export const UpdateIndexResponse = {
-    encode(message: UpdateIndexResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: UpdateIndexResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.downloadProgress !== undefined) {
-            DownloadProgress.encode(message.downloadProgress, writer.uint32(10).fork()).ldelim();
+            DownloadProgress.encode(
+                message.downloadProgress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): UpdateIndexResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): UpdateIndexResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUpdateIndexResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.downloadProgress = DownloadProgress.decode(reader, reader.uint32());
+                    message.downloadProgress = DownloadProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -773,7 +881,8 @@ export const UpdateIndexResponse = {
     fromPartial(object: DeepPartial<UpdateIndexResponse>): UpdateIndexResponse {
         const message = createBaseUpdateIndexResponse();
         message.downloadProgress =
-            object.downloadProgress !== undefined && object.downloadProgress !== null
+            object.downloadProgress !== undefined &&
+            object.downloadProgress !== null
                 ? DownloadProgress.fromPartial(object.downloadProgress)
                 : undefined;
         return message;
@@ -785,15 +894,25 @@ function createBaseUpdateLibrariesIndexRequest(): UpdateLibrariesIndexRequest {
 }
 
 export const UpdateLibrariesIndexRequest = {
-    encode(message: UpdateLibrariesIndexRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: UpdateLibrariesIndexRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): UpdateLibrariesIndexRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): UpdateLibrariesIndexRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUpdateLibrariesIndexRequest();
         while (reader.pos < end) {
@@ -811,17 +930,25 @@ export const UpdateLibrariesIndexRequest = {
     },
 
     fromJSON(object: any): UpdateLibrariesIndexRequest {
-        return { instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined };
+        return {
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+        };
     },
 
     toJSON(message: UpdateLibrariesIndexRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<UpdateLibrariesIndexRequest>): UpdateLibrariesIndexRequest {
+    fromPartial(
+        object: DeepPartial<UpdateLibrariesIndexRequest>
+    ): UpdateLibrariesIndexRequest {
         const message = createBaseUpdateLibrariesIndexRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
@@ -836,22 +963,35 @@ function createBaseUpdateLibrariesIndexResponse(): UpdateLibrariesIndexResponse 
 }
 
 export const UpdateLibrariesIndexResponse = {
-    encode(message: UpdateLibrariesIndexResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: UpdateLibrariesIndexResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.downloadProgress !== undefined) {
-            DownloadProgress.encode(message.downloadProgress, writer.uint32(10).fork()).ldelim();
+            DownloadProgress.encode(
+                message.downloadProgress,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): UpdateLibrariesIndexResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): UpdateLibrariesIndexResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUpdateLibrariesIndexResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
-                    message.downloadProgress = DownloadProgress.decode(reader, reader.uint32());
+                    message.downloadProgress = DownloadProgress.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -878,368 +1018,14 @@ export const UpdateLibrariesIndexResponse = {
         return obj;
     },
 
-    fromPartial(object: DeepPartial<UpdateLibrariesIndexResponse>): UpdateLibrariesIndexResponse {
+    fromPartial(
+        object: DeepPartial<UpdateLibrariesIndexResponse>
+    ): UpdateLibrariesIndexResponse {
         const message = createBaseUpdateLibrariesIndexResponse();
         message.downloadProgress =
-            object.downloadProgress !== undefined && object.downloadProgress !== null
+            object.downloadProgress !== undefined &&
+            object.downloadProgress !== null
                 ? DownloadProgress.fromPartial(object.downloadProgress)
-                : undefined;
-        return message;
-    },
-};
-
-function createBaseUpdateCoreLibrariesIndexRequest(): UpdateCoreLibrariesIndexRequest {
-    return { instance: undefined };
-}
-
-export const UpdateCoreLibrariesIndexRequest = {
-    encode(message: UpdateCoreLibrariesIndexRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-        if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
-        }
-        return writer;
-    },
-
-    decode(input: _m0.Reader | Uint8Array, length?: number): UpdateCoreLibrariesIndexRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseUpdateCoreLibrariesIndexRequest();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.instance = Instance.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-
-    fromJSON(object: any): UpdateCoreLibrariesIndexRequest {
-        return { instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined };
-    },
-
-    toJSON(message: UpdateCoreLibrariesIndexRequest): unknown {
-        const obj: any = {};
-        message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
-        return obj;
-    },
-
-    fromPartial(object: DeepPartial<UpdateCoreLibrariesIndexRequest>): UpdateCoreLibrariesIndexRequest {
-        const message = createBaseUpdateCoreLibrariesIndexRequest();
-        message.instance =
-            object.instance !== undefined && object.instance !== null
-                ? Instance.fromPartial(object.instance)
-                : undefined;
-        return message;
-    },
-};
-
-function createBaseUpdateCoreLibrariesIndexResponse(): UpdateCoreLibrariesIndexResponse {
-    return { downloadProgress: undefined };
-}
-
-export const UpdateCoreLibrariesIndexResponse = {
-    encode(message: UpdateCoreLibrariesIndexResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-        if (message.downloadProgress !== undefined) {
-            DownloadProgress.encode(message.downloadProgress, writer.uint32(10).fork()).ldelim();
-        }
-        return writer;
-    },
-
-    decode(input: _m0.Reader | Uint8Array, length?: number): UpdateCoreLibrariesIndexResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseUpdateCoreLibrariesIndexResponse();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.downloadProgress = DownloadProgress.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-
-    fromJSON(object: any): UpdateCoreLibrariesIndexResponse {
-        return {
-            downloadProgress: isSet(object.downloadProgress)
-                ? DownloadProgress.fromJSON(object.downloadProgress)
-                : undefined,
-        };
-    },
-
-    toJSON(message: UpdateCoreLibrariesIndexResponse): unknown {
-        const obj: any = {};
-        message.downloadProgress !== undefined &&
-            (obj.downloadProgress = message.downloadProgress
-                ? DownloadProgress.toJSON(message.downloadProgress)
-                : undefined);
-        return obj;
-    },
-
-    fromPartial(object: DeepPartial<UpdateCoreLibrariesIndexResponse>): UpdateCoreLibrariesIndexResponse {
-        const message = createBaseUpdateCoreLibrariesIndexResponse();
-        message.downloadProgress =
-            object.downloadProgress !== undefined && object.downloadProgress !== null
-                ? DownloadProgress.fromPartial(object.downloadProgress)
-                : undefined;
-        return message;
-    },
-};
-
-function createBaseOutdatedRequest(): OutdatedRequest {
-    return { instance: undefined };
-}
-
-export const OutdatedRequest = {
-    encode(message: OutdatedRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-        if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
-        }
-        return writer;
-    },
-
-    decode(input: _m0.Reader | Uint8Array, length?: number): OutdatedRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseOutdatedRequest();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.instance = Instance.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-
-    fromJSON(object: any): OutdatedRequest {
-        return { instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined };
-    },
-
-    toJSON(message: OutdatedRequest): unknown {
-        const obj: any = {};
-        message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
-        return obj;
-    },
-
-    fromPartial(object: DeepPartial<OutdatedRequest>): OutdatedRequest {
-        const message = createBaseOutdatedRequest();
-        message.instance =
-            object.instance !== undefined && object.instance !== null
-                ? Instance.fromPartial(object.instance)
-                : undefined;
-        return message;
-    },
-};
-
-function createBaseOutdatedResponse(): OutdatedResponse {
-    return { outdatedLibraries: [], outdatedPlatforms: [] };
-}
-
-export const OutdatedResponse = {
-    encode(message: OutdatedResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-        for (const v of message.outdatedLibraries) {
-            InstalledLibrary.encode(v!, writer.uint32(10).fork()).ldelim();
-        }
-        for (const v of message.outdatedPlatforms) {
-            Platform.encode(v!, writer.uint32(18).fork()).ldelim();
-        }
-        return writer;
-    },
-
-    decode(input: _m0.Reader | Uint8Array, length?: number): OutdatedResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseOutdatedResponse();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.outdatedLibraries.push(InstalledLibrary.decode(reader, reader.uint32()));
-                    break;
-                case 2:
-                    message.outdatedPlatforms.push(Platform.decode(reader, reader.uint32()));
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-
-    fromJSON(object: any): OutdatedResponse {
-        return {
-            outdatedLibraries: Array.isArray(object?.outdatedLibraries)
-                ? object.outdatedLibraries.map((e: any) => InstalledLibrary.fromJSON(e))
-                : [],
-            outdatedPlatforms: Array.isArray(object?.outdatedPlatforms)
-                ? object.outdatedPlatforms.map((e: any) => Platform.fromJSON(e))
-                : [],
-        };
-    },
-
-    toJSON(message: OutdatedResponse): unknown {
-        const obj: any = {};
-        if (message.outdatedLibraries) {
-            obj.outdatedLibraries = message.outdatedLibraries.map((e) => (e ? InstalledLibrary.toJSON(e) : undefined));
-        } else {
-            obj.outdatedLibraries = [];
-        }
-        if (message.outdatedPlatforms) {
-            obj.outdatedPlatforms = message.outdatedPlatforms.map((e) => (e ? Platform.toJSON(e) : undefined));
-        } else {
-            obj.outdatedPlatforms = [];
-        }
-        return obj;
-    },
-
-    fromPartial(object: DeepPartial<OutdatedResponse>): OutdatedResponse {
-        const message = createBaseOutdatedResponse();
-        message.outdatedLibraries = object.outdatedLibraries?.map((e) => InstalledLibrary.fromPartial(e)) || [];
-        message.outdatedPlatforms = object.outdatedPlatforms?.map((e) => Platform.fromPartial(e)) || [];
-        return message;
-    },
-};
-
-function createBaseUpgradeRequest(): UpgradeRequest {
-    return { instance: undefined, skipPostInstall: false };
-}
-
-export const UpgradeRequest = {
-    encode(message: UpgradeRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-        if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
-        }
-        if (message.skipPostInstall === true) {
-            writer.uint32(16).bool(message.skipPostInstall);
-        }
-        return writer;
-    },
-
-    decode(input: _m0.Reader | Uint8Array, length?: number): UpgradeRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseUpgradeRequest();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.instance = Instance.decode(reader, reader.uint32());
-                    break;
-                case 2:
-                    message.skipPostInstall = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-
-    fromJSON(object: any): UpgradeRequest {
-        return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
-            skipPostInstall: isSet(object.skipPostInstall) ? Boolean(object.skipPostInstall) : false,
-        };
-    },
-
-    toJSON(message: UpgradeRequest): unknown {
-        const obj: any = {};
-        message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
-        message.skipPostInstall !== undefined && (obj.skipPostInstall = message.skipPostInstall);
-        return obj;
-    },
-
-    fromPartial(object: DeepPartial<UpgradeRequest>): UpgradeRequest {
-        const message = createBaseUpgradeRequest();
-        message.instance =
-            object.instance !== undefined && object.instance !== null
-                ? Instance.fromPartial(object.instance)
-                : undefined;
-        message.skipPostInstall = object.skipPostInstall ?? false;
-        return message;
-    },
-};
-
-function createBaseUpgradeResponse(): UpgradeResponse {
-    return { progress: undefined, taskProgress: undefined };
-}
-
-export const UpgradeResponse = {
-    encode(message: UpgradeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-        if (message.progress !== undefined) {
-            DownloadProgress.encode(message.progress, writer.uint32(10).fork()).ldelim();
-        }
-        if (message.taskProgress !== undefined) {
-            TaskProgress.encode(message.taskProgress, writer.uint32(18).fork()).ldelim();
-        }
-        return writer;
-    },
-
-    decode(input: _m0.Reader | Uint8Array, length?: number): UpgradeResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseUpgradeResponse();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.progress = DownloadProgress.decode(reader, reader.uint32());
-                    break;
-                case 2:
-                    message.taskProgress = TaskProgress.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-
-    fromJSON(object: any): UpgradeResponse {
-        return {
-            progress: isSet(object.progress) ? DownloadProgress.fromJSON(object.progress) : undefined,
-            taskProgress: isSet(object.taskProgress) ? TaskProgress.fromJSON(object.taskProgress) : undefined,
-        };
-    },
-
-    toJSON(message: UpgradeResponse): unknown {
-        const obj: any = {};
-        message.progress !== undefined &&
-            (obj.progress = message.progress ? DownloadProgress.toJSON(message.progress) : undefined);
-        message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress ? TaskProgress.toJSON(message.taskProgress) : undefined);
-        return obj;
-    },
-
-    fromPartial(object: DeepPartial<UpgradeResponse>): UpgradeResponse {
-        const message = createBaseUpgradeResponse();
-        message.progress =
-            object.progress !== undefined && object.progress !== null
-                ? DownloadProgress.fromPartial(object.progress)
-                : undefined;
-        message.taskProgress =
-            object.taskProgress !== undefined && object.taskProgress !== null
-                ? TaskProgress.fromPartial(object.taskProgress)
                 : undefined;
         return message;
     },
@@ -1250,12 +1036,16 @@ function createBaseVersionRequest(): VersionRequest {
 }
 
 export const VersionRequest = {
-    encode(_: VersionRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        _: VersionRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): VersionRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseVersionRequest();
         while (reader.pos < end) {
@@ -1289,7 +1079,10 @@ function createBaseVersionResponse(): VersionResponse {
 }
 
 export const VersionResponse = {
-    encode(message: VersionResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: VersionResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.version !== '') {
             writer.uint32(10).string(message.version);
         }
@@ -1297,7 +1090,8 @@ export const VersionResponse = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): VersionResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseVersionResponse();
         while (reader.pos < end) {
@@ -1336,9 +1130,15 @@ function createBaseNewSketchRequest(): NewSketchRequest {
 }
 
 export const NewSketchRequest = {
-    encode(message: NewSketchRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: NewSketchRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.sketchName !== '') {
             writer.uint32(18).string(message.sketchName);
@@ -1350,7 +1150,8 @@ export const NewSketchRequest = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): NewSketchRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseNewSketchRequest();
         while (reader.pos < end) {
@@ -1375,8 +1176,12 @@ export const NewSketchRequest = {
 
     fromJSON(object: any): NewSketchRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
-            sketchName: isSet(object.sketchName) ? String(object.sketchName) : '',
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+            sketchName: isSet(object.sketchName)
+                ? String(object.sketchName)
+                : '',
             sketchDir: isSet(object.sketchDir) ? String(object.sketchDir) : '',
         };
     },
@@ -1384,8 +1189,11 @@ export const NewSketchRequest = {
     toJSON(message: NewSketchRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
-        message.sketchName !== undefined && (obj.sketchName = message.sketchName);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
+        message.sketchName !== undefined &&
+            (obj.sketchName = message.sketchName);
         message.sketchDir !== undefined && (obj.sketchDir = message.sketchDir);
         return obj;
     },
@@ -1407,7 +1215,10 @@ function createBaseNewSketchResponse(): NewSketchResponse {
 }
 
 export const NewSketchResponse = {
-    encode(message: NewSketchResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: NewSketchResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.mainFile !== '') {
             writer.uint32(10).string(message.mainFile);
         }
@@ -1415,7 +1226,8 @@ export const NewSketchResponse = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): NewSketchResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseNewSketchResponse();
         while (reader.pos < end) {
@@ -1433,7 +1245,9 @@ export const NewSketchResponse = {
     },
 
     fromJSON(object: any): NewSketchResponse {
-        return { mainFile: isSet(object.mainFile) ? String(object.mainFile) : '' };
+        return {
+            mainFile: isSet(object.mainFile) ? String(object.mainFile) : '',
+        };
     },
 
     toJSON(message: NewSketchResponse): unknown {
@@ -1454,9 +1268,15 @@ function createBaseLoadSketchRequest(): LoadSketchRequest {
 }
 
 export const LoadSketchRequest = {
-    encode(message: LoadSketchRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LoadSketchRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.instance !== undefined) {
-            Instance.encode(message.instance, writer.uint32(10).fork()).ldelim();
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
         }
         if (message.sketchPath !== '') {
             writer.uint32(18).string(message.sketchPath);
@@ -1465,7 +1285,8 @@ export const LoadSketchRequest = {
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): LoadSketchRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLoadSketchRequest();
         while (reader.pos < end) {
@@ -1487,16 +1308,23 @@ export const LoadSketchRequest = {
 
     fromJSON(object: any): LoadSketchRequest {
         return {
-            instance: isSet(object.instance) ? Instance.fromJSON(object.instance) : undefined,
-            sketchPath: isSet(object.sketchPath) ? String(object.sketchPath) : '',
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+            sketchPath: isSet(object.sketchPath)
+                ? String(object.sketchPath)
+                : '',
         };
     },
 
     toJSON(message: LoadSketchRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
-            (obj.instance = message.instance ? Instance.toJSON(message.instance) : undefined);
-        message.sketchPath !== undefined && (obj.sketchPath = message.sketchPath);
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
+        message.sketchPath !== undefined &&
+            (obj.sketchPath = message.sketchPath);
         return obj;
     },
 
@@ -1512,11 +1340,20 @@ export const LoadSketchRequest = {
 };
 
 function createBaseLoadSketchResponse(): LoadSketchResponse {
-    return { mainFile: '', locationPath: '', otherSketchFiles: [], additionalFiles: [], rootFolderFiles: [] };
+    return {
+        mainFile: '',
+        locationPath: '',
+        otherSketchFiles: [],
+        additionalFiles: [],
+        rootFolderFiles: [],
+    };
 }
 
 export const LoadSketchResponse = {
-    encode(message: LoadSketchResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: LoadSketchResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.mainFile !== '') {
             writer.uint32(10).string(message.mainFile);
         }
@@ -1535,8 +1372,12 @@ export const LoadSketchResponse = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): LoadSketchResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LoadSketchResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLoadSketchResponse();
         while (reader.pos < end) {
@@ -1568,7 +1409,9 @@ export const LoadSketchResponse = {
     fromJSON(object: any): LoadSketchResponse {
         return {
             mainFile: isSet(object.mainFile) ? String(object.mainFile) : '',
-            locationPath: isSet(object.locationPath) ? String(object.locationPath) : '',
+            locationPath: isSet(object.locationPath)
+                ? String(object.locationPath)
+                : '',
             otherSketchFiles: Array.isArray(object?.otherSketchFiles)
                 ? object.otherSketchFiles.map((e: any) => String(e))
                 : [],
@@ -1584,7 +1427,8 @@ export const LoadSketchResponse = {
     toJSON(message: LoadSketchResponse): unknown {
         const obj: any = {};
         message.mainFile !== undefined && (obj.mainFile = message.mainFile);
-        message.locationPath !== undefined && (obj.locationPath = message.locationPath);
+        message.locationPath !== undefined &&
+            (obj.locationPath = message.locationPath);
         if (message.otherSketchFiles) {
             obj.otherSketchFiles = message.otherSketchFiles.map((e) => e);
         } else {
@@ -1619,7 +1463,10 @@ function createBaseArchiveSketchRequest(): ArchiveSketchRequest {
 }
 
 export const ArchiveSketchRequest = {
-    encode(message: ArchiveSketchRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        message: ArchiveSketchRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         if (message.sketchPath !== '') {
             writer.uint32(10).string(message.sketchPath);
         }
@@ -1632,8 +1479,12 @@ export const ArchiveSketchRequest = {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): ArchiveSketchRequest {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): ArchiveSketchRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseArchiveSketchRequest();
         while (reader.pos < end) {
@@ -1658,21 +1509,32 @@ export const ArchiveSketchRequest = {
 
     fromJSON(object: any): ArchiveSketchRequest {
         return {
-            sketchPath: isSet(object.sketchPath) ? String(object.sketchPath) : '',
-            archivePath: isSet(object.archivePath) ? String(object.archivePath) : '',
-            includeBuildDir: isSet(object.includeBuildDir) ? Boolean(object.includeBuildDir) : false,
+            sketchPath: isSet(object.sketchPath)
+                ? String(object.sketchPath)
+                : '',
+            archivePath: isSet(object.archivePath)
+                ? String(object.archivePath)
+                : '',
+            includeBuildDir: isSet(object.includeBuildDir)
+                ? Boolean(object.includeBuildDir)
+                : false,
         };
     },
 
     toJSON(message: ArchiveSketchRequest): unknown {
         const obj: any = {};
-        message.sketchPath !== undefined && (obj.sketchPath = message.sketchPath);
-        message.archivePath !== undefined && (obj.archivePath = message.archivePath);
-        message.includeBuildDir !== undefined && (obj.includeBuildDir = message.includeBuildDir);
+        message.sketchPath !== undefined &&
+            (obj.sketchPath = message.sketchPath);
+        message.archivePath !== undefined &&
+            (obj.archivePath = message.archivePath);
+        message.includeBuildDir !== undefined &&
+            (obj.includeBuildDir = message.includeBuildDir);
         return obj;
     },
 
-    fromPartial(object: DeepPartial<ArchiveSketchRequest>): ArchiveSketchRequest {
+    fromPartial(
+        object: DeepPartial<ArchiveSketchRequest>
+    ): ArchiveSketchRequest {
         const message = createBaseArchiveSketchRequest();
         message.sketchPath = object.sketchPath ?? '';
         message.archivePath = object.archivePath ?? '';
@@ -1686,12 +1548,19 @@ function createBaseArchiveSketchResponse(): ArchiveSketchResponse {
 }
 
 export const ArchiveSketchResponse = {
-    encode(_: ArchiveSketchResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    encode(
+        _: ArchiveSketchResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): ArchiveSketchResponse {
-        const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): ArchiveSketchResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : new _m0.Reader(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseArchiveSketchResponse();
         while (reader.pos < end) {
@@ -1771,33 +1640,6 @@ export const ArduinoCoreServiceDefinition = {
             requestType: UpdateLibrariesIndexRequest,
             requestStream: false,
             responseType: UpdateLibrariesIndexResponse,
-            responseStream: true,
-            options: {},
-        },
-        /** Update packages indexes for both Cores and Libraries */
-        updateCoreLibrariesIndex: {
-            name: 'UpdateCoreLibrariesIndex',
-            requestType: UpdateCoreLibrariesIndexRequest,
-            requestStream: false,
-            responseType: UpdateCoreLibrariesIndexResponse,
-            responseStream: true,
-            options: {},
-        },
-        /** Outdated returns a message with a list of outdated Cores and Libraries */
-        outdated: {
-            name: 'Outdated',
-            requestType: OutdatedRequest,
-            requestStream: false,
-            responseType: OutdatedResponse,
-            responseStream: false,
-            options: {},
-        },
-        /** Upgrade both Cores and Libraries */
-        upgrade: {
-            name: 'Upgrade',
-            requestType: UpgradeRequest,
-            requestStream: false,
-            responseType: UpgradeResponse,
             responseStream: true,
             options: {},
         },
@@ -2130,7 +1972,10 @@ export const ArduinoCoreServiceDefinition = {
 
 export interface ArduinoCoreServiceServiceImplementation<CallContextExt = {}> {
     /** Create a new Arduino Core instance */
-    create(request: CreateRequest, context: CallContext & CallContextExt): Promise<DeepPartial<CreateResponse>>;
+    create(
+        request: CreateRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<CreateResponse>>;
     /**
      * Initializes an existing Arduino Core instance by loading platforms and
      * libraries
@@ -2140,7 +1985,10 @@ export interface ArduinoCoreServiceServiceImplementation<CallContextExt = {}> {
         context: CallContext & CallContextExt
     ): ServerStreamingMethodResult<DeepPartial<InitResponse>>;
     /** Destroy an instance of the Arduino Core Service */
-    destroy(request: DestroyRequest, context: CallContext & CallContextExt): Promise<DeepPartial<DestroyResponse>>;
+    destroy(
+        request: DestroyRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<DestroyResponse>>;
     /** Update package index of the Arduino Core Service */
     updateIndex(
         request: UpdateIndexRequest,
@@ -2151,20 +1999,11 @@ export interface ArduinoCoreServiceServiceImplementation<CallContextExt = {}> {
         request: UpdateLibrariesIndexRequest,
         context: CallContext & CallContextExt
     ): ServerStreamingMethodResult<DeepPartial<UpdateLibrariesIndexResponse>>;
-    /** Update packages indexes for both Cores and Libraries */
-    updateCoreLibrariesIndex(
-        request: UpdateCoreLibrariesIndexRequest,
-        context: CallContext & CallContextExt
-    ): ServerStreamingMethodResult<DeepPartial<UpdateCoreLibrariesIndexResponse>>;
-    /** Outdated returns a message with a list of outdated Cores and Libraries */
-    outdated(request: OutdatedRequest, context: CallContext & CallContextExt): Promise<DeepPartial<OutdatedResponse>>;
-    /** Upgrade both Cores and Libraries */
-    upgrade(
-        request: UpgradeRequest,
-        context: CallContext & CallContextExt
-    ): ServerStreamingMethodResult<DeepPartial<UpgradeResponse>>;
     /** Get the version of Arduino CLI in use. */
-    version(request: VersionRequest, context: CallContext & CallContextExt): Promise<DeepPartial<VersionResponse>>;
+    version(
+        request: VersionRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<VersionResponse>>;
     /** Create a new Sketch */
     newSketch(
         request: NewSketchRequest,
@@ -2352,14 +2191,23 @@ export interface ArduinoCoreServiceServiceImplementation<CallContextExt = {}> {
 
 export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
     /** Create a new Arduino Core instance */
-    create(request: DeepPartial<CreateRequest>, options?: CallOptions & CallOptionsExt): Promise<CreateResponse>;
+    create(
+        request: DeepPartial<CreateRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<CreateResponse>;
     /**
      * Initializes an existing Arduino Core instance by loading platforms and
      * libraries
      */
-    init(request: DeepPartial<InitRequest>, options?: CallOptions & CallOptionsExt): AsyncIterable<InitResponse>;
+    init(
+        request: DeepPartial<InitRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): AsyncIterable<InitResponse>;
     /** Destroy an instance of the Arduino Core Service */
-    destroy(request: DeepPartial<DestroyRequest>, options?: CallOptions & CallOptionsExt): Promise<DestroyResponse>;
+    destroy(
+        request: DeepPartial<DestroyRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<DestroyResponse>;
     /** Update package index of the Arduino Core Service */
     updateIndex(
         request: DeepPartial<UpdateIndexRequest>,
@@ -2370,20 +2218,11 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
         request: DeepPartial<UpdateLibrariesIndexRequest>,
         options?: CallOptions & CallOptionsExt
     ): AsyncIterable<UpdateLibrariesIndexResponse>;
-    /** Update packages indexes for both Cores and Libraries */
-    updateCoreLibrariesIndex(
-        request: DeepPartial<UpdateCoreLibrariesIndexRequest>,
-        options?: CallOptions & CallOptionsExt
-    ): AsyncIterable<UpdateCoreLibrariesIndexResponse>;
-    /** Outdated returns a message with a list of outdated Cores and Libraries */
-    outdated(request: DeepPartial<OutdatedRequest>, options?: CallOptions & CallOptionsExt): Promise<OutdatedResponse>;
-    /** Upgrade both Cores and Libraries */
-    upgrade(
-        request: DeepPartial<UpgradeRequest>,
-        options?: CallOptions & CallOptionsExt
-    ): AsyncIterable<UpgradeResponse>;
     /** Get the version of Arduino CLI in use. */
-    version(request: DeepPartial<VersionRequest>, options?: CallOptions & CallOptionsExt): Promise<VersionResponse>;
+    version(
+        request: DeepPartial<VersionRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<VersionResponse>;
     /** Create a new Sketch */
     newSketch(
         request: DeepPartial<NewSketchRequest>,
@@ -2464,7 +2303,10 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
         options?: CallOptions & CallOptionsExt
     ): AsyncIterable<PlatformUpgradeResponse>;
     /** Upload a compiled sketch to a board. */
-    upload(request: DeepPartial<UploadRequest>, options?: CallOptions & CallOptionsExt): AsyncIterable<UploadResponse>;
+    upload(
+        request: DeepPartial<UploadRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): AsyncIterable<UploadResponse>;
     /** Upload a compiled sketch to a board using a programmer. */
     uploadUsingProgrammer(
         request: DeepPartial<UploadUsingProgrammerRequest>,
@@ -2566,7 +2408,14 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
     ): Promise<EnumerateMonitorPortSettingsResponse>;
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+    | Date
+    | Function
+    | Uint8Array
+    | string
+    | number
+    | boolean
+    | undefined;
 
 export type DeepPartial<T> = T extends Builtin
     ? T
@@ -2575,7 +2424,9 @@ export type DeepPartial<T> = T extends Builtin
     : T extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
     : T extends { $case: string }
-    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & { $case: T['$case'] }
+    ? { [K in keyof Omit<T, '$case'>]?: DeepPartial<T[K]> } & {
+          $case: T['$case'];
+      }
     : T extends {}
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;
@@ -2584,4 +2435,6 @@ function isSet(value: any): boolean {
     return value !== null && value !== undefined;
 }
 
-export type ServerStreamingMethodResult<Response> = { [Symbol.asyncIterator](): AsyncIterator<Response, void> };
+export type ServerStreamingMethodResult<Response> = {
+    [Symbol.asyncIterator](): AsyncIterator<Response, void>;
+};
