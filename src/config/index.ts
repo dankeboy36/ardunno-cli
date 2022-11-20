@@ -1,4 +1,5 @@
-// Go source: https://github.com/arduino/arduino-cli/blob/4dcf0da6c6361c14c8d3ddc8f64711a10e9f16a0/cli/config/validate.go#L28-L46
+// Manually made from the CLI configuration: https://arduino.github.io/arduino-cli/latest/configuration/
+// Go source: https://github.com/arduino/arduino-cli/blob/0.29.0/cli/config/validate.go#L28-L46
 /**
  * Configuration for the Arduino CLI. See the [specs](https://arduino.github.io/arduino-cli/latest/configuration/) for more details.
  */
