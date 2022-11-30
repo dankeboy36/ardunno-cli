@@ -4,7 +4,7 @@
 
 The CLI API code in this repository is generated from the [`.proto` files](https://github.com/arduino/arduino-cli/tree/master/rpc) of the Arduino CLI. The API is compatible with [Arduino CLI `0.29.0`](https://github.com/arduino/arduino-cli/releases/tag/0.29.0). This project uses [`ardunno-cli-gen`](https://github.com/dankeboy36/ardunno-cli-gen/) for the API generation.
 
-## Installation
+## Installing
 
 ```
 npm i ardunno-cli --save
@@ -81,3 +81,7 @@ searchOutput.forEach(({ id, latest }) => console.log(`${id}@${latest}`));
 ## Configuration
 
 The API contains typing and a JSON schema for the [Arduino CLI configuration](https://arduino.github.io/arduino-cli/latest/configuration/).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

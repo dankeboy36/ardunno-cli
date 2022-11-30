@@ -1,6 +1,6 @@
 {
   "name": "ardunno-cli",
-  "version": "0.1.0-beta.17",
+  "version": "0.1.0",
   "description": "nice-grpc API for the Arduino CLI",
   "main": "./dist/api/index.js",
   "exports": {
@@ -62,7 +62,7 @@
     "@types/semver": "^7.3.13",
     "@typescript-eslint/eslint-plugin": "^5.43.0",
     "@typescript-eslint/parser": "^5.43.0",
-    "ardunno-cli-gen": "^0.1.0-beta.12",
+    "ardunno-cli-gen": "^0.1.0-beta.13",
     "ctix": "^1.5.0",
     "eslint": "^8.25.0",
     "eslint-config-prettier": "^8.5.0",
