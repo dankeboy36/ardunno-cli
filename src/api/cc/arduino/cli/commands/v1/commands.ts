@@ -1,10 +1,8 @@
 /* eslint-disable */
-import { CallContext, CallOptions } from 'nice-grpc-common';
+import type { CallContext, CallOptions } from 'nice-grpc-common';
 import _m0 from 'protobufjs/minimal';
 import { Status } from '../../../../../google/rpc/status';
 import {
-    BoardAttachRequest,
-    BoardAttachResponse,
     BoardDetailsRequest,
     BoardDetailsResponse,
     BoardListAllRequest,
@@ -73,7 +71,64 @@ import {
     UploadUsingProgrammerResponse,
 } from './upload';
 
-export const protobufPackage = 'cc.arduino.cli.commands.v1';
+export enum FailedInstanceInitReason {
+    /** FAILED_INSTANCE_INIT_REASON_UNSPECIFIED - FAILED_INSTANCE_INIT_REASON_UNSPECIFIED the error reason is not specialized */
+    FAILED_INSTANCE_INIT_REASON_UNSPECIFIED = 0,
+    /** FAILED_INSTANCE_INIT_REASON_INVALID_INDEX_URL - INVALID_INDEX_URL a package index url is malformed */
+    FAILED_INSTANCE_INIT_REASON_INVALID_INDEX_URL = 1,
+    /**
+     * FAILED_INSTANCE_INIT_REASON_INDEX_LOAD_ERROR - FAILED_INSTANCE_INIT_REASON_INDEX_LOAD_ERROR failure encountered while
+     * loading an index
+     */
+    FAILED_INSTANCE_INIT_REASON_INDEX_LOAD_ERROR = 2,
+    /**
+     * FAILED_INSTANCE_INIT_REASON_TOOL_LOAD_ERROR - FAILED_INSTANCE_INIT_REASON_TOOL_LOAD_ERROR failure encountered while
+     * loading a tool
+     */
+    FAILED_INSTANCE_INIT_REASON_TOOL_LOAD_ERROR = 3,
+    UNRECOGNIZED = -1,
+}
+
+export function failedInstanceInitReasonFromJSON(
+    object: any
+): FailedInstanceInitReason {
+    switch (object) {
+        case 0:
+        case 'FAILED_INSTANCE_INIT_REASON_UNSPECIFIED':
+            return FailedInstanceInitReason.FAILED_INSTANCE_INIT_REASON_UNSPECIFIED;
+        case 1:
+        case 'FAILED_INSTANCE_INIT_REASON_INVALID_INDEX_URL':
+            return FailedInstanceInitReason.FAILED_INSTANCE_INIT_REASON_INVALID_INDEX_URL;
+        case 2:
+        case 'FAILED_INSTANCE_INIT_REASON_INDEX_LOAD_ERROR':
+            return FailedInstanceInitReason.FAILED_INSTANCE_INIT_REASON_INDEX_LOAD_ERROR;
+        case 3:
+        case 'FAILED_INSTANCE_INIT_REASON_TOOL_LOAD_ERROR':
+            return FailedInstanceInitReason.FAILED_INSTANCE_INIT_REASON_TOOL_LOAD_ERROR;
+        case -1:
+        case 'UNRECOGNIZED':
+        default:
+            return FailedInstanceInitReason.UNRECOGNIZED;
+    }
+}
+
+export function failedInstanceInitReasonToJSON(
+    object: FailedInstanceInitReason
+): string {
+    switch (object) {
+        case FailedInstanceInitReason.FAILED_INSTANCE_INIT_REASON_UNSPECIFIED:
+            return 'FAILED_INSTANCE_INIT_REASON_UNSPECIFIED';
+        case FailedInstanceInitReason.FAILED_INSTANCE_INIT_REASON_INVALID_INDEX_URL:
+            return 'FAILED_INSTANCE_INIT_REASON_INVALID_INDEX_URL';
+        case FailedInstanceInitReason.FAILED_INSTANCE_INIT_REASON_INDEX_LOAD_ERROR:
+            return 'FAILED_INSTANCE_INIT_REASON_INDEX_LOAD_ERROR';
+        case FailedInstanceInitReason.FAILED_INSTANCE_INIT_REASON_TOOL_LOAD_ERROR:
+            return 'FAILED_INSTANCE_INIT_REASON_TOOL_LOAD_ERROR';
+        case FailedInstanceInitReason.UNRECOGNIZED:
+        default:
+            return 'UNRECOGNIZED';
+    }
+}
 
 export interface CreateRequest {}
 
@@ -106,6 +161,13 @@ export interface InitResponse_Progress {
     downloadProgress: DownloadProgress | undefined;
     /** Describes the current stage of the initialization. */
     taskProgress: TaskProgress | undefined;
+}
+
+export interface FailedInstanceInitError {
+    /** specific cause of the error */
+    reason: FailedInstanceInitReason;
+    /** explanation of the error */
+    message: string;
 }
 
 export interface DestroyRequest {
@@ -156,6 +218,8 @@ export interface NewSketchRequest {
      * empty.
      */
     sketchDir: string;
+    /** Specificies if an existing .ino sketch should be overwritten */
+    overwrite: boolean;
 }
 
 export interface NewSketchResponse {
@@ -196,6 +260,8 @@ export interface ArchiveSketchRequest {
     archivePath: string;
     /** Specifies if build directory should be included in the archive */
     includeBuildDir: boolean;
+    /** Allows to override an already existing archive */
+    overwrite: boolean;
 }
 
 export interface ArchiveSketchResponse {}
@@ -214,16 +280,17 @@ export const CreateRequest = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): CreateRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseCreateRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
-                default:
-                    reader.skipType(tag & 7);
-                    break;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -235,6 +302,10 @@ export const CreateRequest = {
     toJSON(_: CreateRequest): unknown {
         const obj: any = {};
         return obj;
+    },
+
+    create(base?: DeepPartial<CreateRequest>): CreateRequest {
+        return CreateRequest.fromPartial(base ?? {});
     },
 
     fromPartial(_: DeepPartial<CreateRequest>): CreateRequest {
@@ -263,19 +334,24 @@ export const CreateResponse = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): CreateResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseCreateResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -295,6 +371,10 @@ export const CreateResponse = {
                 ? Instance.toJSON(message.instance)
                 : undefined);
         return obj;
+    },
+
+    create(base?: DeepPartial<CreateResponse>): CreateResponse {
+        return CreateResponse.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<CreateResponse>): CreateResponse {
@@ -333,25 +413,38 @@ export const InitRequest = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): InitRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseInitRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.profile = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.sketchPath = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -380,6 +473,10 @@ export const InitRequest = {
         return obj;
     },
 
+    create(base?: DeepPartial<InitRequest>): InitRequest {
+        return InitRequest.fromPartial(base ?? {});
+    },
+
     fromPartial(object: DeepPartial<InitRequest>): InitRequest {
         const message = createBaseInitRequest();
         message.instance =
@@ -401,36 +498,42 @@ export const InitResponse = {
         message: InitResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.message?.$case === 'initProgress') {
-            InitResponse_Progress.encode(
-                message.message.initProgress,
-                writer.uint32(10).fork()
-            ).ldelim();
-        }
-        if (message.message?.$case === 'error') {
-            Status.encode(
-                message.message.error,
-                writer.uint32(18).fork()
-            ).ldelim();
-        }
-        if (message.message?.$case === 'profile') {
-            Profile.encode(
-                message.message.profile,
-                writer.uint32(26).fork()
-            ).ldelim();
+        switch (message.message?.$case) {
+            case 'initProgress':
+                InitResponse_Progress.encode(
+                    message.message.initProgress,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'error':
+                Status.encode(
+                    message.message.error,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
+            case 'profile':
+                Profile.encode(
+                    message.message.profile,
+                    writer.uint32(26).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): InitResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseInitResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.message = {
                         $case: 'initProgress',
                         initProgress: InitResponse_Progress.decode(
@@ -438,23 +541,32 @@ export const InitResponse = {
                             reader.uint32()
                         ),
                     };
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.message = {
                         $case: 'error',
                         error: Status.decode(reader, reader.uint32()),
                     };
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.message = {
                         $case: 'profile',
                         profile: Profile.decode(reader, reader.uint32()),
                     };
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -494,6 +606,10 @@ export const InitResponse = {
                 ? Profile.toJSON(message.message?.profile)
                 : undefined);
         return obj;
+    },
+
+    create(base?: DeepPartial<InitResponse>): InitResponse {
+        return InitResponse.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<InitResponse>): InitResponse {
@@ -563,28 +679,37 @@ export const InitResponse_Progress = {
         length?: number
     ): InitResponse_Progress {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseInitResponse_Progress();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.downloadProgress = DownloadProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.taskProgress = TaskProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -613,6 +738,10 @@ export const InitResponse_Progress = {
         return obj;
     },
 
+    create(base?: DeepPartial<InitResponse_Progress>): InitResponse_Progress {
+        return InitResponse_Progress.fromPartial(base ?? {});
+    },
+
     fromPartial(
         object: DeepPartial<InitResponse_Progress>
     ): InitResponse_Progress {
@@ -626,6 +755,91 @@ export const InitResponse_Progress = {
             object.taskProgress !== undefined && object.taskProgress !== null
                 ? TaskProgress.fromPartial(object.taskProgress)
                 : undefined;
+        return message;
+    },
+};
+
+function createBaseFailedInstanceInitError(): FailedInstanceInitError {
+    return { reason: 0, message: '' };
+}
+
+export const FailedInstanceInitError = {
+    encode(
+        message: FailedInstanceInitError,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.reason !== 0) {
+            writer.uint32(8).int32(message.reason);
+        }
+        if (message.message !== '') {
+            writer.uint32(18).string(message.message);
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): FailedInstanceInitError {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseFailedInstanceInitError();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 8) {
+                        break;
+                    }
+
+                    message.reason = reader.int32() as any;
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.message = reader.string();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): FailedInstanceInitError {
+        return {
+            reason: isSet(object.reason)
+                ? failedInstanceInitReasonFromJSON(object.reason)
+                : 0,
+            message: isSet(object.message) ? String(object.message) : '',
+        };
+    },
+
+    toJSON(message: FailedInstanceInitError): unknown {
+        const obj: any = {};
+        message.reason !== undefined &&
+            (obj.reason = failedInstanceInitReasonToJSON(message.reason));
+        message.message !== undefined && (obj.message = message.message);
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<FailedInstanceInitError>
+    ): FailedInstanceInitError {
+        return FailedInstanceInitError.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<FailedInstanceInitError>
+    ): FailedInstanceInitError {
+        const message = createBaseFailedInstanceInitError();
+        message.reason = object.reason ?? 0;
+        message.message = object.message ?? '';
         return message;
     },
 };
@@ -650,19 +864,24 @@ export const DestroyRequest = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): DestroyRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDestroyRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -682,6 +901,10 @@ export const DestroyRequest = {
                 ? Instance.toJSON(message.instance)
                 : undefined);
         return obj;
+    },
+
+    create(base?: DeepPartial<DestroyRequest>): DestroyRequest {
+        return DestroyRequest.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<DestroyRequest>): DestroyRequest {
@@ -708,16 +931,17 @@ export const DestroyResponse = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): DestroyResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDestroyResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
-                default:
-                    reader.skipType(tag & 7);
-                    break;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -729,6 +953,10 @@ export const DestroyResponse = {
     toJSON(_: DestroyResponse): unknown {
         const obj: any = {};
         return obj;
+    },
+
+    create(base?: DeepPartial<DestroyResponse>): DestroyResponse {
+        return DestroyResponse.fromPartial(base ?? {});
     },
 
     fromPartial(_: DeepPartial<DestroyResponse>): DestroyResponse {
@@ -763,22 +991,31 @@ export const UpdateIndexRequest = {
         length?: number
     ): UpdateIndexRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUpdateIndexRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 16) {
+                        break;
+                    }
+
                     message.ignoreCustomPackageIndexes = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -804,6 +1041,10 @@ export const UpdateIndexRequest = {
             (obj.ignoreCustomPackageIndexes =
                 message.ignoreCustomPackageIndexes);
         return obj;
+    },
+
+    create(base?: DeepPartial<UpdateIndexRequest>): UpdateIndexRequest {
+        return UpdateIndexRequest.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<UpdateIndexRequest>): UpdateIndexRequest {
@@ -841,22 +1082,27 @@ export const UpdateIndexResponse = {
         length?: number
     ): UpdateIndexResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUpdateIndexResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.downloadProgress = DownloadProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -876,6 +1122,10 @@ export const UpdateIndexResponse = {
                 ? DownloadProgress.toJSON(message.downloadProgress)
                 : undefined);
         return obj;
+    },
+
+    create(base?: DeepPartial<UpdateIndexResponse>): UpdateIndexResponse {
+        return UpdateIndexResponse.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<UpdateIndexResponse>): UpdateIndexResponse {
@@ -912,19 +1162,24 @@ export const UpdateLibrariesIndexRequest = {
         length?: number
     ): UpdateLibrariesIndexRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUpdateLibrariesIndexRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -944,6 +1199,12 @@ export const UpdateLibrariesIndexRequest = {
                 ? Instance.toJSON(message.instance)
                 : undefined);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<UpdateLibrariesIndexRequest>
+    ): UpdateLibrariesIndexRequest {
+        return UpdateLibrariesIndexRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -981,22 +1242,27 @@ export const UpdateLibrariesIndexResponse = {
         length?: number
     ): UpdateLibrariesIndexResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUpdateLibrariesIndexResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.downloadProgress = DownloadProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1016,6 +1282,12 @@ export const UpdateLibrariesIndexResponse = {
                 ? DownloadProgress.toJSON(message.downloadProgress)
                 : undefined);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<UpdateLibrariesIndexResponse>
+    ): UpdateLibrariesIndexResponse {
+        return UpdateLibrariesIndexResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1045,16 +1317,17 @@ export const VersionRequest = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): VersionRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseVersionRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
-                default:
-                    reader.skipType(tag & 7);
-                    break;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1066,6 +1339,10 @@ export const VersionRequest = {
     toJSON(_: VersionRequest): unknown {
         const obj: any = {};
         return obj;
+    },
+
+    create(base?: DeepPartial<VersionRequest>): VersionRequest {
+        return VersionRequest.fromPartial(base ?? {});
     },
 
     fromPartial(_: DeepPartial<VersionRequest>): VersionRequest {
@@ -1091,19 +1368,24 @@ export const VersionResponse = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): VersionResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseVersionResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.version = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1118,6 +1400,10 @@ export const VersionResponse = {
         return obj;
     },
 
+    create(base?: DeepPartial<VersionResponse>): VersionResponse {
+        return VersionResponse.fromPartial(base ?? {});
+    },
+
     fromPartial(object: DeepPartial<VersionResponse>): VersionResponse {
         const message = createBaseVersionResponse();
         message.version = object.version ?? '';
@@ -1126,7 +1412,12 @@ export const VersionResponse = {
 };
 
 function createBaseNewSketchRequest(): NewSketchRequest {
-    return { instance: undefined, sketchName: '', sketchDir: '' };
+    return {
+        instance: undefined,
+        sketchName: '',
+        sketchDir: '',
+        overwrite: false,
+    };
 }
 
 export const NewSketchRequest = {
@@ -1146,30 +1437,53 @@ export const NewSketchRequest = {
         if (message.sketchDir !== '') {
             writer.uint32(26).string(message.sketchDir);
         }
+        if (message.overwrite === true) {
+            writer.uint32(32).bool(message.overwrite);
+        }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): NewSketchRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseNewSketchRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.sketchName = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.sketchDir = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
+                case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
+                    message.overwrite = reader.bool();
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1183,6 +1497,9 @@ export const NewSketchRequest = {
                 ? String(object.sketchName)
                 : '',
             sketchDir: isSet(object.sketchDir) ? String(object.sketchDir) : '',
+            overwrite: isSet(object.overwrite)
+                ? Boolean(object.overwrite)
+                : false,
         };
     },
 
@@ -1195,7 +1512,12 @@ export const NewSketchRequest = {
         message.sketchName !== undefined &&
             (obj.sketchName = message.sketchName);
         message.sketchDir !== undefined && (obj.sketchDir = message.sketchDir);
+        message.overwrite !== undefined && (obj.overwrite = message.overwrite);
         return obj;
+    },
+
+    create(base?: DeepPartial<NewSketchRequest>): NewSketchRequest {
+        return NewSketchRequest.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<NewSketchRequest>): NewSketchRequest {
@@ -1206,6 +1528,7 @@ export const NewSketchRequest = {
                 : undefined;
         message.sketchName = object.sketchName ?? '';
         message.sketchDir = object.sketchDir ?? '';
+        message.overwrite = object.overwrite ?? false;
         return message;
     },
 };
@@ -1227,19 +1550,24 @@ export const NewSketchResponse = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): NewSketchResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseNewSketchResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.mainFile = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1254,6 +1582,10 @@ export const NewSketchResponse = {
         const obj: any = {};
         message.mainFile !== undefined && (obj.mainFile = message.mainFile);
         return obj;
+    },
+
+    create(base?: DeepPartial<NewSketchResponse>): NewSketchResponse {
+        return NewSketchResponse.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<NewSketchResponse>): NewSketchResponse {
@@ -1286,22 +1618,31 @@ export const LoadSketchRequest = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): LoadSketchRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLoadSketchRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.sketchPath = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1326,6 +1667,10 @@ export const LoadSketchRequest = {
         message.sketchPath !== undefined &&
             (obj.sketchPath = message.sketchPath);
         return obj;
+    },
+
+    create(base?: DeepPartial<LoadSketchRequest>): LoadSketchRequest {
+        return LoadSketchRequest.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<LoadSketchRequest>): LoadSketchRequest {
@@ -1377,31 +1722,52 @@ export const LoadSketchResponse = {
         length?: number
     ): LoadSketchResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLoadSketchResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.mainFile = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.locationPath = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.otherSketchFiles.push(reader.string());
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.additionalFiles.push(reader.string());
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
                     message.rootFolderFiles.push(reader.string());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1447,6 +1813,10 @@ export const LoadSketchResponse = {
         return obj;
     },
 
+    create(base?: DeepPartial<LoadSketchResponse>): LoadSketchResponse {
+        return LoadSketchResponse.fromPartial(base ?? {});
+    },
+
     fromPartial(object: DeepPartial<LoadSketchResponse>): LoadSketchResponse {
         const message = createBaseLoadSketchResponse();
         message.mainFile = object.mainFile ?? '';
@@ -1459,7 +1829,12 @@ export const LoadSketchResponse = {
 };
 
 function createBaseArchiveSketchRequest(): ArchiveSketchRequest {
-    return { sketchPath: '', archivePath: '', includeBuildDir: false };
+    return {
+        sketchPath: '',
+        archivePath: '',
+        includeBuildDir: false,
+        overwrite: false,
+    };
 }
 
 export const ArchiveSketchRequest = {
@@ -1476,6 +1851,9 @@ export const ArchiveSketchRequest = {
         if (message.includeBuildDir === true) {
             writer.uint32(24).bool(message.includeBuildDir);
         }
+        if (message.overwrite === true) {
+            writer.uint32(32).bool(message.overwrite);
+        }
         return writer;
     },
 
@@ -1484,25 +1862,45 @@ export const ArchiveSketchRequest = {
         length?: number
     ): ArchiveSketchRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseArchiveSketchRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.sketchPath = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.archivePath = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
                     message.includeBuildDir = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
+                case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
+                    message.overwrite = reader.bool();
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1518,6 +1916,9 @@ export const ArchiveSketchRequest = {
             includeBuildDir: isSet(object.includeBuildDir)
                 ? Boolean(object.includeBuildDir)
                 : false,
+            overwrite: isSet(object.overwrite)
+                ? Boolean(object.overwrite)
+                : false,
         };
     },
 
@@ -1529,7 +1930,12 @@ export const ArchiveSketchRequest = {
             (obj.archivePath = message.archivePath);
         message.includeBuildDir !== undefined &&
             (obj.includeBuildDir = message.includeBuildDir);
+        message.overwrite !== undefined && (obj.overwrite = message.overwrite);
         return obj;
+    },
+
+    create(base?: DeepPartial<ArchiveSketchRequest>): ArchiveSketchRequest {
+        return ArchiveSketchRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1539,6 +1945,7 @@ export const ArchiveSketchRequest = {
         message.sketchPath = object.sketchPath ?? '';
         message.archivePath = object.archivePath ?? '';
         message.includeBuildDir = object.includeBuildDir ?? false;
+        message.overwrite = object.overwrite ?? false;
         return message;
     },
 };
@@ -1560,16 +1967,17 @@ export const ArchiveSketchResponse = {
         length?: number
     ): ArchiveSketchResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseArchiveSketchResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
-                default:
-                    reader.skipType(tag & 7);
-                    break;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1581,6 +1989,10 @@ export const ArchiveSketchResponse = {
     toJSON(_: ArchiveSketchResponse): unknown {
         const obj: any = {};
         return obj;
+    },
+
+    create(base?: DeepPartial<ArchiveSketchResponse>): ArchiveSketchResponse {
+        return ArchiveSketchResponse.fromPartial(base ?? {});
     },
 
     fromPartial(_: DeepPartial<ArchiveSketchResponse>): ArchiveSketchResponse {
@@ -1686,18 +2098,6 @@ export const ArduinoCoreServiceDefinition = {
             requestStream: false,
             responseType: BoardDetailsResponse,
             responseStream: false,
-            options: {},
-        },
-        /**
-         * Attach a board to a sketch. When the `fqbn` field of a request is not
-         * provided, the FQBN of the attached board will be used.
-         */
-        boardAttach: {
-            name: 'BoardAttach',
-            requestType: BoardAttachRequest,
-            requestStream: false,
-            responseType: BoardAttachResponse,
-            responseStream: true,
             options: {},
         },
         /** List the boards currently connected to the computer. */
@@ -1970,7 +2370,7 @@ export const ArduinoCoreServiceDefinition = {
     },
 } as const;
 
-export interface ArduinoCoreServiceServiceImplementation<CallContextExt = {}> {
+export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
     /** Create a new Arduino Core instance */
     create(
         request: CreateRequest,
@@ -2024,14 +2424,6 @@ export interface ArduinoCoreServiceServiceImplementation<CallContextExt = {}> {
         request: BoardDetailsRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<BoardDetailsResponse>>;
-    /**
-     * Attach a board to a sketch. When the `fqbn` field of a request is not
-     * provided, the FQBN of the attached board will be used.
-     */
-    boardAttach(
-        request: BoardAttachRequest,
-        context: CallContext & CallContextExt
-    ): ServerStreamingMethodResult<DeepPartial<BoardAttachResponse>>;
     /** List the boards currently connected to the computer. */
     boardList(
         request: BoardListRequest,
@@ -2243,14 +2635,6 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
         request: DeepPartial<BoardDetailsRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<BoardDetailsResponse>;
-    /**
-     * Attach a board to a sketch. When the `fqbn` field of a request is not
-     * provided, the FQBN of the attached board will be used.
-     */
-    boardAttach(
-        request: DeepPartial<BoardAttachRequest>,
-        options?: CallOptions & CallOptionsExt
-    ): AsyncIterable<BoardAttachResponse>;
     /** List the boards currently connected to the computer. */
     boardList(
         request: DeepPartial<BoardListRequest>,
@@ -2417,7 +2801,7 @@ type Builtin =
     | boolean
     | undefined;
 
-export type DeepPartial<T> = T extends Builtin
+type DeepPartial<T> = T extends Builtin
     ? T
     : T extends Array<infer U>
     ? Array<DeepPartial<U>>

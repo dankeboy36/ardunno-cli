@@ -5,8 +5,6 @@ import { BoolValue } from '../../../../../google/protobuf/wrappers';
 import { InstalledPlatformReference, Instance, TaskProgress } from './common';
 import { Library } from './lib';
 
-export const protobufPackage = 'cc.arduino.cli.commands.v1';
-
 export interface CompileRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
@@ -18,7 +16,7 @@ export interface CompileRequest {
     fqbn: string;
     /** The path where the sketch is stored. */
     sketchPath: string;
-    /** Show all build preferences used instead of compiling. */
+    /** Just get the build properties and do not run the full compile. */
     showProperties: boolean;
     /** Print preprocessed code to stdout instead of compiling. */
     preprocess: boolean;
@@ -41,8 +39,6 @@ export interface CompileRequest {
     verbose: boolean;
     /** Suppresses almost every output. */
     quiet: boolean;
-    /** VID/PID specific build properties. */
-    vidPid: string;
     /**
      * The max number of concurrent compiler instances to run (as `make -jx`).
      * If jobs is set to 0, it will use the number of available CPUs as the
@@ -123,6 +119,8 @@ export interface CompileResponse {
     buildPlatform: InstalledPlatformReference | undefined;
     /** Completions reports of the compilation process (stream) */
     progress: TaskProgress | undefined;
+    /** Build properties used for compiling */
+    buildProperties: string[];
 }
 
 export interface ExecutableSectionSize {
@@ -144,7 +142,6 @@ function createBaseCompileRequest(): CompileRequest {
         warnings: '',
         verbose: false,
         quiet: false,
-        vidPid: '',
         jobs: 0,
         libraries: [],
         optimizeForDebug: false,
@@ -202,9 +199,6 @@ export const CompileRequest = {
         if (message.quiet === true) {
             writer.uint32(88).bool(message.quiet);
         }
-        if (message.vidPid !== '') {
-            writer.uint32(98).string(message.vidPid);
-        }
         if (message.jobs !== 0) {
             writer.uint32(112).int32(message.jobs);
         }
@@ -255,67 +249,136 @@ export const CompileRequest = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): CompileRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseCompileRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.fqbn = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.sketchPath = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
                     message.showProperties = reader.bool();
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 40) {
+                        break;
+                    }
+
                     message.preprocess = reader.bool();
-                    break;
+                    continue;
                 case 6:
+                    if (tag !== 50) {
+                        break;
+                    }
+
                     message.buildCachePath = reader.string();
-                    break;
+                    continue;
                 case 7:
+                    if (tag !== 58) {
+                        break;
+                    }
+
                     message.buildPath = reader.string();
-                    break;
+                    continue;
                 case 8:
+                    if (tag !== 66) {
+                        break;
+                    }
+
                     message.buildProperties.push(reader.string());
-                    break;
+                    continue;
                 case 9:
+                    if (tag !== 74) {
+                        break;
+                    }
+
                     message.warnings = reader.string();
-                    break;
+                    continue;
                 case 10:
+                    if (tag !== 80) {
+                        break;
+                    }
+
                     message.verbose = reader.bool();
-                    break;
+                    continue;
                 case 11:
+                    if (tag !== 88) {
+                        break;
+                    }
+
                     message.quiet = reader.bool();
-                    break;
-                case 12:
-                    message.vidPid = reader.string();
-                    break;
+                    continue;
                 case 14:
+                    if (tag !== 112) {
+                        break;
+                    }
+
                     message.jobs = reader.int32();
-                    break;
+                    continue;
                 case 15:
+                    if (tag !== 122) {
+                        break;
+                    }
+
                     message.libraries.push(reader.string());
-                    break;
+                    continue;
                 case 16:
+                    if (tag !== 128) {
+                        break;
+                    }
+
                     message.optimizeForDebug = reader.bool();
-                    break;
+                    continue;
                 case 18:
+                    if (tag !== 146) {
+                        break;
+                    }
+
                     message.exportDir = reader.string();
-                    break;
+                    continue;
                 case 19:
+                    if (tag !== 152) {
+                        break;
+                    }
+
                     message.clean = reader.bool();
-                    break;
+                    continue;
                 case 21:
+                    if (tag !== 168) {
+                        break;
+                    }
+
                     message.createCompilationDatabaseOnly = reader.bool();
-                    break;
+                    continue;
                 case 22:
+                    if (tag !== 178) {
+                        break;
+                    }
+
                     const entry22 = CompileRequest_SourceOverrideEntry.decode(
                         reader,
                         reader.uint32()
@@ -323,32 +386,57 @@ export const CompileRequest = {
                     if (entry22.value !== undefined) {
                         message.sourceOverride[entry22.key] = entry22.value;
                     }
-                    break;
+                    continue;
                 case 23:
+                    if (tag !== 186) {
+                        break;
+                    }
+
                     message.exportBinaries = BoolValue.decode(
                         reader,
                         reader.uint32()
                     ).value;
-                    break;
+                    continue;
                 case 24:
+                    if (tag !== 194) {
+                        break;
+                    }
+
                     message.library.push(reader.string());
-                    break;
+                    continue;
                 case 25:
+                    if (tag !== 202) {
+                        break;
+                    }
+
                     message.keysKeychain = reader.string();
-                    break;
+                    continue;
                 case 26:
+                    if (tag !== 210) {
+                        break;
+                    }
+
                     message.signKey = reader.string();
-                    break;
+                    continue;
                 case 27:
+                    if (tag !== 218) {
+                        break;
+                    }
+
                     message.encryptKey = reader.string();
-                    break;
+                    continue;
                 case 28:
+                    if (tag !== 224) {
+                        break;
+                    }
+
                     message.skipLibrariesDiscovery = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -378,7 +466,6 @@ export const CompileRequest = {
             warnings: isSet(object.warnings) ? String(object.warnings) : '',
             verbose: isSet(object.verbose) ? Boolean(object.verbose) : false,
             quiet: isSet(object.quiet) ? Boolean(object.quiet) : false,
-            vidPid: isSet(object.vidPid) ? String(object.vidPid) : '',
             jobs: isSet(object.jobs) ? Number(object.jobs) : 0,
             libraries: Array.isArray(object?.libraries)
                 ? object.libraries.map((e: any) => String(e))
@@ -444,7 +531,6 @@ export const CompileRequest = {
         message.warnings !== undefined && (obj.warnings = message.warnings);
         message.verbose !== undefined && (obj.verbose = message.verbose);
         message.quiet !== undefined && (obj.quiet = message.quiet);
-        message.vidPid !== undefined && (obj.vidPid = message.vidPid);
         message.jobs !== undefined && (obj.jobs = Math.round(message.jobs));
         if (message.libraries) {
             obj.libraries = message.libraries.map((e) => e);
@@ -481,6 +567,10 @@ export const CompileRequest = {
         return obj;
     },
 
+    create(base?: DeepPartial<CompileRequest>): CompileRequest {
+        return CompileRequest.fromPartial(base ?? {});
+    },
+
     fromPartial(object: DeepPartial<CompileRequest>): CompileRequest {
         const message = createBaseCompileRequest();
         message.instance =
@@ -497,7 +587,6 @@ export const CompileRequest = {
         message.warnings = object.warnings ?? '';
         message.verbose = object.verbose ?? false;
         message.quiet = object.quiet ?? false;
-        message.vidPid = object.vidPid ?? '';
         message.jobs = object.jobs ?? 0;
         message.libraries = object.libraries?.map((e) => e) || [];
         message.optimizeForDebug = object.optimizeForDebug ?? false;
@@ -546,22 +635,31 @@ export const CompileRequest_SourceOverrideEntry = {
         length?: number
     ): CompileRequest_SourceOverrideEntry {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseCompileRequest_SourceOverrideEntry();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.key = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.value = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -578,6 +676,12 @@ export const CompileRequest_SourceOverrideEntry = {
         message.key !== undefined && (obj.key = message.key);
         message.value !== undefined && (obj.value = message.value);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<CompileRequest_SourceOverrideEntry>
+    ): CompileRequest_SourceOverrideEntry {
+        return CompileRequest_SourceOverrideEntry.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -600,6 +704,7 @@ function createBaseCompileResponse(): CompileResponse {
         boardPlatform: undefined,
         buildPlatform: undefined,
         progress: undefined,
+        buildProperties: [],
     };
 }
 
@@ -641,58 +746,101 @@ export const CompileResponse = {
                 writer.uint32(66).fork()
             ).ldelim();
         }
+        for (const v of message.buildProperties) {
+            writer.uint32(74).string(v!);
+        }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): CompileResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseCompileResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.outStream = reader.bytes();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.errStream = reader.bytes();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.buildPath = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.usedLibraries.push(
                         Library.decode(reader, reader.uint32())
                     );
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
                     message.executableSectionsSize.push(
                         ExecutableSectionSize.decode(reader, reader.uint32())
                     );
-                    break;
+                    continue;
                 case 6:
+                    if (tag !== 50) {
+                        break;
+                    }
+
                     message.boardPlatform = InstalledPlatformReference.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
+                    continue;
                 case 7:
+                    if (tag !== 58) {
+                        break;
+                    }
+
                     message.buildPlatform = InstalledPlatformReference.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
+                    continue;
                 case 8:
+                    if (tag !== 66) {
+                        break;
+                    }
+
                     message.progress = TaskProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
+                case 9:
+                    if (tag !== 74) {
+                        break;
+                    }
+
+                    message.buildProperties.push(reader.string());
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -725,6 +873,9 @@ export const CompileResponse = {
             progress: isSet(object.progress)
                 ? TaskProgress.fromJSON(object.progress)
                 : undefined,
+            buildProperties: Array.isArray(object?.buildProperties)
+                ? object.buildProperties.map((e: any) => String(e))
+                : [],
         };
     },
 
@@ -769,7 +920,16 @@ export const CompileResponse = {
             (obj.progress = message.progress
                 ? TaskProgress.toJSON(message.progress)
                 : undefined);
+        if (message.buildProperties) {
+            obj.buildProperties = message.buildProperties.map((e) => e);
+        } else {
+            obj.buildProperties = [];
+        }
         return obj;
+    },
+
+    create(base?: DeepPartial<CompileResponse>): CompileResponse {
+        return CompileResponse.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<CompileResponse>): CompileResponse {
@@ -795,6 +955,7 @@ export const CompileResponse = {
             object.progress !== undefined && object.progress !== null
                 ? TaskProgress.fromPartial(object.progress)
                 : undefined;
+        message.buildProperties = object.buildProperties?.map((e) => e) || [];
         return message;
     },
 };
@@ -825,25 +986,38 @@ export const ExecutableSectionSize = {
         length?: number
     ): ExecutableSectionSize {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseExecutableSectionSize();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 16) {
+                        break;
+                    }
+
                     message.size = longToNumber(reader.int64() as Long);
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
                     message.maxSize = longToNumber(reader.int64() as Long);
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -865,6 +1039,10 @@ export const ExecutableSectionSize = {
         return obj;
     },
 
+    create(base?: DeepPartial<ExecutableSectionSize>): ExecutableSectionSize {
+        return ExecutableSectionSize.fromPartial(base ?? {});
+    },
+
     fromPartial(
         object: DeepPartial<ExecutableSectionSize>
     ): ExecutableSectionSize {
@@ -879,7 +1057,7 @@ export const ExecutableSectionSize = {
 declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
-var globalThis: any = (() => {
+var tsProtoGlobalThis: any = (() => {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
     }
@@ -896,10 +1074,10 @@ var globalThis: any = (() => {
 })();
 
 function bytesFromBase64(b64: string): Uint8Array {
-    if (globalThis.Buffer) {
-        return Uint8Array.from(globalThis.Buffer.from(b64, 'base64'));
+    if (tsProtoGlobalThis.Buffer) {
+        return Uint8Array.from(tsProtoGlobalThis.Buffer.from(b64, 'base64'));
     } else {
-        const bin = globalThis.atob(b64);
+        const bin = tsProtoGlobalThis.atob(b64);
         const arr = new Uint8Array(bin.length);
         for (let i = 0; i < bin.length; ++i) {
             arr[i] = bin.charCodeAt(i);
@@ -909,14 +1087,14 @@ function bytesFromBase64(b64: string): Uint8Array {
 }
 
 function base64FromBytes(arr: Uint8Array): string {
-    if (globalThis.Buffer) {
-        return globalThis.Buffer.from(arr).toString('base64');
+    if (tsProtoGlobalThis.Buffer) {
+        return tsProtoGlobalThis.Buffer.from(arr).toString('base64');
     } else {
         const bin: string[] = [];
         arr.forEach((byte) => {
             bin.push(String.fromCharCode(byte));
         });
-        return globalThis.btoa(bin.join(''));
+        return tsProtoGlobalThis.btoa(bin.join(''));
     }
 }
 
@@ -929,7 +1107,7 @@ type Builtin =
     | boolean
     | undefined;
 
-export type DeepPartial<T> = T extends Builtin
+type DeepPartial<T> = T extends Builtin
     ? T
     : T extends Array<infer U>
     ? Array<DeepPartial<U>>
@@ -945,7 +1123,7 @@ export type DeepPartial<T> = T extends Builtin
 
 function longToNumber(long: Long): number {
     if (long.gt(Number.MAX_SAFE_INTEGER)) {
-        throw new globalThis.Error(
+        throw new tsProtoGlobalThis.Error(
             'Value is larger than Number.MAX_SAFE_INTEGER'
         );
     }

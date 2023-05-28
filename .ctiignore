@@ -1,9 +1,5 @@
 {
     "src/api/**/*.ts": [
-        "protobufPackage",
-        "DeepPartial",
         "ServerStreamingMethodResult"
-    ],
-    "src/cli/**": "*",
-    "src/__tests__/**": "*"
+    ]
 }

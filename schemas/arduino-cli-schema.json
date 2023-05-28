@@ -1,39 +1,62 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "additionalProperties": false,
-  "definitions": {},
-  "description": "Configuration for the Arduino CLI. See the [specs](https://arduino.github.io/arduino-cli/latest/configuration/) for more details.",
+  "title": "Arduino CLI configuration schema",
+  "description": "Describe the parameters available for the Arduino CLI configuration file. This schema should be considered unstable at this moment, it is not used by the CLI to validate input configuration",
+  "$schema": "http://json-schema.org/draft-06/schema#",
   "properties": {
     "board_manager": {
-      "additionalProperties": false,
+      "description": "",
       "properties": {
         "additional_urls": {
           "description": "the URLs to any additional Boards Manager package index files needed for your boards platforms.",
+          "type": "array",
           "items": {
-            "type": "string"
-          },
-          "type": "array"
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "type": "object"
+    },
+    "build_cache": {
+      "description": "configuration options related to the compilation cache",
+      "properties": {
+        "compilations_before_purge": {
+          "description": "interval, in number of compilations, at which the cache is purged, defaults to `10`. When `0` the cache is never purged.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "ttl": {
+          "description": "cache expiration time of build folders. If the cache is hit by a compilation the corresponding build files lifetime is renewed. The value format must be a valid input for time.ParseDuration(), defaults to `720h` (30 days)",
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^\\+?([0-9]?\\.?[0-9]+(([nuµm]?s)|m|h))+$"
+            }
+          ]
         }
       },
       "type": "object"
     },
     "daemon": {
-      "additionalProperties": false,
-      "description": "options related to running Arduino CLI as a [gRPC](https://grpc.io/) server.",
+      "description": "options related to running Arduino CLI as a [gRPC] server.",
       "properties": {
         "port": {
           "description": "TCP port used for gRPC client connections.",
-          "type": "string"
+          "type": "string",
+          "pattern": "^[0-9]+$"
         }
       },
       "type": "object"
     },
     "directories": {
-      "additionalProperties": false,
       "description": "directories used by Arduino CLI.",
       "properties": {
-        "builtins": {
-          "additionalProperties": false,
+        "builtin": {
+          "description": "",
           "properties": {
             "libraries": {
               "description": "the libraries in this directory will be available to all platforms without the need for the user to install them, but with the lowest priority over other installed libraries with the same name, it's the equivalent of the Arduino IDE's bundled libraries directory.",
@@ -41,7 +64,10 @@
             },
             "tools": {
               "description": "it's a list of directories of tools that will be available to all platforms without the need for the user to install them, it's the equivalent of the Arduino IDE 1.x bundled tools directory.",
-              "type": "string"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           "type": "object"
@@ -55,18 +81,17 @@
           "type": "string"
         },
         "user": {
-          "description": "the equivalent of the Arduino IDE's [\"sketchbook\" directory](https://arduino.github.io/arduino-cli/latest/sketch-specification/#sketchbook). Library Manager installations are made to the libraries subdirectory of the user directory.",
+          "description": "the equivalent of the Arduino IDE's [\"sketchbook\" directory][sketchbook directory]. Library Manager installations are made to the `libraries` subdirectory of the user directory.",
           "type": "string"
         }
       },
       "type": "object"
     },
     "library": {
-      "additionalProperties": false,
       "description": "configuration options relating to Arduino libraries.",
       "properties": {
         "enable_unsafe_install": {
-          "description": "set to `true` to enable the use of the `--git-url` and `--zip-file` flags with [`arduino-cli lib install`](https://arduino.github.io/arduino-cli/latest/commands/arduino-cli_lib_install/). These are considered \"unsafe\" installation methods because they allow installing files that have not passed through the Library Manager submission process.",
+          "description": "set to `true` to enable the use of the `--git-url` and `--zip-file` flags with [`arduino-cli lib install`][arduino cli lib install]. These are considered \"unsafe\" installation methods because they allow installing files that have not passed through the Library Manager submission process.",
           "type": "boolean"
         }
       },
@@ -77,7 +102,6 @@
       "type": "string"
     },
     "logging": {
-      "additionalProperties": false,
       "description": "configuration options for Arduino CLI's logs.",
       "properties": {
         "file": {
@@ -86,19 +110,18 @@
         },
         "format": {
           "description": "output format for the logs. Allowed values are `text` or `json`.",
-          "enum": ["text", "json"],
-          "type": "string"
+          "type": "string",
+          "enum": ["text", "json"]
         },
         "level": {
           "description": "messages with this level and above will be logged. Valid levels are: `trace`, `debug`, `info`, `warn`, `error`, `fatal`, `panic`.",
-          "enum": ["trace", "debug", "info", "warn", "error", "fatal", "panic"],
-          "type": "string"
+          "type": "string",
+          "enum": ["trace", "debug", "info", "warn", "error", "fatal", "panic"]
         }
       },
       "type": "object"
     },
     "metrics": {
-      "additionalProperties": false,
       "description": "settings related to the collection of data used for continued improvement of Arduino CLI.",
       "properties": {
         "addr": {
@@ -112,45 +135,23 @@
       },
       "type": "object"
     },
-    "network": {
-      "additionalProperties": false,
-      "properties": {
-        "proxy": {
-          "type": "string"
-        },
-        "user_agent_ext": {
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "output": {
-      "additionalProperties": false,
-      "properties": {
-        "no_color": {
-          "type": "boolean"
-        }
-      },
-      "type": "object"
-    },
     "sketch": {
-      "additionalProperties": false,
-      "description": "configuration options relating to [Arduino sketches](https://arduino.github.io/arduino-cli/latest/sketch-specification/).",
+      "description": "configuration options relating to [Arduino sketches][sketch specification].",
       "properties": {
         "always_export_binaries": {
-          "description": "set to `true` to make [`arduino-cli compile`](https://arduino.github.io/arduino-cli/latest/commands/arduino-cli_compile/) always save binaries to the sketch folder. This is the equivalent of using the [`--export-binaries`](https://arduino.github.io/arduino-cli/latest/commands/arduino-cli_compile/#options) flag.",
+          "description": "set to `true` to make [`arduino-cli compile`][arduino-cli compile] always save binaries to the sketch folder. This is the equivalent of using the [`--export-binaries`][arduino-cli compile options] flag.",
           "type": "boolean"
         }
       },
       "type": "object"
     },
     "updater": {
-      "additionalProperties": false,
       "description": "configuration options related to Arduino CLI updates",
       "properties": {
         "enable_notification": {
           "description": "set to `false` to disable notifications of new Arduino CLI releases, defaults to `true`",
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         }
       },
       "type": "object"

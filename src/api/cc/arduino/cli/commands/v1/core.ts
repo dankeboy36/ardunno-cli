@@ -2,8 +2,6 @@
 import _m0 from 'protobufjs/minimal';
 import { DownloadProgress, Instance, Platform, TaskProgress } from './common';
 
-export const protobufPackage = 'cc.arduino.cli.commands.v1';
-
 export interface PlatformInstallRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
@@ -31,6 +29,8 @@ export interface PlatformInstallResponse {
     /** Description of the current stage of the installation. */
     taskProgress: TaskProgress | undefined;
 }
+
+export interface PlatformLoadingError {}
 
 export interface PlatformDownloadRequest {
     /** Arduino Core Service instance from the `Init` response. */
@@ -171,34 +171,59 @@ export const PlatformInstallRequest = {
         length?: number
     ): PlatformInstallRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformInstallRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.platformPackage = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.architecture = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.version = reader.string();
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 40) {
+                        break;
+                    }
+
                     message.skipPostInstall = reader.bool();
-                    break;
+                    continue;
                 case 6:
+                    if (tag !== 48) {
+                        break;
+                    }
+
                     message.noOverwrite = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -240,6 +265,10 @@ export const PlatformInstallRequest = {
         message.noOverwrite !== undefined &&
             (obj.noOverwrite = message.noOverwrite);
         return obj;
+    },
+
+    create(base?: DeepPartial<PlatformInstallRequest>): PlatformInstallRequest {
+        return PlatformInstallRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -288,28 +317,37 @@ export const PlatformInstallResponse = {
         length?: number
     ): PlatformInstallResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformInstallResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.progress = DownloadProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.taskProgress = TaskProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -338,6 +376,12 @@ export const PlatformInstallResponse = {
         return obj;
     },
 
+    create(
+        base?: DeepPartial<PlatformInstallResponse>
+    ): PlatformInstallResponse {
+        return PlatformInstallResponse.fromPartial(base ?? {});
+    },
+
     fromPartial(
         object: DeepPartial<PlatformInstallResponse>
     ): PlatformInstallResponse {
@@ -350,6 +394,57 @@ export const PlatformInstallResponse = {
             object.taskProgress !== undefined && object.taskProgress !== null
                 ? TaskProgress.fromPartial(object.taskProgress)
                 : undefined;
+        return message;
+    },
+};
+
+function createBasePlatformLoadingError(): PlatformLoadingError {
+    return {};
+}
+
+export const PlatformLoadingError = {
+    encode(
+        _: PlatformLoadingError,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformLoadingError {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBasePlatformLoadingError();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(_: any): PlatformLoadingError {
+        return {};
+    },
+
+    toJSON(_: PlatformLoadingError): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(base?: DeepPartial<PlatformLoadingError>): PlatformLoadingError {
+        return PlatformLoadingError.fromPartial(base ?? {});
+    },
+
+    fromPartial(_: DeepPartial<PlatformLoadingError>): PlatformLoadingError {
+        const message = createBasePlatformLoadingError();
         return message;
     },
 };
@@ -391,28 +486,45 @@ export const PlatformDownloadRequest = {
         length?: number
     ): PlatformDownloadRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformDownloadRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.platformPackage = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.architecture = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.version = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -444,6 +556,12 @@ export const PlatformDownloadRequest = {
             (obj.architecture = message.architecture);
         message.version !== undefined && (obj.version = message.version);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<PlatformDownloadRequest>
+    ): PlatformDownloadRequest {
+        return PlatformDownloadRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -484,22 +602,27 @@ export const PlatformDownloadResponse = {
         length?: number
     ): PlatformDownloadResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformDownloadResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.progress = DownloadProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -519,6 +642,12 @@ export const PlatformDownloadResponse = {
                 ? DownloadProgress.toJSON(message.progress)
                 : undefined);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<PlatformDownloadResponse>
+    ): PlatformDownloadResponse {
+        return PlatformDownloadResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -562,25 +691,38 @@ export const PlatformUninstallRequest = {
         length?: number
     ): PlatformUninstallRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformUninstallRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.platformPackage = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.architecture = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -610,6 +752,12 @@ export const PlatformUninstallRequest = {
         message.architecture !== undefined &&
             (obj.architecture = message.architecture);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<PlatformUninstallRequest>
+    ): PlatformUninstallRequest {
+        return PlatformUninstallRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -649,22 +797,27 @@ export const PlatformUninstallResponse = {
         length?: number
     ): PlatformUninstallResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformUninstallResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.taskProgress = TaskProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -684,6 +837,12 @@ export const PlatformUninstallResponse = {
                 ? TaskProgress.toJSON(message.taskProgress)
                 : undefined);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<PlatformUninstallResponse>
+    ): PlatformUninstallResponse {
+        return PlatformUninstallResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -715,16 +874,17 @@ export const AlreadyAtLatestVersionError = {
         length?: number
     ): AlreadyAtLatestVersionError {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseAlreadyAtLatestVersionError();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
-                default:
-                    reader.skipType(tag & 7);
-                    break;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -736,6 +896,12 @@ export const AlreadyAtLatestVersionError = {
     toJSON(_: AlreadyAtLatestVersionError): unknown {
         const obj: any = {};
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<AlreadyAtLatestVersionError>
+    ): AlreadyAtLatestVersionError {
+        return AlreadyAtLatestVersionError.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -783,28 +949,45 @@ export const PlatformUpgradeRequest = {
         length?: number
     ): PlatformUpgradeRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformUpgradeRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.platformPackage = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.architecture = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
                     message.skipPostInstall = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -839,6 +1022,10 @@ export const PlatformUpgradeRequest = {
         message.skipPostInstall !== undefined &&
             (obj.skipPostInstall = message.skipPostInstall);
         return obj;
+    },
+
+    create(base?: DeepPartial<PlatformUpgradeRequest>): PlatformUpgradeRequest {
+        return PlatformUpgradeRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -885,28 +1072,37 @@ export const PlatformUpgradeResponse = {
         length?: number
     ): PlatformUpgradeResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformUpgradeResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.progress = DownloadProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.taskProgress = TaskProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -933,6 +1129,12 @@ export const PlatformUpgradeResponse = {
                 ? TaskProgress.toJSON(message.taskProgress)
                 : undefined);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<PlatformUpgradeResponse>
+    ): PlatformUpgradeResponse {
+        return PlatformUpgradeResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -980,25 +1182,38 @@ export const PlatformSearchRequest = {
         length?: number
     ): PlatformSearchRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformSearchRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.searchArgs = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
                     message.allVersions = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1028,6 +1243,10 @@ export const PlatformSearchRequest = {
         message.allVersions !== undefined &&
             (obj.allVersions = message.allVersions);
         return obj;
+    },
+
+    create(base?: DeepPartial<PlatformSearchRequest>): PlatformSearchRequest {
+        return PlatformSearchRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1064,21 +1283,26 @@ export const PlatformSearchResponse = {
         length?: number
     ): PlatformSearchResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformSearchResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.searchOutput.push(
                         Platform.decode(reader, reader.uint32())
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1101,6 +1325,10 @@ export const PlatformSearchResponse = {
             obj.searchOutput = [];
         }
         return obj;
+    },
+
+    create(base?: DeepPartial<PlatformSearchResponse>): PlatformSearchResponse {
+        return PlatformSearchResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1142,25 +1370,38 @@ export const PlatformListRequest = {
         length?: number
     ): PlatformListRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformListRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 16) {
+                        break;
+                    }
+
                     message.updatableOnly = reader.bool();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
                     message.all = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1187,6 +1428,10 @@ export const PlatformListRequest = {
             (obj.updatableOnly = message.updatableOnly);
         message.all !== undefined && (obj.all = message.all);
         return obj;
+    },
+
+    create(base?: DeepPartial<PlatformListRequest>): PlatformListRequest {
+        return PlatformListRequest.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<PlatformListRequest>): PlatformListRequest {
@@ -1221,21 +1466,26 @@ export const PlatformListResponse = {
         length?: number
     ): PlatformListResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatformListResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.installedPlatforms.push(
                         Platform.decode(reader, reader.uint32())
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1262,6 +1512,10 @@ export const PlatformListResponse = {
         return obj;
     },
 
+    create(base?: DeepPartial<PlatformListResponse>): PlatformListResponse {
+        return PlatformListResponse.fromPartial(base ?? {});
+    },
+
     fromPartial(
         object: DeepPartial<PlatformListResponse>
     ): PlatformListResponse {
@@ -1282,7 +1536,7 @@ type Builtin =
     | boolean
     | undefined;
 
-export type DeepPartial<T> = T extends Builtin
+type DeepPartial<T> = T extends Builtin
     ? T
     : T extends Array<infer U>
     ? Array<DeepPartial<U>>

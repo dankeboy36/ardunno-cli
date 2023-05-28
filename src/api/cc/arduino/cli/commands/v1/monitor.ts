@@ -3,8 +3,6 @@ import _m0 from 'protobufjs/minimal';
 import { Instance } from './common';
 import { Port } from './port';
 
-export const protobufPackage = 'cc.arduino.cli.commands.v1';
-
 export interface MonitorRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
@@ -125,34 +123,55 @@ export const MonitorRequest = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): MonitorRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseMonitorRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.port = Port.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.fqbn = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.txData = reader.bytes();
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
                     message.portConfiguration = MonitorPortConfiguration.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -191,6 +210,10 @@ export const MonitorRequest = {
                 ? MonitorPortConfiguration.toJSON(message.portConfiguration)
                 : undefined);
         return obj;
+    },
+
+    create(base?: DeepPartial<MonitorRequest>): MonitorRequest {
+        return MonitorRequest.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<MonitorRequest>): MonitorRequest {
@@ -234,21 +257,26 @@ export const MonitorPortConfiguration = {
         length?: number
     ): MonitorPortConfiguration {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseMonitorPortConfiguration();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.settings.push(
                         MonitorPortSetting.decode(reader, reader.uint32())
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -273,6 +301,12 @@ export const MonitorPortConfiguration = {
             obj.settings = [];
         }
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<MonitorPortConfiguration>
+    ): MonitorPortConfiguration {
+        return MonitorPortConfiguration.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -317,30 +351,47 @@ export const MonitorResponse = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): MonitorResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseMonitorResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.error = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.rxData = reader.bytes();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.appliedSettings.push(
                         MonitorPortSetting.decode(reader, reader.uint32())
                     );
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
                     message.success = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -376,6 +427,10 @@ export const MonitorResponse = {
         }
         message.success !== undefined && (obj.success = message.success);
         return obj;
+    },
+
+    create(base?: DeepPartial<MonitorResponse>): MonitorResponse {
+        return MonitorResponse.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<MonitorResponse>): MonitorResponse {
@@ -414,22 +469,31 @@ export const MonitorPortSetting = {
         length?: number
     ): MonitorPortSetting {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseMonitorPortSetting();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.settingId = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.value = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -446,6 +510,10 @@ export const MonitorPortSetting = {
         message.settingId !== undefined && (obj.settingId = message.settingId);
         message.value !== undefined && (obj.value = message.value);
         return obj;
+    },
+
+    create(base?: DeepPartial<MonitorPortSetting>): MonitorPortSetting {
+        return MonitorPortSetting.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<MonitorPortSetting>): MonitorPortSetting {
@@ -485,25 +553,38 @@ export const EnumerateMonitorPortSettingsRequest = {
         length?: number
     ): EnumerateMonitorPortSettingsRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseEnumerateMonitorPortSettingsRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.portProtocol = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.fqbn = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -530,6 +611,12 @@ export const EnumerateMonitorPortSettingsRequest = {
             (obj.portProtocol = message.portProtocol);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<EnumerateMonitorPortSettingsRequest>
+    ): EnumerateMonitorPortSettingsRequest {
+        return EnumerateMonitorPortSettingsRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -569,24 +656,29 @@ export const EnumerateMonitorPortSettingsResponse = {
         length?: number
     ): EnumerateMonitorPortSettingsResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseEnumerateMonitorPortSettingsResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.settings.push(
                         MonitorPortSettingDescriptor.decode(
                             reader,
                             reader.uint32()
                         )
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -611,6 +703,12 @@ export const EnumerateMonitorPortSettingsResponse = {
             obj.settings = [];
         }
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<EnumerateMonitorPortSettingsResponse>
+    ): EnumerateMonitorPortSettingsResponse {
+        return EnumerateMonitorPortSettingsResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -657,31 +755,52 @@ export const MonitorPortSettingDescriptor = {
         length?: number
     ): MonitorPortSettingDescriptor {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseMonitorPortSettingDescriptor();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.settingId = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.label = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.type = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.enumValues.push(reader.string());
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
                     message.value = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -712,6 +831,12 @@ export const MonitorPortSettingDescriptor = {
         return obj;
     },
 
+    create(
+        base?: DeepPartial<MonitorPortSettingDescriptor>
+    ): MonitorPortSettingDescriptor {
+        return MonitorPortSettingDescriptor.fromPartial(base ?? {});
+    },
+
     fromPartial(
         object: DeepPartial<MonitorPortSettingDescriptor>
     ): MonitorPortSettingDescriptor {
@@ -728,7 +853,7 @@ export const MonitorPortSettingDescriptor = {
 declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
-var globalThis: any = (() => {
+var tsProtoGlobalThis: any = (() => {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
     }
@@ -745,10 +870,10 @@ var globalThis: any = (() => {
 })();
 
 function bytesFromBase64(b64: string): Uint8Array {
-    if (globalThis.Buffer) {
-        return Uint8Array.from(globalThis.Buffer.from(b64, 'base64'));
+    if (tsProtoGlobalThis.Buffer) {
+        return Uint8Array.from(tsProtoGlobalThis.Buffer.from(b64, 'base64'));
     } else {
-        const bin = globalThis.atob(b64);
+        const bin = tsProtoGlobalThis.atob(b64);
         const arr = new Uint8Array(bin.length);
         for (let i = 0; i < bin.length; ++i) {
             arr[i] = bin.charCodeAt(i);
@@ -758,14 +883,14 @@ function bytesFromBase64(b64: string): Uint8Array {
 }
 
 function base64FromBytes(arr: Uint8Array): string {
-    if (globalThis.Buffer) {
-        return globalThis.Buffer.from(arr).toString('base64');
+    if (tsProtoGlobalThis.Buffer) {
+        return tsProtoGlobalThis.Buffer.from(arr).toString('base64');
     } else {
         const bin: string[] = [];
         arr.forEach((byte) => {
             bin.push(String.fromCharCode(byte));
         });
-        return globalThis.btoa(bin.join(''));
+        return tsProtoGlobalThis.btoa(bin.join(''));
     }
 }
 
@@ -778,7 +903,7 @@ type Builtin =
     | boolean
     | undefined;
 
-export type DeepPartial<T> = T extends Builtin
+type DeepPartial<T> = T extends Builtin
     ? T
     : T extends Array<infer U>
     ? Array<DeepPartial<U>>

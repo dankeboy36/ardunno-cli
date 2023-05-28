@@ -3,8 +3,6 @@ import _m0 from 'protobufjs/minimal';
 import { Instance, Programmer } from './common';
 import { Port } from './port';
 
-export const protobufPackage = 'cc.arduino.cli.commands.v1';
-
 export interface UploadRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
@@ -287,43 +285,87 @@ export const UploadRequest = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): UploadRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUploadRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.fqbn = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.sketchPath = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.port = Port.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 40) {
+                        break;
+                    }
+
                     message.verbose = reader.bool();
-                    break;
+                    continue;
                 case 6:
+                    if (tag !== 48) {
+                        break;
+                    }
+
                     message.verify = reader.bool();
-                    break;
+                    continue;
                 case 7:
+                    if (tag !== 58) {
+                        break;
+                    }
+
                     message.importFile = reader.string();
-                    break;
+                    continue;
                 case 8:
+                    if (tag !== 66) {
+                        break;
+                    }
+
                     message.importDir = reader.string();
-                    break;
+                    continue;
                 case 9:
+                    if (tag !== 74) {
+                        break;
+                    }
+
                     message.programmer = reader.string();
-                    break;
+                    continue;
                 case 10:
+                    if (tag !== 80) {
+                        break;
+                    }
+
                     message.dryRun = reader.bool();
-                    break;
+                    continue;
                 case 11:
+                    if (tag !== 90) {
+                        break;
+                    }
+
                     const entry11 = UploadRequest_UserFieldsEntry.decode(
                         reader,
                         reader.uint32()
@@ -331,11 +373,12 @@ export const UploadRequest = {
                     if (entry11.value !== undefined) {
                         message.userFields[entry11.key] = entry11.value;
                     }
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -399,6 +442,10 @@ export const UploadRequest = {
         return obj;
     },
 
+    create(base?: DeepPartial<UploadRequest>): UploadRequest {
+        return UploadRequest.fromPartial(base ?? {});
+    },
+
     fromPartial(object: DeepPartial<UploadRequest>): UploadRequest {
         const message = createBaseUploadRequest();
         message.instance =
@@ -452,22 +499,31 @@ export const UploadRequest_UserFieldsEntry = {
         length?: number
     ): UploadRequest_UserFieldsEntry {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUploadRequest_UserFieldsEntry();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.key = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.value = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -484,6 +540,12 @@ export const UploadRequest_UserFieldsEntry = {
         message.key !== undefined && (obj.key = message.key);
         message.value !== undefined && (obj.value = message.value);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<UploadRequest_UserFieldsEntry>
+    ): UploadRequest_UserFieldsEntry {
+        return UploadRequest_UserFieldsEntry.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -516,22 +578,31 @@ export const UploadResponse = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): UploadResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUploadResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.outStream = reader.bytes();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.errStream = reader.bytes();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -564,6 +635,10 @@ export const UploadResponse = {
         return obj;
     },
 
+    create(base?: DeepPartial<UploadResponse>): UploadResponse {
+        return UploadResponse.fromPartial(base ?? {});
+    },
+
     fromPartial(object: DeepPartial<UploadResponse>): UploadResponse {
         const message = createBaseUploadResponse();
         message.outStream = object.outStream ?? new Uint8Array();
@@ -589,16 +664,17 @@ export const ProgrammerIsRequiredForUploadError = {
         length?: number
     ): ProgrammerIsRequiredForUploadError {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseProgrammerIsRequiredForUploadError();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
-                default:
-                    reader.skipType(tag & 7);
-                    break;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -610,6 +686,12 @@ export const ProgrammerIsRequiredForUploadError = {
     toJSON(_: ProgrammerIsRequiredForUploadError): unknown {
         const obj: any = {};
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<ProgrammerIsRequiredForUploadError>
+    ): ProgrammerIsRequiredForUploadError {
+        return ProgrammerIsRequiredForUploadError.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -688,43 +770,87 @@ export const UploadUsingProgrammerRequest = {
         length?: number
     ): UploadUsingProgrammerRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUploadUsingProgrammerRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.fqbn = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.sketchPath = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.port = Port.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 40) {
+                        break;
+                    }
+
                     message.verbose = reader.bool();
-                    break;
+                    continue;
                 case 6:
+                    if (tag !== 48) {
+                        break;
+                    }
+
                     message.verify = reader.bool();
-                    break;
+                    continue;
                 case 7:
+                    if (tag !== 58) {
+                        break;
+                    }
+
                     message.importFile = reader.string();
-                    break;
+                    continue;
                 case 8:
+                    if (tag !== 66) {
+                        break;
+                    }
+
                     message.importDir = reader.string();
-                    break;
+                    continue;
                 case 9:
+                    if (tag !== 74) {
+                        break;
+                    }
+
                     message.programmer = reader.string();
-                    break;
+                    continue;
                 case 10:
+                    if (tag !== 80) {
+                        break;
+                    }
+
                     message.dryRun = reader.bool();
-                    break;
+                    continue;
                 case 11:
+                    if (tag !== 90) {
+                        break;
+                    }
+
                     const entry11 =
                         UploadUsingProgrammerRequest_UserFieldsEntry.decode(
                             reader,
@@ -733,11 +859,12 @@ export const UploadUsingProgrammerRequest = {
                     if (entry11.value !== undefined) {
                         message.userFields[entry11.key] = entry11.value;
                     }
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -801,6 +928,12 @@ export const UploadUsingProgrammerRequest = {
         return obj;
     },
 
+    create(
+        base?: DeepPartial<UploadUsingProgrammerRequest>
+    ): UploadUsingProgrammerRequest {
+        return UploadUsingProgrammerRequest.fromPartial(base ?? {});
+    },
+
     fromPartial(
         object: DeepPartial<UploadUsingProgrammerRequest>
     ): UploadUsingProgrammerRequest {
@@ -856,7 +989,7 @@ export const UploadUsingProgrammerRequest_UserFieldsEntry = {
         length?: number
     ): UploadUsingProgrammerRequest_UserFieldsEntry {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message =
             createBaseUploadUsingProgrammerRequest_UserFieldsEntry();
@@ -864,15 +997,24 @@ export const UploadUsingProgrammerRequest_UserFieldsEntry = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.key = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.value = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -889,6 +1031,14 @@ export const UploadUsingProgrammerRequest_UserFieldsEntry = {
         message.key !== undefined && (obj.key = message.key);
         message.value !== undefined && (obj.value = message.value);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<UploadUsingProgrammerRequest_UserFieldsEntry>
+    ): UploadUsingProgrammerRequest_UserFieldsEntry {
+        return UploadUsingProgrammerRequest_UserFieldsEntry.fromPartial(
+            base ?? {}
+        );
     },
 
     fromPartial(
@@ -925,22 +1075,31 @@ export const UploadUsingProgrammerResponse = {
         length?: number
     ): UploadUsingProgrammerResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUploadUsingProgrammerResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.outStream = reader.bytes();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.errStream = reader.bytes();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -971,6 +1130,12 @@ export const UploadUsingProgrammerResponse = {
                     : new Uint8Array()
             ));
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<UploadUsingProgrammerResponse>
+    ): UploadUsingProgrammerResponse {
+        return UploadUsingProgrammerResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1039,34 +1204,66 @@ export const BurnBootloaderRequest = {
         length?: number
     ): BurnBootloaderRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBurnBootloaderRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.fqbn = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.port = Port.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
                     message.verbose = reader.bool();
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 40) {
+                        break;
+                    }
+
                     message.verify = reader.bool();
-                    break;
+                    continue;
                 case 6:
+                    if (tag !== 50) {
+                        break;
+                    }
+
                     message.programmer = reader.string();
-                    break;
+                    continue;
                 case 7:
+                    if (tag !== 56) {
+                        break;
+                    }
+
                     message.dryRun = reader.bool();
-                    break;
+                    continue;
                 case 11:
+                    if (tag !== 90) {
+                        break;
+                    }
+
                     const entry11 =
                         BurnBootloaderRequest_UserFieldsEntry.decode(
                             reader,
@@ -1075,11 +1272,12 @@ export const BurnBootloaderRequest = {
                     if (entry11.value !== undefined) {
                         message.userFields[entry11.key] = entry11.value;
                     }
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1129,6 +1327,10 @@ export const BurnBootloaderRequest = {
             });
         }
         return obj;
+    },
+
+    create(base?: DeepPartial<BurnBootloaderRequest>): BurnBootloaderRequest {
+        return BurnBootloaderRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1183,22 +1385,31 @@ export const BurnBootloaderRequest_UserFieldsEntry = {
         length?: number
     ): BurnBootloaderRequest_UserFieldsEntry {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBurnBootloaderRequest_UserFieldsEntry();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.key = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.value = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1215,6 +1426,12 @@ export const BurnBootloaderRequest_UserFieldsEntry = {
         message.key !== undefined && (obj.key = message.key);
         message.value !== undefined && (obj.value = message.value);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<BurnBootloaderRequest_UserFieldsEntry>
+    ): BurnBootloaderRequest_UserFieldsEntry {
+        return BurnBootloaderRequest_UserFieldsEntry.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1250,22 +1467,31 @@ export const BurnBootloaderResponse = {
         length?: number
     ): BurnBootloaderResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBurnBootloaderResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.outStream = reader.bytes();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.errStream = reader.bytes();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1296,6 +1522,10 @@ export const BurnBootloaderResponse = {
                     : new Uint8Array()
             ));
         return obj;
+    },
+
+    create(base?: DeepPartial<BurnBootloaderResponse>): BurnBootloaderResponse {
+        return BurnBootloaderResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1334,22 +1564,31 @@ export const ListProgrammersAvailableForUploadRequest = {
         length?: number
     ): ListProgrammersAvailableForUploadRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseListProgrammersAvailableForUploadRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.fqbn = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1371,6 +1610,12 @@ export const ListProgrammersAvailableForUploadRequest = {
                 : undefined);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<ListProgrammersAvailableForUploadRequest>
+    ): ListProgrammersAvailableForUploadRequest {
+        return ListProgrammersAvailableForUploadRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1406,21 +1651,26 @@ export const ListProgrammersAvailableForUploadResponse = {
         length?: number
     ): ListProgrammersAvailableForUploadResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseListProgrammersAvailableForUploadResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.programmers.push(
                         Programmer.decode(reader, reader.uint32())
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1443,6 +1693,14 @@ export const ListProgrammersAvailableForUploadResponse = {
             obj.programmers = [];
         }
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<ListProgrammersAvailableForUploadResponse>
+    ): ListProgrammersAvailableForUploadResponse {
+        return ListProgrammersAvailableForUploadResponse.fromPartial(
+            base ?? {}
+        );
     },
 
     fromPartial(
@@ -1484,25 +1742,38 @@ export const SupportedUserFieldsRequest = {
         length?: number
     ): SupportedUserFieldsRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseSupportedUserFieldsRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.fqbn = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.protocol = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1526,6 +1797,12 @@ export const SupportedUserFieldsRequest = {
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         message.protocol !== undefined && (obj.protocol = message.protocol);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<SupportedUserFieldsRequest>
+    ): SupportedUserFieldsRequest {
+        return SupportedUserFieldsRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1568,28 +1845,45 @@ export const UserField = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): UserField {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseUserField();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.toolId = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.label = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
                     message.secret = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1610,6 +1904,10 @@ export const UserField = {
         message.label !== undefined && (obj.label = message.label);
         message.secret !== undefined && (obj.secret = message.secret);
         return obj;
+    },
+
+    create(base?: DeepPartial<UserField>): UserField {
+        return UserField.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<UserField>): UserField {
@@ -1642,21 +1940,26 @@ export const SupportedUserFieldsResponse = {
         length?: number
     ): SupportedUserFieldsResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseSupportedUserFieldsResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.userFields.push(
                         UserField.decode(reader, reader.uint32())
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1681,6 +1984,12 @@ export const SupportedUserFieldsResponse = {
         return obj;
     },
 
+    create(
+        base?: DeepPartial<SupportedUserFieldsResponse>
+    ): SupportedUserFieldsResponse {
+        return SupportedUserFieldsResponse.fromPartial(base ?? {});
+    },
+
     fromPartial(
         object: DeepPartial<SupportedUserFieldsResponse>
     ): SupportedUserFieldsResponse {
@@ -1694,7 +2003,7 @@ export const SupportedUserFieldsResponse = {
 declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
-var globalThis: any = (() => {
+var tsProtoGlobalThis: any = (() => {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
     }
@@ -1711,10 +2020,10 @@ var globalThis: any = (() => {
 })();
 
 function bytesFromBase64(b64: string): Uint8Array {
-    if (globalThis.Buffer) {
-        return Uint8Array.from(globalThis.Buffer.from(b64, 'base64'));
+    if (tsProtoGlobalThis.Buffer) {
+        return Uint8Array.from(tsProtoGlobalThis.Buffer.from(b64, 'base64'));
     } else {
-        const bin = globalThis.atob(b64);
+        const bin = tsProtoGlobalThis.atob(b64);
         const arr = new Uint8Array(bin.length);
         for (let i = 0; i < bin.length; ++i) {
             arr[i] = bin.charCodeAt(i);
@@ -1724,14 +2033,14 @@ function bytesFromBase64(b64: string): Uint8Array {
 }
 
 function base64FromBytes(arr: Uint8Array): string {
-    if (globalThis.Buffer) {
-        return globalThis.Buffer.from(arr).toString('base64');
+    if (tsProtoGlobalThis.Buffer) {
+        return tsProtoGlobalThis.Buffer.from(arr).toString('base64');
     } else {
         const bin: string[] = [];
         arr.forEach((byte) => {
             bin.push(String.fromCharCode(byte));
         });
-        return globalThis.btoa(bin.join(''));
+        return tsProtoGlobalThis.btoa(bin.join(''));
     }
 }
 
@@ -1744,7 +2053,7 @@ type Builtin =
     | boolean
     | undefined;
 
-export type DeepPartial<T> = T extends Builtin
+type DeepPartial<T> = T extends Builtin
     ? T
     : T extends Array<infer U>
     ? Array<DeepPartial<U>>
