@@ -1,8 +1,6 @@
 /* eslint-disable */
-import { CallContext, CallOptions } from 'nice-grpc-common';
+import type { CallContext, CallOptions } from 'nice-grpc-common';
 import _m0 from 'protobufjs/minimal';
-
-export const protobufPackage = 'cc.arduino.cli.settings.v1';
 
 export interface GetAllResponse {
     /** The settings, in JSON format. */
@@ -63,19 +61,24 @@ export const GetAllResponse = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): GetAllResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseGetAllResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.jsonData = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -90,6 +93,10 @@ export const GetAllResponse = {
         const obj: any = {};
         message.jsonData !== undefined && (obj.jsonData = message.jsonData);
         return obj;
+    },
+
+    create(base?: DeepPartial<GetAllResponse>): GetAllResponse {
+        return GetAllResponse.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<GetAllResponse>): GetAllResponse {
@@ -116,19 +123,24 @@ export const MergeRequest = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): MergeRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseMergeRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.jsonData = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -143,6 +155,10 @@ export const MergeRequest = {
         const obj: any = {};
         message.jsonData !== undefined && (obj.jsonData = message.jsonData);
         return obj;
+    },
+
+    create(base?: DeepPartial<MergeRequest>): MergeRequest {
+        return MergeRequest.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<MergeRequest>): MergeRequest {
@@ -172,22 +188,31 @@ export const GetValueResponse = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): GetValueResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseGetValueResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.key = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.jsonData = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -204,6 +229,10 @@ export const GetValueResponse = {
         message.key !== undefined && (obj.key = message.key);
         message.jsonData !== undefined && (obj.jsonData = message.jsonData);
         return obj;
+    },
+
+    create(base?: DeepPartial<GetValueResponse>): GetValueResponse {
+        return GetValueResponse.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<GetValueResponse>): GetValueResponse {
@@ -234,22 +263,31 @@ export const SetValueRequest = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): SetValueRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseSetValueRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.key = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.jsonData = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -266,6 +304,10 @@ export const SetValueRequest = {
         message.key !== undefined && (obj.key = message.key);
         message.jsonData !== undefined && (obj.jsonData = message.jsonData);
         return obj;
+    },
+
+    create(base?: DeepPartial<SetValueRequest>): SetValueRequest {
+        return SetValueRequest.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<SetValueRequest>): SetValueRequest {
@@ -290,16 +332,17 @@ export const GetAllRequest = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): GetAllRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseGetAllRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
-                default:
-                    reader.skipType(tag & 7);
-                    break;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -311,6 +354,10 @@ export const GetAllRequest = {
     toJSON(_: GetAllRequest): unknown {
         const obj: any = {};
         return obj;
+    },
+
+    create(base?: DeepPartial<GetAllRequest>): GetAllRequest {
+        return GetAllRequest.fromPartial(base ?? {});
     },
 
     fromPartial(_: DeepPartial<GetAllRequest>): GetAllRequest {
@@ -336,19 +383,24 @@ export const GetValueRequest = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): GetValueRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseGetValueRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.key = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -361,6 +413,10 @@ export const GetValueRequest = {
         const obj: any = {};
         message.key !== undefined && (obj.key = message.key);
         return obj;
+    },
+
+    create(base?: DeepPartial<GetValueRequest>): GetValueRequest {
+        return GetValueRequest.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<GetValueRequest>): GetValueRequest {
@@ -384,16 +440,17 @@ export const MergeResponse = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): MergeResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseMergeResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
-                default:
-                    reader.skipType(tag & 7);
-                    break;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -405,6 +462,10 @@ export const MergeResponse = {
     toJSON(_: MergeResponse): unknown {
         const obj: any = {};
         return obj;
+    },
+
+    create(base?: DeepPartial<MergeResponse>): MergeResponse {
+        return MergeResponse.fromPartial(base ?? {});
     },
 
     fromPartial(_: DeepPartial<MergeResponse>): MergeResponse {
@@ -427,16 +488,17 @@ export const SetValueResponse = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): SetValueResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseSetValueResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
-                default:
-                    reader.skipType(tag & 7);
-                    break;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -448,6 +510,10 @@ export const SetValueResponse = {
     toJSON(_: SetValueResponse): unknown {
         const obj: any = {};
         return obj;
+    },
+
+    create(base?: DeepPartial<SetValueResponse>): SetValueResponse {
+        return SetValueResponse.fromPartial(base ?? {});
     },
 
     fromPartial(_: DeepPartial<SetValueResponse>): SetValueResponse {
@@ -473,19 +539,24 @@ export const WriteRequest = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): WriteRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseWriteRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.filePath = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -500,6 +571,10 @@ export const WriteRequest = {
         const obj: any = {};
         message.filePath !== undefined && (obj.filePath = message.filePath);
         return obj;
+    },
+
+    create(base?: DeepPartial<WriteRequest>): WriteRequest {
+        return WriteRequest.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<WriteRequest>): WriteRequest {
@@ -523,16 +598,17 @@ export const WriteResponse = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): WriteResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseWriteResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
-                default:
-                    reader.skipType(tag & 7);
-                    break;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -544,6 +620,10 @@ export const WriteResponse = {
     toJSON(_: WriteResponse): unknown {
         const obj: any = {};
         return obj;
+    },
+
+    create(base?: DeepPartial<WriteResponse>): WriteResponse {
+        return WriteResponse.fromPartial(base ?? {});
     },
 
     fromPartial(_: DeepPartial<WriteResponse>): WriteResponse {
@@ -609,7 +689,7 @@ export const SettingsServiceDefinition = {
     },
 } as const;
 
-export interface SettingsServiceServiceImplementation<CallContextExt = {}> {
+export interface SettingsServiceImplementation<CallContextExt = {}> {
     /** List all the settings. */
     getAll(
         request: GetAllRequest,
@@ -674,7 +754,7 @@ type Builtin =
     | boolean
     | undefined;
 
-export type DeepPartial<T> = T extends Builtin
+type DeepPartial<T> = T extends Builtin
     ? T
     : T extends Array<infer U>
     ? Array<DeepPartial<U>>

@@ -1,10 +1,8 @@
 /* eslint-disable */
-import { CallContext, CallOptions } from 'nice-grpc-common';
+import type { CallContext, CallOptions } from 'nice-grpc-common';
 import _m0 from 'protobufjs/minimal';
 import { Instance } from '../../commands/v1/common';
 import { Port } from '../../commands/v1/port';
-
-export const protobufPackage = 'cc.arduino.cli.debug.v1';
 
 /**
  * The top-level message sent by the client for the `Debug` method.
@@ -124,28 +122,41 @@ export const DebugRequest = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): DebugRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDebugRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.debugRequest = DebugConfigRequest.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.data = reader.bytes();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
                     message.sendInterrupt = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -177,6 +188,10 @@ export const DebugRequest = {
         message.sendInterrupt !== undefined &&
             (obj.sendInterrupt = message.sendInterrupt);
         return obj;
+    },
+
+    create(base?: DeepPartial<DebugRequest>): DebugRequest {
+        return DebugRequest.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<DebugRequest>): DebugRequest {
@@ -240,37 +255,66 @@ export const DebugConfigRequest = {
         length?: number
     ): DebugConfigRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDebugConfigRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.fqbn = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.sketchPath = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.port = Port.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
                     message.interpreter = reader.string();
-                    break;
+                    continue;
                 case 8:
+                    if (tag !== 66) {
+                        break;
+                    }
+
                     message.importDir = reader.string();
-                    break;
+                    continue;
                 case 9:
+                    if (tag !== 74) {
+                        break;
+                    }
+
                     message.programmer = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -314,6 +358,10 @@ export const DebugConfigRequest = {
         return obj;
     },
 
+    create(base?: DeepPartial<DebugConfigRequest>): DebugConfigRequest {
+        return DebugConfigRequest.fromPartial(base ?? {});
+    },
+
     fromPartial(object: DeepPartial<DebugConfigRequest>): DebugConfigRequest {
         const message = createBaseDebugConfigRequest();
         message.instance =
@@ -353,22 +401,31 @@ export const DebugResponse = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): DebugResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDebugResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.data = reader.bytes();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.error = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -390,6 +447,10 @@ export const DebugResponse = {
             ));
         message.error !== undefined && (obj.error = message.error);
         return obj;
+    },
+
+    create(base?: DeepPartial<DebugResponse>): DebugResponse {
+        return DebugResponse.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<DebugResponse>): DebugResponse {
@@ -458,31 +519,59 @@ export const GetDebugConfigResponse = {
         length?: number
     ): GetDebugConfigResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseGetDebugConfigResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.executable = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.toolchain = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.toolchainPath = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.toolchainPrefix = reader.string();
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
                     message.server = reader.string();
-                    break;
+                    continue;
                 case 6:
+                    if (tag !== 50) {
+                        break;
+                    }
+
                     message.serverPath = reader.string();
-                    break;
+                    continue;
                 case 7:
+                    if (tag !== 58) {
+                        break;
+                    }
+
                     const entry7 =
                         GetDebugConfigResponse_ToolchainConfigurationEntry.decode(
                             reader,
@@ -492,8 +581,12 @@ export const GetDebugConfigResponse = {
                         message.toolchainConfiguration[entry7.key] =
                             entry7.value;
                     }
-                    break;
+                    continue;
                 case 8:
+                    if (tag !== 66) {
+                        break;
+                    }
+
                     const entry8 =
                         GetDebugConfigResponse_ServerConfigurationEntry.decode(
                             reader,
@@ -502,11 +595,12 @@ export const GetDebugConfigResponse = {
                     if (entry8.value !== undefined) {
                         message.serverConfiguration[entry8.key] = entry8.value;
                     }
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -573,6 +667,10 @@ export const GetDebugConfigResponse = {
         return obj;
     },
 
+    create(base?: DeepPartial<GetDebugConfigResponse>): GetDebugConfigResponse {
+        return GetDebugConfigResponse.fromPartial(base ?? {});
+    },
+
     fromPartial(
         object: DeepPartial<GetDebugConfigResponse>
     ): GetDebugConfigResponse {
@@ -626,7 +724,7 @@ export const GetDebugConfigResponse_ToolchainConfigurationEntry = {
         length?: number
     ): GetDebugConfigResponse_ToolchainConfigurationEntry {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message =
             createBaseGetDebugConfigResponse_ToolchainConfigurationEntry();
@@ -634,15 +732,24 @@ export const GetDebugConfigResponse_ToolchainConfigurationEntry = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.key = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.value = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -661,6 +768,14 @@ export const GetDebugConfigResponse_ToolchainConfigurationEntry = {
         message.key !== undefined && (obj.key = message.key);
         message.value !== undefined && (obj.value = message.value);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<GetDebugConfigResponse_ToolchainConfigurationEntry>
+    ): GetDebugConfigResponse_ToolchainConfigurationEntry {
+        return GetDebugConfigResponse_ToolchainConfigurationEntry.fromPartial(
+            base ?? {}
+        );
     },
 
     fromPartial(
@@ -697,7 +812,7 @@ export const GetDebugConfigResponse_ServerConfigurationEntry = {
         length?: number
     ): GetDebugConfigResponse_ServerConfigurationEntry {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message =
             createBaseGetDebugConfigResponse_ServerConfigurationEntry();
@@ -705,15 +820,24 @@ export const GetDebugConfigResponse_ServerConfigurationEntry = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.key = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.value = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -730,6 +854,14 @@ export const GetDebugConfigResponse_ServerConfigurationEntry = {
         message.key !== undefined && (obj.key = message.key);
         message.value !== undefined && (obj.value = message.value);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<GetDebugConfigResponse_ServerConfigurationEntry>
+    ): GetDebugConfigResponse_ServerConfigurationEntry {
+        return GetDebugConfigResponse_ServerConfigurationEntry.fromPartial(
+            base ?? {}
+        );
     },
 
     fromPartial(
@@ -769,7 +901,7 @@ export const DebugServiceDefinition = {
     },
 } as const;
 
-export interface DebugServiceServiceImplementation<CallContextExt = {}> {
+export interface DebugServiceImplementation<CallContextExt = {}> {
     /** Start a debug session and communicate with the debugger tool. */
     debug(
         request: AsyncIterable<DebugRequest>,
@@ -796,7 +928,7 @@ export interface DebugServiceClient<CallOptionsExt = {}> {
 declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
-var globalThis: any = (() => {
+var tsProtoGlobalThis: any = (() => {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
     }
@@ -813,10 +945,10 @@ var globalThis: any = (() => {
 })();
 
 function bytesFromBase64(b64: string): Uint8Array {
-    if (globalThis.Buffer) {
-        return Uint8Array.from(globalThis.Buffer.from(b64, 'base64'));
+    if (tsProtoGlobalThis.Buffer) {
+        return Uint8Array.from(tsProtoGlobalThis.Buffer.from(b64, 'base64'));
     } else {
-        const bin = globalThis.atob(b64);
+        const bin = tsProtoGlobalThis.atob(b64);
         const arr = new Uint8Array(bin.length);
         for (let i = 0; i < bin.length; ++i) {
             arr[i] = bin.charCodeAt(i);
@@ -826,14 +958,14 @@ function bytesFromBase64(b64: string): Uint8Array {
 }
 
 function base64FromBytes(arr: Uint8Array): string {
-    if (globalThis.Buffer) {
-        return globalThis.Buffer.from(arr).toString('base64');
+    if (tsProtoGlobalThis.Buffer) {
+        return tsProtoGlobalThis.Buffer.from(arr).toString('base64');
     } else {
         const bin: string[] = [];
         arr.forEach((byte) => {
             bin.push(String.fromCharCode(byte));
         });
-        return globalThis.btoa(bin.join(''));
+        return tsProtoGlobalThis.btoa(bin.join(''));
     }
 }
 
@@ -846,7 +978,7 @@ type Builtin =
     | boolean
     | undefined;
 
-export type DeepPartial<T> = T extends Builtin
+type DeepPartial<T> = T extends Builtin
     ? T
     : T extends Array<infer U>
     ? Array<DeepPartial<U>>

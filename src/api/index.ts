@@ -10,8 +10,6 @@ export {
     Systems,
     ConfigOption,
     ConfigValue,
-    BoardAttachRequest,
-    BoardAttachResponse,
     BoardListRequest,
     BoardListResponse,
     DetectedPort,
@@ -24,11 +22,15 @@ export {
     BoardSearchResponse,
 } from './cc/arduino/cli/commands/v1/board';
 export {
+    failedInstanceInitReasonFromJSON,
+    failedInstanceInitReasonToJSON,
+    FailedInstanceInitReason,
     CreateRequest,
     CreateResponse,
     InitRequest,
     InitResponse,
     InitResponse_Progress,
+    FailedInstanceInitError,
     DestroyRequest,
     DestroyResponse,
     UpdateIndexRequest,
@@ -44,7 +46,7 @@ export {
     ArchiveSketchRequest,
     ArchiveSketchResponse,
     ArduinoCoreServiceDefinition,
-    ArduinoCoreServiceServiceImplementation,
+    ArduinoCoreServiceImplementation,
     ArduinoCoreServiceClient,
 } from './cc/arduino/cli/commands/v1/commands';
 export {
@@ -59,6 +61,7 @@ export {
     InstalledPlatformReference,
     Board,
     Profile,
+    HelpResources,
 } from './cc/arduino/cli/commands/v1/common';
 export {
     CompileRequest,
@@ -69,6 +72,7 @@ export {
 export {
     PlatformInstallRequest,
     PlatformInstallResponse,
+    PlatformLoadingError,
     PlatformDownloadRequest,
     PlatformDownloadResponse,
     PlatformUninstallRequest,
@@ -160,7 +164,7 @@ export {
     GetDebugConfigResponse_ToolchainConfigurationEntry,
     GetDebugConfigResponse_ServerConfigurationEntry,
     DebugServiceDefinition,
-    DebugServiceServiceImplementation,
+    DebugServiceImplementation,
     DebugServiceClient,
 } from './cc/arduino/cli/debug/v1/debug';
 export {
@@ -175,7 +179,7 @@ export {
     WriteRequest,
     WriteResponse,
     SettingsServiceDefinition,
-    SettingsServiceServiceImplementation,
+    SettingsServiceImplementation,
     SettingsServiceClient,
 } from './cc/arduino/cli/settings/v1/settings';
 export { Any } from './google/protobuf/any';

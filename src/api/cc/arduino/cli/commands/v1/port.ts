@@ -1,8 +1,6 @@
 /* eslint-disable */
 import _m0 from 'protobufjs/minimal';
 
-export const protobufPackage = 'cc.arduino.cli.commands.v1';
-
 /** Port represents a board port that may be used to upload or to monitor a board */
 export interface Port {
     /** Address of the port (e.g., `/dev/ttyACM0`). */
@@ -15,6 +13,8 @@ export interface Port {
     protocolLabel: string;
     /** A set of properties of the port */
     properties: { [key: string]: string };
+    /** The hardware ID (serial number) of the board attached to the port */
+    hardwareId: string;
 }
 
 export interface Port_PropertiesEntry {
@@ -29,6 +29,7 @@ function createBasePort(): Port {
         protocol: '',
         protocolLabel: '',
         properties: {},
+        hardwareId: '',
     };
 }
 
@@ -55,30 +56,53 @@ export const Port = {
                 writer.uint32(42).fork()
             ).ldelim();
         });
+        if (message.hardwareId !== '') {
+            writer.uint32(50).string(message.hardwareId);
+        }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Port {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePort();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.address = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.label = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.protocol = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.protocolLabel = reader.string();
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
                     const entry5 = Port_PropertiesEntry.decode(
                         reader,
                         reader.uint32()
@@ -86,11 +110,19 @@ export const Port = {
                     if (entry5.value !== undefined) {
                         message.properties[entry5.key] = entry5.value;
                     }
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
+                case 6:
+                    if (tag !== 50) {
+                        break;
+                    }
+
+                    message.hardwareId = reader.string();
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -111,6 +143,9 @@ export const Port = {
                       return acc;
                   }, {})
                 : {},
+            hardwareId: isSet(object.hardwareId)
+                ? String(object.hardwareId)
+                : '',
         };
     },
 
@@ -127,7 +162,13 @@ export const Port = {
                 obj.properties[k] = v;
             });
         }
+        message.hardwareId !== undefined &&
+            (obj.hardwareId = message.hardwareId);
         return obj;
+    },
+
+    create(base?: DeepPartial<Port>): Port {
+        return Port.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<Port>): Port {
@@ -144,6 +185,7 @@ export const Port = {
             }
             return acc;
         }, {});
+        message.hardwareId = object.hardwareId ?? '';
         return message;
     },
 };
@@ -171,22 +213,31 @@ export const Port_PropertiesEntry = {
         length?: number
     ): Port_PropertiesEntry {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePort_PropertiesEntry();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.key = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.value = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -203,6 +254,10 @@ export const Port_PropertiesEntry = {
         message.key !== undefined && (obj.key = message.key);
         message.value !== undefined && (obj.value = message.value);
         return obj;
+    },
+
+    create(base?: DeepPartial<Port_PropertiesEntry>): Port_PropertiesEntry {
+        return Port_PropertiesEntry.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -224,7 +279,7 @@ type Builtin =
     | boolean
     | undefined;
 
-export type DeepPartial<T> = T extends Builtin
+type DeepPartial<T> = T extends Builtin
     ? T
     : T extends Array<infer U>
     ? Array<DeepPartial<U>>

@@ -2,8 +2,6 @@
 import Long from 'long';
 import _m0 from 'protobufjs/minimal';
 
-export const protobufPackage = 'cc.arduino.cli.commands.v1';
-
 export interface Instance {
     /** The ID of the instance. */
     id: number;
@@ -94,6 +92,11 @@ export interface Platform {
     deprecated: boolean;
     /** Type of the platform. */
     type: string[];
+    /**
+     * A URL provided by the author of the platform's package, intended to point
+     * to their online help service.
+     */
+    help: HelpResources | undefined;
 }
 
 export interface InstalledPlatformReference {
@@ -124,6 +127,14 @@ export interface Profile {
     fqbn: string;
 }
 
+export interface HelpResources {
+    /**
+     * A URL provided by the author of the platform's package, intended to point
+     * to their online help service.
+     */
+    online: string;
+}
+
 function createBaseInstance(): Instance {
     return { id: 0 };
 }
@@ -141,19 +152,24 @@ export const Instance = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Instance {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseInstance();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 8) {
+                        break;
+                    }
+
                     message.id = reader.int32();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -166,6 +182,10 @@ export const Instance = {
         const obj: any = {};
         message.id !== undefined && (obj.id = Math.round(message.id));
         return obj;
+    },
+
+    create(base?: DeepPartial<Instance>): Instance {
+        return Instance.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<Instance>): Instance {
@@ -184,36 +204,42 @@ export const DownloadProgress = {
         message: DownloadProgress,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.message?.$case === 'start') {
-            DownloadProgressStart.encode(
-                message.message.start,
-                writer.uint32(10).fork()
-            ).ldelim();
-        }
-        if (message.message?.$case === 'update') {
-            DownloadProgressUpdate.encode(
-                message.message.update,
-                writer.uint32(18).fork()
-            ).ldelim();
-        }
-        if (message.message?.$case === 'end') {
-            DownloadProgressEnd.encode(
-                message.message.end,
-                writer.uint32(26).fork()
-            ).ldelim();
+        switch (message.message?.$case) {
+            case 'start':
+                DownloadProgressStart.encode(
+                    message.message.start,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'update':
+                DownloadProgressUpdate.encode(
+                    message.message.update,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
+            case 'end':
+                DownloadProgressEnd.encode(
+                    message.message.end,
+                    writer.uint32(26).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): DownloadProgress {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDownloadProgress();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.message = {
                         $case: 'start',
                         start: DownloadProgressStart.decode(
@@ -221,8 +247,12 @@ export const DownloadProgress = {
                             reader.uint32()
                         ),
                     };
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.message = {
                         $case: 'update',
                         update: DownloadProgressUpdate.decode(
@@ -230,8 +260,12 @@ export const DownloadProgress = {
                             reader.uint32()
                         ),
                     };
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.message = {
                         $case: 'end',
                         end: DownloadProgressEnd.decode(
@@ -239,11 +273,12 @@ export const DownloadProgress = {
                             reader.uint32()
                         ),
                     };
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -284,6 +319,10 @@ export const DownloadProgress = {
                 ? DownloadProgressEnd.toJSON(message.message?.end)
                 : undefined);
         return obj;
+    },
+
+    create(base?: DeepPartial<DownloadProgress>): DownloadProgress {
+        return DownloadProgress.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<DownloadProgress>): DownloadProgress {
@@ -347,22 +386,31 @@ export const DownloadProgressStart = {
         length?: number
     ): DownloadProgressStart {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDownloadProgressStart();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.url = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.label = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -379,6 +427,10 @@ export const DownloadProgressStart = {
         message.url !== undefined && (obj.url = message.url);
         message.label !== undefined && (obj.label = message.label);
         return obj;
+    },
+
+    create(base?: DeepPartial<DownloadProgressStart>): DownloadProgressStart {
+        return DownloadProgressStart.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -414,22 +466,31 @@ export const DownloadProgressUpdate = {
         length?: number
     ): DownloadProgressUpdate {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDownloadProgressUpdate();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 8) {
+                        break;
+                    }
+
                     message.downloaded = longToNumber(reader.int64() as Long);
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 16) {
+                        break;
+                    }
+
                     message.totalSize = longToNumber(reader.int64() as Long);
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -450,6 +511,10 @@ export const DownloadProgressUpdate = {
         message.totalSize !== undefined &&
             (obj.totalSize = Math.round(message.totalSize));
         return obj;
+    },
+
+    create(base?: DeepPartial<DownloadProgressUpdate>): DownloadProgressUpdate {
+        return DownloadProgressUpdate.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -485,22 +550,31 @@ export const DownloadProgressEnd = {
         length?: number
     ): DownloadProgressEnd {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDownloadProgressEnd();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 8) {
+                        break;
+                    }
+
                     message.success = reader.bool();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.message = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -517,6 +591,10 @@ export const DownloadProgressEnd = {
         message.success !== undefined && (obj.success = message.success);
         message.message !== undefined && (obj.message = message.message);
         return obj;
+    },
+
+    create(base?: DeepPartial<DownloadProgressEnd>): DownloadProgressEnd {
+        return DownloadProgressEnd.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<DownloadProgressEnd>): DownloadProgressEnd {
@@ -553,28 +631,45 @@ export const TaskProgress = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): TaskProgress {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseTaskProgress();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.message = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
                     message.completed = reader.bool();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 37) {
+                        break;
+                    }
+
                     message.percent = reader.float();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -597,6 +692,10 @@ export const TaskProgress = {
         message.completed !== undefined && (obj.completed = message.completed);
         message.percent !== undefined && (obj.percent = message.percent);
         return obj;
+    },
+
+    create(base?: DeepPartial<TaskProgress>): TaskProgress {
+        return TaskProgress.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<TaskProgress>): TaskProgress {
@@ -632,25 +731,38 @@ export const Programmer = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Programmer {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseProgrammer();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.platform = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.id = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -669,6 +781,10 @@ export const Programmer = {
         message.id !== undefined && (obj.id = message.id);
         message.name !== undefined && (obj.name = message.name);
         return obj;
+    },
+
+    create(base?: DeepPartial<Programmer>): Programmer {
+        return Programmer.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<Programmer>): Programmer {
@@ -693,6 +809,7 @@ function createBasePlatform(): Platform {
         manuallyInstalled: false,
         deprecated: false,
         type: [],
+        help: undefined,
     };
 }
 
@@ -734,54 +851,115 @@ export const Platform = {
         for (const v of message.type) {
             writer.uint32(90).string(v!);
         }
+        if (message.help !== undefined) {
+            HelpResources.encode(
+                message.help,
+                writer.uint32(98).fork()
+            ).ldelim();
+        }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Platform {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePlatform();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.id = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.installed = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.latest = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
                     message.maintainer = reader.string();
-                    break;
+                    continue;
                 case 6:
+                    if (tag !== 50) {
+                        break;
+                    }
+
                     message.website = reader.string();
-                    break;
+                    continue;
                 case 7:
+                    if (tag !== 58) {
+                        break;
+                    }
+
                     message.email = reader.string();
-                    break;
+                    continue;
                 case 8:
+                    if (tag !== 66) {
+                        break;
+                    }
+
                     message.boards.push(Board.decode(reader, reader.uint32()));
-                    break;
+                    continue;
                 case 9:
+                    if (tag !== 72) {
+                        break;
+                    }
+
                     message.manuallyInstalled = reader.bool();
-                    break;
+                    continue;
                 case 10:
+                    if (tag !== 80) {
+                        break;
+                    }
+
                     message.deprecated = reader.bool();
-                    break;
+                    continue;
                 case 11:
+                    if (tag !== 90) {
+                        break;
+                    }
+
                     message.type.push(reader.string());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
+                case 12:
+                    if (tag !== 98) {
+                        break;
+                    }
+
+                    message.help = HelpResources.decode(
+                        reader,
+                        reader.uint32()
+                    );
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -809,6 +987,9 @@ export const Platform = {
             type: Array.isArray(object?.type)
                 ? object.type.map((e: any) => String(e))
                 : [],
+            help: isSet(object.help)
+                ? HelpResources.fromJSON(object.help)
+                : undefined,
         };
     },
 
@@ -838,7 +1019,15 @@ export const Platform = {
         } else {
             obj.type = [];
         }
+        message.help !== undefined &&
+            (obj.help = message.help
+                ? HelpResources.toJSON(message.help)
+                : undefined);
         return obj;
+    },
+
+    create(base?: DeepPartial<Platform>): Platform {
+        return Platform.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<Platform>): Platform {
@@ -854,6 +1043,10 @@ export const Platform = {
         message.manuallyInstalled = object.manuallyInstalled ?? false;
         message.deprecated = object.deprecated ?? false;
         message.type = object.type?.map((e) => e) || [];
+        message.help =
+            object.help !== undefined && object.help !== null
+                ? HelpResources.fromPartial(object.help)
+                : undefined;
         return message;
     },
 };
@@ -887,28 +1080,45 @@ export const InstalledPlatformReference = {
         length?: number
     ): InstalledPlatformReference {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseInstalledPlatformReference();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.id = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.version = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.installDir = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.packageUrl = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -935,6 +1145,12 @@ export const InstalledPlatformReference = {
         message.packageUrl !== undefined &&
             (obj.packageUrl = message.packageUrl);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<InstalledPlatformReference>
+    ): InstalledPlatformReference {
+        return InstalledPlatformReference.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -969,22 +1185,31 @@ export const Board = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Board {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoard();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.fqbn = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1001,6 +1226,10 @@ export const Board = {
         message.name !== undefined && (obj.name = message.name);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         return obj;
+    },
+
+    create(base?: DeepPartial<Board>): Board {
+        return Board.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<Board>): Board {
@@ -1031,22 +1260,31 @@ export const Profile = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Profile {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseProfile();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.fqbn = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1065,6 +1303,10 @@ export const Profile = {
         return obj;
     },
 
+    create(base?: DeepPartial<Profile>): Profile {
+        return Profile.fromPartial(base ?? {});
+    },
+
     fromPartial(object: DeepPartial<Profile>): Profile {
         const message = createBaseProfile();
         message.name = object.name ?? '';
@@ -1073,10 +1315,70 @@ export const Profile = {
     },
 };
 
+function createBaseHelpResources(): HelpResources {
+    return { online: '' };
+}
+
+export const HelpResources = {
+    encode(
+        message: HelpResources,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.online !== '') {
+            writer.uint32(10).string(message.online);
+        }
+        return writer;
+    },
+
+    decode(input: _m0.Reader | Uint8Array, length?: number): HelpResources {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseHelpResources();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.online = reader.string();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): HelpResources {
+        return { online: isSet(object.online) ? String(object.online) : '' };
+    },
+
+    toJSON(message: HelpResources): unknown {
+        const obj: any = {};
+        message.online !== undefined && (obj.online = message.online);
+        return obj;
+    },
+
+    create(base?: DeepPartial<HelpResources>): HelpResources {
+        return HelpResources.fromPartial(base ?? {});
+    },
+
+    fromPartial(object: DeepPartial<HelpResources>): HelpResources {
+        const message = createBaseHelpResources();
+        message.online = object.online ?? '';
+        return message;
+    },
+};
+
 declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
-var globalThis: any = (() => {
+var tsProtoGlobalThis: any = (() => {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
     }
@@ -1101,7 +1403,7 @@ type Builtin =
     | boolean
     | undefined;
 
-export type DeepPartial<T> = T extends Builtin
+type DeepPartial<T> = T extends Builtin
     ? T
     : T extends Array<infer U>
     ? Array<DeepPartial<U>>
@@ -1117,7 +1419,7 @@ export type DeepPartial<T> = T extends Builtin
 
 function longToNumber(long: Long): number {
     if (long.gt(Number.MAX_SAFE_INTEGER)) {
-        throw new globalThis.Error(
+        throw new tsProtoGlobalThis.Error(
             'Value is larger than Number.MAX_SAFE_INTEGER'
         );
     }

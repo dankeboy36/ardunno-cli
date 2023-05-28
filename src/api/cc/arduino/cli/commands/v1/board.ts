@@ -1,10 +1,8 @@
 /* eslint-disable */
 import Long from 'long';
 import _m0 from 'protobufjs/minimal';
-import { Instance, Platform, Programmer, TaskProgress } from './common';
+import { Instance, Platform, Programmer } from './common';
 import { Port } from './port';
-
-export const protobufPackage = 'cc.arduino.cli.commands.v1';
 
 export interface BoardDetailsRequest {
     /** Arduino Core Service instance from the `Init` response. */
@@ -142,33 +140,16 @@ export interface ConfigValue {
     selected: boolean;
 }
 
-export interface BoardAttachRequest {
-    /** Arduino Core Service instance from the `Init` response. */
-    instance: Instance | undefined;
-    /** The board's URI (e.g., /dev/ttyACM0). */
-    boardUri: string;
-    /**
-     * Path of the sketch to attach the board to. The board attachment
-     * metadata will be saved to `{sketch_path}/sketch.json`.
-     */
-    sketchPath: string;
-    /**
-     * Duration in seconds to search the given URI for a connected board before
-     * timing out. The default value is 5 seconds.
-     */
-    searchTimeout: string;
-}
-
-export interface BoardAttachResponse {
-    /** Description of the current stage of the board attachment. */
-    taskProgress: TaskProgress | undefined;
-}
-
 export interface BoardListRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
     /** Search for boards for the given time (in milliseconds) */
     timeout: number;
+    /**
+     * The fully qualified board name of the board you want information about
+     * (e.g., `arduino:avr:uno`).
+     */
+    fqbn: string;
 }
 
 export interface BoardListResponse {
@@ -267,22 +248,31 @@ export const BoardDetailsRequest = {
         length?: number
     ): BoardDetailsRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardDetailsRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.fqbn = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -304,6 +294,10 @@ export const BoardDetailsRequest = {
                 : undefined);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         return obj;
+    },
+
+    create(base?: DeepPartial<BoardDetailsRequest>): BoardDetailsRequest {
+        return BoardDetailsRequest.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<BoardDetailsRequest>): BoardDetailsRequest {
@@ -397,72 +391,129 @@ export const BoardDetailsResponse = {
         length?: number
     ): BoardDetailsResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardDetailsResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.fqbn = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.version = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.propertiesId = reader.string();
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
                     message.alias = reader.string();
-                    break;
+                    continue;
                 case 6:
+                    if (tag !== 48) {
+                        break;
+                    }
+
                     message.official = reader.bool();
-                    break;
+                    continue;
                 case 7:
+                    if (tag !== 58) {
+                        break;
+                    }
+
                     message.pinout = reader.string();
-                    break;
+                    continue;
                 case 8:
+                    if (tag !== 66) {
+                        break;
+                    }
+
                     message.package = Package.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 9:
+                    if (tag !== 74) {
+                        break;
+                    }
+
                     message.platform = BoardPlatform.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
+                    continue;
                 case 10:
+                    if (tag !== 82) {
+                        break;
+                    }
+
                     message.toolsDependencies.push(
                         ToolsDependencies.decode(reader, reader.uint32())
                     );
-                    break;
+                    continue;
                 case 11:
+                    if (tag !== 90) {
+                        break;
+                    }
+
                     message.configOptions.push(
                         ConfigOption.decode(reader, reader.uint32())
                     );
-                    break;
+                    continue;
                 case 13:
+                    if (tag !== 106) {
+                        break;
+                    }
+
                     message.programmers.push(
                         Programmer.decode(reader, reader.uint32())
                     );
-                    break;
+                    continue;
                 case 14:
+                    if (tag !== 112) {
+                        break;
+                    }
+
                     message.debuggingSupported = reader.bool();
-                    break;
+                    continue;
                 case 15:
+                    if (tag !== 122) {
+                        break;
+                    }
+
                     message.identificationProperties.push(
                         BoardIdentificationProperties.decode(
                             reader,
                             reader.uint32()
                         )
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -559,6 +610,10 @@ export const BoardDetailsResponse = {
         return obj;
     },
 
+    create(base?: DeepPartial<BoardDetailsResponse>): BoardDetailsResponse {
+        return BoardDetailsResponse.fromPartial(base ?? {});
+    },
+
     fromPartial(
         object: DeepPartial<BoardDetailsResponse>
     ): BoardDetailsResponse {
@@ -618,13 +673,17 @@ export const BoardIdentificationProperties = {
         length?: number
     ): BoardIdentificationProperties {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardIdentificationProperties();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     const entry1 =
                         BoardIdentificationProperties_PropertiesEntry.decode(
                             reader,
@@ -633,11 +692,12 @@ export const BoardIdentificationProperties = {
                     if (entry1.value !== undefined) {
                         message.properties[entry1.key] = entry1.value;
                     }
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -664,6 +724,12 @@ export const BoardIdentificationProperties = {
             });
         }
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<BoardIdentificationProperties>
+    ): BoardIdentificationProperties {
+        return BoardIdentificationProperties.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -705,7 +771,7 @@ export const BoardIdentificationProperties_PropertiesEntry = {
         length?: number
     ): BoardIdentificationProperties_PropertiesEntry {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message =
             createBaseBoardIdentificationProperties_PropertiesEntry();
@@ -713,15 +779,24 @@ export const BoardIdentificationProperties_PropertiesEntry = {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.key = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.value = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -738,6 +813,14 @@ export const BoardIdentificationProperties_PropertiesEntry = {
         message.key !== undefined && (obj.key = message.key);
         message.value !== undefined && (obj.value = message.value);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<BoardIdentificationProperties_PropertiesEntry>
+    ): BoardIdentificationProperties_PropertiesEntry {
+        return BoardIdentificationProperties_PropertiesEntry.fromPartial(
+            base ?? {}
+        );
     },
 
     fromPartial(
@@ -790,34 +873,59 @@ export const Package = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Package {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBasePackage();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.maintainer = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.url = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.websiteUrl = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.email = reader.string();
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 6:
+                    if (tag !== 50) {
+                        break;
+                    }
+
                     message.help = Help.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -849,6 +957,10 @@ export const Package = {
         message.help !== undefined &&
             (obj.help = message.help ? Help.toJSON(message.help) : undefined);
         return obj;
+    },
+
+    create(base?: DeepPartial<Package>): Package {
+        return Package.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<Package>): Package {
@@ -883,19 +995,24 @@ export const Help = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Help {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseHelp();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.online = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -908,6 +1025,10 @@ export const Help = {
         const obj: any = {};
         message.online !== undefined && (obj.online = message.online);
         return obj;
+    },
+
+    create(base?: DeepPartial<Help>): Help {
+        return Help.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<Help>): Help {
@@ -960,37 +1081,66 @@ export const BoardPlatform = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): BoardPlatform {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardPlatform();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.architecture = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.category = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.url = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.archiveFilename = reader.string();
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
                     message.checksum = reader.string();
-                    break;
+                    continue;
                 case 6:
+                    if (tag !== 48) {
+                        break;
+                    }
+
                     message.size = longToNumber(reader.int64() as Long);
-                    break;
+                    continue;
                 case 7:
+                    if (tag !== 58) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1023,6 +1173,10 @@ export const BoardPlatform = {
         message.size !== undefined && (obj.size = Math.round(message.size));
         message.name !== undefined && (obj.name = message.name);
         return obj;
+    },
+
+    create(base?: DeepPartial<BoardPlatform>): BoardPlatform {
+        return BoardPlatform.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<BoardPlatform>): BoardPlatform {
@@ -1064,30 +1218,47 @@ export const ToolsDependencies = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): ToolsDependencies {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseToolsDependencies();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.packager = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.version = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.systems.push(
                         Systems.decode(reader, reader.uint32())
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1116,6 +1287,10 @@ export const ToolsDependencies = {
             obj.systems = [];
         }
         return obj;
+    },
+
+    create(base?: DeepPartial<ToolsDependencies>): ToolsDependencies {
+        return ToolsDependencies.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<ToolsDependencies>): ToolsDependencies {
@@ -1158,31 +1333,52 @@ export const Systems = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Systems {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseSystems();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.checksum = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.host = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.archiveFilename = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.url = reader.string();
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 40) {
+                        break;
+                    }
+
                     message.size = longToNumber(reader.int64() as Long);
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1208,6 +1404,10 @@ export const Systems = {
         message.url !== undefined && (obj.url = message.url);
         message.size !== undefined && (obj.size = Math.round(message.size));
         return obj;
+    },
+
+    create(base?: DeepPartial<Systems>): Systems {
+        return Systems.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<Systems>): Systems {
@@ -1244,27 +1444,40 @@ export const ConfigOption = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): ConfigOption {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseConfigOption();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.option = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.optionLabel = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.values.push(
                         ConfigValue.decode(reader, reader.uint32())
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1294,6 +1507,10 @@ export const ConfigOption = {
             obj.values = [];
         }
         return obj;
+    },
+
+    create(base?: DeepPartial<ConfigOption>): ConfigOption {
+        return ConfigOption.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<ConfigOption>): ConfigOption {
@@ -1329,25 +1546,38 @@ export const ConfigValue = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): ConfigValue {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseConfigValue();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.value = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.valueLabel = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
                     message.selected = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1371,6 +1601,10 @@ export const ConfigValue = {
         return obj;
     },
 
+    create(base?: DeepPartial<ConfigValue>): ConfigValue {
+        return ConfigValue.fromPartial(base ?? {});
+    },
+
     fromPartial(object: DeepPartial<ConfigValue>): ConfigValue {
         const message = createBaseConfigValue();
         message.value = object.value ?? '';
@@ -1380,183 +1614,8 @@ export const ConfigValue = {
     },
 };
 
-function createBaseBoardAttachRequest(): BoardAttachRequest {
-    return {
-        instance: undefined,
-        boardUri: '',
-        sketchPath: '',
-        searchTimeout: '',
-    };
-}
-
-export const BoardAttachRequest = {
-    encode(
-        message: BoardAttachRequest,
-        writer: _m0.Writer = _m0.Writer.create()
-    ): _m0.Writer {
-        if (message.instance !== undefined) {
-            Instance.encode(
-                message.instance,
-                writer.uint32(10).fork()
-            ).ldelim();
-        }
-        if (message.boardUri !== '') {
-            writer.uint32(18).string(message.boardUri);
-        }
-        if (message.sketchPath !== '') {
-            writer.uint32(26).string(message.sketchPath);
-        }
-        if (message.searchTimeout !== '') {
-            writer.uint32(34).string(message.searchTimeout);
-        }
-        return writer;
-    },
-
-    decode(
-        input: _m0.Reader | Uint8Array,
-        length?: number
-    ): BoardAttachRequest {
-        const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseBoardAttachRequest();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.instance = Instance.decode(reader, reader.uint32());
-                    break;
-                case 2:
-                    message.boardUri = reader.string();
-                    break;
-                case 3:
-                    message.sketchPath = reader.string();
-                    break;
-                case 4:
-                    message.searchTimeout = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-
-    fromJSON(object: any): BoardAttachRequest {
-        return {
-            instance: isSet(object.instance)
-                ? Instance.fromJSON(object.instance)
-                : undefined,
-            boardUri: isSet(object.boardUri) ? String(object.boardUri) : '',
-            sketchPath: isSet(object.sketchPath)
-                ? String(object.sketchPath)
-                : '',
-            searchTimeout: isSet(object.searchTimeout)
-                ? String(object.searchTimeout)
-                : '',
-        };
-    },
-
-    toJSON(message: BoardAttachRequest): unknown {
-        const obj: any = {};
-        message.instance !== undefined &&
-            (obj.instance = message.instance
-                ? Instance.toJSON(message.instance)
-                : undefined);
-        message.boardUri !== undefined && (obj.boardUri = message.boardUri);
-        message.sketchPath !== undefined &&
-            (obj.sketchPath = message.sketchPath);
-        message.searchTimeout !== undefined &&
-            (obj.searchTimeout = message.searchTimeout);
-        return obj;
-    },
-
-    fromPartial(object: DeepPartial<BoardAttachRequest>): BoardAttachRequest {
-        const message = createBaseBoardAttachRequest();
-        message.instance =
-            object.instance !== undefined && object.instance !== null
-                ? Instance.fromPartial(object.instance)
-                : undefined;
-        message.boardUri = object.boardUri ?? '';
-        message.sketchPath = object.sketchPath ?? '';
-        message.searchTimeout = object.searchTimeout ?? '';
-        return message;
-    },
-};
-
-function createBaseBoardAttachResponse(): BoardAttachResponse {
-    return { taskProgress: undefined };
-}
-
-export const BoardAttachResponse = {
-    encode(
-        message: BoardAttachResponse,
-        writer: _m0.Writer = _m0.Writer.create()
-    ): _m0.Writer {
-        if (message.taskProgress !== undefined) {
-            TaskProgress.encode(
-                message.taskProgress,
-                writer.uint32(10).fork()
-            ).ldelim();
-        }
-        return writer;
-    },
-
-    decode(
-        input: _m0.Reader | Uint8Array,
-        length?: number
-    ): BoardAttachResponse {
-        const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseBoardAttachResponse();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.taskProgress = TaskProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-
-    fromJSON(object: any): BoardAttachResponse {
-        return {
-            taskProgress: isSet(object.taskProgress)
-                ? TaskProgress.fromJSON(object.taskProgress)
-                : undefined,
-        };
-    },
-
-    toJSON(message: BoardAttachResponse): unknown {
-        const obj: any = {};
-        message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress
-                ? TaskProgress.toJSON(message.taskProgress)
-                : undefined);
-        return obj;
-    },
-
-    fromPartial(object: DeepPartial<BoardAttachResponse>): BoardAttachResponse {
-        const message = createBaseBoardAttachResponse();
-        message.taskProgress =
-            object.taskProgress !== undefined && object.taskProgress !== null
-                ? TaskProgress.fromPartial(object.taskProgress)
-                : undefined;
-        return message;
-    },
-};
-
 function createBaseBoardListRequest(): BoardListRequest {
-    return { instance: undefined, timeout: 0 };
+    return { instance: undefined, timeout: 0, fqbn: '' };
 }
 
 export const BoardListRequest = {
@@ -1573,27 +1632,46 @@ export const BoardListRequest = {
         if (message.timeout !== 0) {
             writer.uint32(16).int64(message.timeout);
         }
+        if (message.fqbn !== '') {
+            writer.uint32(26).string(message.fqbn);
+        }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): BoardListRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardListRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 16) {
+                        break;
+                    }
+
                     message.timeout = longToNumber(reader.int64() as Long);
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
+                    message.fqbn = reader.string();
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1604,6 +1682,7 @@ export const BoardListRequest = {
                 ? Instance.fromJSON(object.instance)
                 : undefined,
             timeout: isSet(object.timeout) ? Number(object.timeout) : 0,
+            fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
         };
     },
 
@@ -1615,7 +1694,12 @@ export const BoardListRequest = {
                 : undefined);
         message.timeout !== undefined &&
             (obj.timeout = Math.round(message.timeout));
+        message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         return obj;
+    },
+
+    create(base?: DeepPartial<BoardListRequest>): BoardListRequest {
+        return BoardListRequest.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<BoardListRequest>): BoardListRequest {
@@ -1625,6 +1709,7 @@ export const BoardListRequest = {
                 ? Instance.fromPartial(object.instance)
                 : undefined;
         message.timeout = object.timeout ?? 0;
+        message.fqbn = object.fqbn ?? '';
         return message;
     },
 };
@@ -1646,21 +1731,26 @@ export const BoardListResponse = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): BoardListResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardListResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.ports.push(
                         DetectedPort.decode(reader, reader.uint32())
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1683,6 +1773,10 @@ export const BoardListResponse = {
             obj.ports = [];
         }
         return obj;
+    },
+
+    create(base?: DeepPartial<BoardListResponse>): BoardListResponse {
+        return BoardListResponse.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<BoardListResponse>): BoardListResponse {
@@ -1713,24 +1807,33 @@ export const DetectedPort = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): DetectedPort {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDetectedPort();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.matchingBoards.push(
                         BoardListItem.decode(reader, reader.uint32())
                     );
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.port = Port.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1758,6 +1861,10 @@ export const DetectedPort = {
         message.port !== undefined &&
             (obj.port = message.port ? Port.toJSON(message.port) : undefined);
         return obj;
+    },
+
+    create(base?: DeepPartial<DetectedPort>): DetectedPort {
+        return DetectedPort.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<DetectedPort>): DetectedPort {
@@ -1802,25 +1909,38 @@ export const BoardListAllRequest = {
         length?: number
     ): BoardListAllRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardListAllRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.searchArgs.push(reader.string());
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
                     message.includeHiddenBoards = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1855,6 +1975,10 @@ export const BoardListAllRequest = {
         return obj;
     },
 
+    create(base?: DeepPartial<BoardListAllRequest>): BoardListAllRequest {
+        return BoardListAllRequest.fromPartial(base ?? {});
+    },
+
     fromPartial(object: DeepPartial<BoardListAllRequest>): BoardListAllRequest {
         const message = createBaseBoardListAllRequest();
         message.instance =
@@ -1887,21 +2011,26 @@ export const BoardListAllResponse = {
         length?: number
     ): BoardListAllResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardListAllResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.boards.push(
                         BoardListItem.decode(reader, reader.uint32())
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1924,6 +2053,10 @@ export const BoardListAllResponse = {
             obj.boards = [];
         }
         return obj;
+    },
+
+    create(base?: DeepPartial<BoardListAllResponse>): BoardListAllResponse {
+        return BoardListAllResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1962,22 +2095,31 @@ export const BoardListWatchRequest = {
         length?: number
     ): BoardListWatchRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardListWatchRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 16) {
+                        break;
+                    }
+
                     message.interrupt = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -2001,6 +2143,10 @@ export const BoardListWatchRequest = {
                 : undefined);
         message.interrupt !== undefined && (obj.interrupt = message.interrupt);
         return obj;
+    },
+
+    create(base?: DeepPartial<BoardListWatchRequest>): BoardListWatchRequest {
+        return BoardListWatchRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -2045,25 +2191,38 @@ export const BoardListWatchResponse = {
         length?: number
     ): BoardListWatchResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardListWatchResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.eventType = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.port = DetectedPort.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.error = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -2087,6 +2246,10 @@ export const BoardListWatchResponse = {
                 : undefined);
         message.error !== undefined && (obj.error = message.error);
         return obj;
+    },
+
+    create(base?: DeepPartial<BoardListWatchResponse>): BoardListWatchResponse {
+        return BoardListWatchResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -2132,28 +2295,45 @@ export const BoardListItem = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): BoardListItem {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardListItem();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.fqbn = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
                     message.isHidden = reader.bool();
-                    break;
+                    continue;
                 case 6:
+                    if (tag !== 50) {
+                        break;
+                    }
+
                     message.platform = Platform.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -2179,6 +2359,10 @@ export const BoardListItem = {
                 ? Platform.toJSON(message.platform)
                 : undefined);
         return obj;
+    },
+
+    create(base?: DeepPartial<BoardListItem>): BoardListItem {
+        return BoardListItem.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<BoardListItem>): BoardListItem {
@@ -2223,25 +2407,38 @@ export const BoardSearchRequest = {
         length?: number
     ): BoardSearchRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardSearchRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.searchArgs = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
                     message.includeHiddenBoards = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -2271,6 +2468,10 @@ export const BoardSearchRequest = {
         message.includeHiddenBoards !== undefined &&
             (obj.includeHiddenBoards = message.includeHiddenBoards);
         return obj;
+    },
+
+    create(base?: DeepPartial<BoardSearchRequest>): BoardSearchRequest {
+        return BoardSearchRequest.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<BoardSearchRequest>): BoardSearchRequest {
@@ -2305,21 +2506,26 @@ export const BoardSearchResponse = {
         length?: number
     ): BoardSearchResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseBoardSearchResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.boards.push(
                         BoardListItem.decode(reader, reader.uint32())
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -2344,6 +2550,10 @@ export const BoardSearchResponse = {
         return obj;
     },
 
+    create(base?: DeepPartial<BoardSearchResponse>): BoardSearchResponse {
+        return BoardSearchResponse.fromPartial(base ?? {});
+    },
+
     fromPartial(object: DeepPartial<BoardSearchResponse>): BoardSearchResponse {
         const message = createBaseBoardSearchResponse();
         message.boards =
@@ -2355,7 +2565,7 @@ export const BoardSearchResponse = {
 declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
-var globalThis: any = (() => {
+var tsProtoGlobalThis: any = (() => {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
     }
@@ -2380,7 +2590,7 @@ type Builtin =
     | boolean
     | undefined;
 
-export type DeepPartial<T> = T extends Builtin
+type DeepPartial<T> = T extends Builtin
     ? T
     : T extends Array<infer U>
     ? Array<DeepPartial<U>>
@@ -2396,7 +2606,7 @@ export type DeepPartial<T> = T extends Builtin
 
 function longToNumber(long: Long): number {
     if (long.gt(Number.MAX_SAFE_INTEGER)) {
-        throw new globalThis.Error(
+        throw new tsProtoGlobalThis.Error(
             'Value is larger than Number.MAX_SAFE_INTEGER'
         );
     }

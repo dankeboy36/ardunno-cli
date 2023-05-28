@@ -3,8 +3,6 @@ import Long from 'long';
 import _m0 from 'protobufjs/minimal';
 import { DownloadProgress, Instance, TaskProgress } from './common';
 
-export const protobufPackage = 'cc.arduino.cli.commands.v1';
-
 export enum LibraryInstallLocation {
     /**
      * LIBRARY_INSTALL_LOCATION_USER - In the `libraries` subdirectory of the user directory (sketchbook). This is
@@ -295,6 +293,11 @@ export interface LibrarySearchRequest {
     instance: Instance | undefined;
     /** The search query. */
     query: string;
+    /**
+     * Set to true to not populate the releases field in the response (may save a
+     * lot of bandwidth/CPU).
+     */
+    omitReleasesDetails: boolean;
 }
 
 export interface LibrarySearchResponse {
@@ -314,6 +317,8 @@ export interface SearchedLibrary {
     releases: { [key: string]: LibraryRelease };
     /** The index data for the latest version of the library. */
     latest: LibraryRelease | undefined;
+    /** The available versions of this library. */
+    availableVersions: string[];
 }
 
 export interface SearchedLibrary_ReleasesEntry {
@@ -564,25 +569,38 @@ export const LibraryDownloadRequest = {
         length?: number
     ): LibraryDownloadRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryDownloadRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.version = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -606,6 +624,10 @@ export const LibraryDownloadRequest = {
         message.name !== undefined && (obj.name = message.name);
         message.version !== undefined && (obj.version = message.version);
         return obj;
+    },
+
+    create(base?: DeepPartial<LibraryDownloadRequest>): LibraryDownloadRequest {
+        return LibraryDownloadRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -645,22 +667,27 @@ export const LibraryDownloadResponse = {
         length?: number
     ): LibraryDownloadResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryDownloadResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.progress = DownloadProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -680,6 +707,12 @@ export const LibraryDownloadResponse = {
                 ? DownloadProgress.toJSON(message.progress)
                 : undefined);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<LibraryDownloadResponse>
+    ): LibraryDownloadResponse {
+        return LibraryDownloadResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -739,34 +772,59 @@ export const LibraryInstallRequest = {
         length?: number
     ): LibraryInstallRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryInstallRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.version = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
                     message.noDeps = reader.bool();
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 40) {
+                        break;
+                    }
+
                     message.noOverwrite = reader.bool();
-                    break;
+                    continue;
                 case 6:
+                    if (tag !== 48) {
+                        break;
+                    }
+
                     message.installLocation = reader.int32() as any;
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -804,6 +862,10 @@ export const LibraryInstallRequest = {
                 message.installLocation
             ));
         return obj;
+    },
+
+    create(base?: DeepPartial<LibraryInstallRequest>): LibraryInstallRequest {
+        return LibraryInstallRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -852,28 +914,37 @@ export const LibraryInstallResponse = {
         length?: number
     ): LibraryInstallResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryInstallResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.progress = DownloadProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.taskProgress = TaskProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -900,6 +971,10 @@ export const LibraryInstallResponse = {
                 ? TaskProgress.toJSON(message.taskProgress)
                 : undefined);
         return obj;
+    },
+
+    create(base?: DeepPartial<LibraryInstallResponse>): LibraryInstallResponse {
+        return LibraryInstallResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -947,25 +1022,38 @@ export const LibraryUpgradeRequest = {
         length?: number
     ): LibraryUpgradeRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryUpgradeRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
                     message.noDeps = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -989,6 +1077,10 @@ export const LibraryUpgradeRequest = {
         message.name !== undefined && (obj.name = message.name);
         message.noDeps !== undefined && (obj.noDeps = message.noDeps);
         return obj;
+    },
+
+    create(base?: DeepPartial<LibraryUpgradeRequest>): LibraryUpgradeRequest {
+        return LibraryUpgradeRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1034,28 +1126,37 @@ export const LibraryUpgradeResponse = {
         length?: number
     ): LibraryUpgradeResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryUpgradeResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.progress = DownloadProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.taskProgress = TaskProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1082,6 +1183,10 @@ export const LibraryUpgradeResponse = {
                 ? TaskProgress.toJSON(message.taskProgress)
                 : undefined);
         return obj;
+    },
+
+    create(base?: DeepPartial<LibraryUpgradeResponse>): LibraryUpgradeResponse {
+        return LibraryUpgradeResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1129,25 +1234,38 @@ export const LibraryUninstallRequest = {
         length?: number
     ): LibraryUninstallRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryUninstallRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.version = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1171,6 +1289,12 @@ export const LibraryUninstallRequest = {
         message.name !== undefined && (obj.name = message.name);
         message.version !== undefined && (obj.version = message.version);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<LibraryUninstallRequest>
+    ): LibraryUninstallRequest {
+        return LibraryUninstallRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1210,22 +1334,27 @@ export const LibraryUninstallResponse = {
         length?: number
     ): LibraryUninstallResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryUninstallResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.taskProgress = TaskProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1245,6 +1374,12 @@ export const LibraryUninstallResponse = {
                 ? TaskProgress.toJSON(message.taskProgress)
                 : undefined);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<LibraryUninstallResponse>
+    ): LibraryUninstallResponse {
+        return LibraryUninstallResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1282,19 +1417,24 @@ export const LibraryUpgradeAllRequest = {
         length?: number
     ): LibraryUpgradeAllRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryUpgradeAllRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1314,6 +1454,12 @@ export const LibraryUpgradeAllRequest = {
                 ? Instance.toJSON(message.instance)
                 : undefined);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<LibraryUpgradeAllRequest>
+    ): LibraryUpgradeAllRequest {
+        return LibraryUpgradeAllRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1357,28 +1503,37 @@ export const LibraryUpgradeAllResponse = {
         length?: number
     ): LibraryUpgradeAllResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryUpgradeAllResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.progress = DownloadProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.taskProgress = TaskProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1405,6 +1560,12 @@ export const LibraryUpgradeAllResponse = {
                 ? TaskProgress.toJSON(message.taskProgress)
                 : undefined);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<LibraryUpgradeAllResponse>
+    ): LibraryUpgradeAllResponse {
+        return LibraryUpgradeAllResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1452,25 +1613,38 @@ export const LibraryResolveDependenciesRequest = {
         length?: number
     ): LibraryResolveDependenciesRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryResolveDependenciesRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.version = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1494,6 +1668,12 @@ export const LibraryResolveDependenciesRequest = {
         message.name !== undefined && (obj.name = message.name);
         message.version !== undefined && (obj.version = message.version);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<LibraryResolveDependenciesRequest>
+    ): LibraryResolveDependenciesRequest {
+        return LibraryResolveDependenciesRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1533,21 +1713,26 @@ export const LibraryResolveDependenciesResponse = {
         length?: number
     ): LibraryResolveDependenciesResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryResolveDependenciesResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.dependencies.push(
                         LibraryDependencyStatus.decode(reader, reader.uint32())
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1572,6 +1757,12 @@ export const LibraryResolveDependenciesResponse = {
             obj.dependencies = [];
         }
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<LibraryResolveDependenciesResponse>
+    ): LibraryResolveDependenciesResponse {
+        return LibraryResolveDependenciesResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1612,25 +1803,38 @@ export const LibraryDependencyStatus = {
         length?: number
     ): LibraryDependencyStatus {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryDependencyStatus();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.versionRequired = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.versionInstalled = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1657,6 +1861,12 @@ export const LibraryDependencyStatus = {
         return obj;
     },
 
+    create(
+        base?: DeepPartial<LibraryDependencyStatus>
+    ): LibraryDependencyStatus {
+        return LibraryDependencyStatus.fromPartial(base ?? {});
+    },
+
     fromPartial(
         object: DeepPartial<LibraryDependencyStatus>
     ): LibraryDependencyStatus {
@@ -1669,7 +1879,7 @@ export const LibraryDependencyStatus = {
 };
 
 function createBaseLibrarySearchRequest(): LibrarySearchRequest {
-    return { instance: undefined, query: '' };
+    return { instance: undefined, query: '', omitReleasesDetails: false };
 }
 
 export const LibrarySearchRequest = {
@@ -1686,6 +1896,9 @@ export const LibrarySearchRequest = {
         if (message.query !== '') {
             writer.uint32(18).string(message.query);
         }
+        if (message.omitReleasesDetails === true) {
+            writer.uint32(24).bool(message.omitReleasesDetails);
+        }
         return writer;
     },
 
@@ -1694,22 +1907,38 @@ export const LibrarySearchRequest = {
         length?: number
     ): LibrarySearchRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibrarySearchRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.query = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
+                case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
+                    message.omitReleasesDetails = reader.bool();
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1720,6 +1949,9 @@ export const LibrarySearchRequest = {
                 ? Instance.fromJSON(object.instance)
                 : undefined,
             query: isSet(object.query) ? String(object.query) : '',
+            omitReleasesDetails: isSet(object.omitReleasesDetails)
+                ? Boolean(object.omitReleasesDetails)
+                : false,
         };
     },
 
@@ -1730,7 +1962,13 @@ export const LibrarySearchRequest = {
                 ? Instance.toJSON(message.instance)
                 : undefined);
         message.query !== undefined && (obj.query = message.query);
+        message.omitReleasesDetails !== undefined &&
+            (obj.omitReleasesDetails = message.omitReleasesDetails);
         return obj;
+    },
+
+    create(base?: DeepPartial<LibrarySearchRequest>): LibrarySearchRequest {
+        return LibrarySearchRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -1742,6 +1980,7 @@ export const LibrarySearchRequest = {
                 ? Instance.fromPartial(object.instance)
                 : undefined;
         message.query = object.query ?? '';
+        message.omitReleasesDetails = object.omitReleasesDetails ?? false;
         return message;
     },
 };
@@ -1769,24 +2008,33 @@ export const LibrarySearchResponse = {
         length?: number
     ): LibrarySearchResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibrarySearchResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.libraries.push(
                         SearchedLibrary.decode(reader, reader.uint32())
                     );
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 16) {
+                        break;
+                    }
+
                     message.status = reader.int32() as any;
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1816,6 +2064,10 @@ export const LibrarySearchResponse = {
         return obj;
     },
 
+    create(base?: DeepPartial<LibrarySearchResponse>): LibrarySearchResponse {
+        return LibrarySearchResponse.fromPartial(base ?? {});
+    },
+
     fromPartial(
         object: DeepPartial<LibrarySearchResponse>
     ): LibrarySearchResponse {
@@ -1828,7 +2080,7 @@ export const LibrarySearchResponse = {
 };
 
 function createBaseSearchedLibrary(): SearchedLibrary {
-    return { name: '', releases: {}, latest: undefined };
+    return { name: '', releases: {}, latest: undefined, availableVersions: [] };
 }
 
 export const SearchedLibrary = {
@@ -1851,21 +2103,32 @@ export const SearchedLibrary = {
                 writer.uint32(26).fork()
             ).ldelim();
         }
+        for (const v of message.availableVersions) {
+            writer.uint32(34).string(v!);
+        }
         return writer;
     },
 
     decode(input: _m0.Reader | Uint8Array, length?: number): SearchedLibrary {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseSearchedLibrary();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     const entry2 = SearchedLibrary_ReleasesEntry.decode(
                         reader,
                         reader.uint32()
@@ -1873,17 +2136,29 @@ export const SearchedLibrary = {
                     if (entry2.value !== undefined) {
                         message.releases[entry2.key] = entry2.value;
                     }
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.latest = LibraryRelease.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
+                case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
+                    message.availableVersions.push(reader.string());
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -1902,6 +2177,9 @@ export const SearchedLibrary = {
             latest: isSet(object.latest)
                 ? LibraryRelease.fromJSON(object.latest)
                 : undefined,
+            availableVersions: Array.isArray(object?.availableVersions)
+                ? object.availableVersions.map((e: any) => String(e))
+                : [],
         };
     },
 
@@ -1918,7 +2196,16 @@ export const SearchedLibrary = {
             (obj.latest = message.latest
                 ? LibraryRelease.toJSON(message.latest)
                 : undefined);
+        if (message.availableVersions) {
+            obj.availableVersions = message.availableVersions.map((e) => e);
+        } else {
+            obj.availableVersions = [];
+        }
         return obj;
+    },
+
+    create(base?: DeepPartial<SearchedLibrary>): SearchedLibrary {
+        return SearchedLibrary.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<SearchedLibrary>): SearchedLibrary {
@@ -1936,6 +2223,8 @@ export const SearchedLibrary = {
             object.latest !== undefined && object.latest !== null
                 ? LibraryRelease.fromPartial(object.latest)
                 : undefined;
+        message.availableVersions =
+            object.availableVersions?.map((e) => e) || [];
         return message;
     },
 };
@@ -1966,25 +2255,34 @@ export const SearchedLibrary_ReleasesEntry = {
         length?: number
     ): SearchedLibrary_ReleasesEntry {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseSearchedLibrary_ReleasesEntry();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.key = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.value = LibraryRelease.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -2006,6 +2304,12 @@ export const SearchedLibrary_ReleasesEntry = {
                 ? LibraryRelease.toJSON(message.value)
                 : undefined);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<SearchedLibrary_ReleasesEntry>
+    ): SearchedLibrary_ReleasesEntry {
+        return SearchedLibrary_ReleasesEntry.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -2091,60 +2395,113 @@ export const LibraryRelease = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): LibraryRelease {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryRelease();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.author = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.version = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.maintainer = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.sentence = reader.string();
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
                     message.paragraph = reader.string();
-                    break;
+                    continue;
                 case 6:
+                    if (tag !== 50) {
+                        break;
+                    }
+
                     message.website = reader.string();
-                    break;
+                    continue;
                 case 7:
+                    if (tag !== 58) {
+                        break;
+                    }
+
                     message.category = reader.string();
-                    break;
+                    continue;
                 case 8:
+                    if (tag !== 66) {
+                        break;
+                    }
+
                     message.architectures.push(reader.string());
-                    break;
+                    continue;
                 case 9:
+                    if (tag !== 74) {
+                        break;
+                    }
+
                     message.types.push(reader.string());
-                    break;
+                    continue;
                 case 10:
+                    if (tag !== 82) {
+                        break;
+                    }
+
                     message.resources = DownloadResource.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
+                    continue;
                 case 11:
+                    if (tag !== 90) {
+                        break;
+                    }
+
                     message.license = reader.string();
-                    break;
+                    continue;
                 case 12:
+                    if (tag !== 98) {
+                        break;
+                    }
+
                     message.providesIncludes.push(reader.string());
-                    break;
+                    continue;
                 case 13:
+                    if (tag !== 106) {
+                        break;
+                    }
+
                     message.dependencies.push(
                         LibraryDependency.decode(reader, reader.uint32())
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -2221,6 +2578,10 @@ export const LibraryRelease = {
         return obj;
     },
 
+    create(base?: DeepPartial<LibraryRelease>): LibraryRelease {
+        return LibraryRelease.fromPartial(base ?? {});
+    },
+
     fromPartial(object: DeepPartial<LibraryRelease>): LibraryRelease {
         const message = createBaseLibraryRelease();
         message.author = object.author ?? '';
@@ -2265,22 +2626,31 @@ export const LibraryDependency = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): LibraryDependency {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryDependency();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.versionConstraint = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -2300,6 +2670,10 @@ export const LibraryDependency = {
         message.versionConstraint !== undefined &&
             (obj.versionConstraint = message.versionConstraint);
         return obj;
+    },
+
+    create(base?: DeepPartial<LibraryDependency>): LibraryDependency {
+        return LibraryDependency.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<LibraryDependency>): LibraryDependency {
@@ -2345,31 +2719,52 @@ export const DownloadResource = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): DownloadResource {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseDownloadResource();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.url = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.archiveFilename = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.checksum = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
                     message.size = longToNumber(reader.int64() as Long);
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
                     message.cachePath = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -2395,6 +2790,10 @@ export const DownloadResource = {
         message.size !== undefined && (obj.size = Math.round(message.size));
         message.cachePath !== undefined && (obj.cachePath = message.cachePath);
         return obj;
+    },
+
+    create(base?: DeepPartial<DownloadResource>): DownloadResource {
+        return DownloadResource.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<DownloadResource>): DownloadResource {
@@ -2449,31 +2848,52 @@ export const LibraryListRequest = {
         length?: number
     ): LibraryListRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryListRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 16) {
+                        break;
+                    }
+
                     message.all = reader.bool();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
                     message.updatable = reader.bool();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
                     message.fqbn = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -2503,6 +2923,10 @@ export const LibraryListRequest = {
         message.name !== undefined && (obj.name = message.name);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         return obj;
+    },
+
+    create(base?: DeepPartial<LibraryListRequest>): LibraryListRequest {
+        return LibraryListRequest.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<LibraryListRequest>): LibraryListRequest {
@@ -2539,21 +2963,26 @@ export const LibraryListResponse = {
         length?: number
     ): LibraryListResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibraryListResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.installedLibraries.push(
                         InstalledLibrary.decode(reader, reader.uint32())
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -2578,6 +3007,10 @@ export const LibraryListResponse = {
             obj.installedLibraries = [];
         }
         return obj;
+    },
+
+    create(base?: DeepPartial<LibraryListResponse>): LibraryListResponse {
+        return LibraryListResponse.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<LibraryListResponse>): LibraryListResponse {
@@ -2613,25 +3046,34 @@ export const InstalledLibrary = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): InstalledLibrary {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseInstalledLibrary();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.library = Library.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.release = LibraryRelease.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -2658,6 +3100,10 @@ export const InstalledLibrary = {
                 ? LibraryRelease.toJSON(message.release)
                 : undefined);
         return obj;
+    },
+
+    create(base?: DeepPartial<InstalledLibrary>): InstalledLibrary {
+        return InstalledLibrary.fromPartial(base ?? {});
     },
 
     fromPartial(object: DeepPartial<InstalledLibrary>): InstalledLibrary {
@@ -2799,70 +3245,150 @@ export const Library = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Library {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibrary();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.name = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.author = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.maintainer = reader.string();
-                    break;
+                    continue;
                 case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
                     message.sentence = reader.string();
-                    break;
+                    continue;
                 case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
                     message.paragraph = reader.string();
-                    break;
+                    continue;
                 case 6:
+                    if (tag !== 50) {
+                        break;
+                    }
+
                     message.website = reader.string();
-                    break;
+                    continue;
                 case 7:
+                    if (tag !== 58) {
+                        break;
+                    }
+
                     message.category = reader.string();
-                    break;
+                    continue;
                 case 8:
+                    if (tag !== 66) {
+                        break;
+                    }
+
                     message.architectures.push(reader.string());
-                    break;
+                    continue;
                 case 9:
+                    if (tag !== 74) {
+                        break;
+                    }
+
                     message.types.push(reader.string());
-                    break;
+                    continue;
                 case 10:
+                    if (tag !== 82) {
+                        break;
+                    }
+
                     message.installDir = reader.string();
-                    break;
+                    continue;
                 case 11:
+                    if (tag !== 90) {
+                        break;
+                    }
+
                     message.sourceDir = reader.string();
-                    break;
+                    continue;
                 case 12:
+                    if (tag !== 98) {
+                        break;
+                    }
+
                     message.utilityDir = reader.string();
-                    break;
+                    continue;
                 case 14:
+                    if (tag !== 114) {
+                        break;
+                    }
+
                     message.containerPlatform = reader.string();
-                    break;
+                    continue;
                 case 17:
+                    if (tag !== 136) {
+                        break;
+                    }
+
                     message.dotALinkage = reader.bool();
-                    break;
+                    continue;
                 case 18:
+                    if (tag !== 144) {
+                        break;
+                    }
+
                     message.precompiled = reader.bool();
-                    break;
+                    continue;
                 case 19:
+                    if (tag !== 154) {
+                        break;
+                    }
+
                     message.ldFlags = reader.string();
-                    break;
+                    continue;
                 case 20:
+                    if (tag !== 160) {
+                        break;
+                    }
+
                     message.isLegacy = reader.bool();
-                    break;
+                    continue;
                 case 21:
+                    if (tag !== 170) {
+                        break;
+                    }
+
                     message.version = reader.string();
-                    break;
+                    continue;
                 case 22:
+                    if (tag !== 178) {
+                        break;
+                    }
+
                     message.license = reader.string();
-                    break;
+                    continue;
                 case 23:
+                    if (tag !== 186) {
+                        break;
+                    }
+
                     const entry23 = Library_PropertiesEntry.decode(
                         reader,
                         reader.uint32()
@@ -2870,20 +3396,40 @@ export const Library = {
                     if (entry23.value !== undefined) {
                         message.properties[entry23.key] = entry23.value;
                     }
-                    break;
+                    continue;
                 case 24:
+                    if (tag !== 192) {
+                        break;
+                    }
+
                     message.location = reader.int32() as any;
-                    break;
+                    continue;
                 case 25:
+                    if (tag !== 200) {
+                        break;
+                    }
+
                     message.layout = reader.int32() as any;
-                    break;
+                    continue;
                 case 26:
+                    if (tag !== 210) {
+                        break;
+                    }
+
                     message.examples.push(reader.string());
-                    break;
+                    continue;
                 case 27:
+                    if (tag !== 218) {
+                        break;
+                    }
+
                     message.providesIncludes.push(reader.string());
-                    break;
+                    continue;
                 case 28:
+                    if (tag !== 226) {
+                        break;
+                    }
+
                     const entry28 = Library_CompatibleWithEntry.decode(
                         reader,
                         reader.uint32()
@@ -2891,14 +3437,19 @@ export const Library = {
                     if (entry28.value !== undefined) {
                         message.compatibleWith[entry28.key] = entry28.value;
                     }
-                    break;
+                    continue;
                 case 29:
+                    if (tag !== 232) {
+                        break;
+                    }
+
                     message.inDevelopment = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -3040,6 +3591,10 @@ export const Library = {
         return obj;
     },
 
+    create(base?: DeepPartial<Library>): Library {
+        return Library.fromPartial(base ?? {});
+    },
+
     fromPartial(object: DeepPartial<Library>): Library {
         const message = createBaseLibrary();
         message.name = object.name ?? '';
@@ -3109,22 +3664,31 @@ export const Library_PropertiesEntry = {
         length?: number
     ): Library_PropertiesEntry {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibrary_PropertiesEntry();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.key = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.value = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -3141,6 +3705,12 @@ export const Library_PropertiesEntry = {
         message.key !== undefined && (obj.key = message.key);
         message.value !== undefined && (obj.value = message.value);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<Library_PropertiesEntry>
+    ): Library_PropertiesEntry {
+        return Library_PropertiesEntry.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -3176,22 +3746,31 @@ export const Library_CompatibleWithEntry = {
         length?: number
     ): Library_CompatibleWithEntry {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseLibrary_CompatibleWithEntry();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.key = reader.string();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 16) {
+                        break;
+                    }
+
                     message.value = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -3208,6 +3787,12 @@ export const Library_CompatibleWithEntry = {
         message.key !== undefined && (obj.key = message.key);
         message.value !== undefined && (obj.value = message.value);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<Library_CompatibleWithEntry>
+    ): Library_CompatibleWithEntry {
+        return Library_CompatibleWithEntry.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -3249,25 +3834,38 @@ export const ZipLibraryInstallRequest = {
         length?: number
     ): ZipLibraryInstallRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseZipLibraryInstallRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.path = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
                     message.overwrite = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -3293,6 +3891,12 @@ export const ZipLibraryInstallRequest = {
         message.path !== undefined && (obj.path = message.path);
         message.overwrite !== undefined && (obj.overwrite = message.overwrite);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<ZipLibraryInstallRequest>
+    ): ZipLibraryInstallRequest {
+        return ZipLibraryInstallRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -3332,22 +3936,27 @@ export const ZipLibraryInstallResponse = {
         length?: number
     ): ZipLibraryInstallResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseZipLibraryInstallResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.taskProgress = TaskProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -3367,6 +3976,12 @@ export const ZipLibraryInstallResponse = {
                 ? TaskProgress.toJSON(message.taskProgress)
                 : undefined);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<ZipLibraryInstallResponse>
+    ): ZipLibraryInstallResponse {
+        return ZipLibraryInstallResponse.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -3410,25 +4025,38 @@ export const GitLibraryInstallRequest = {
         length?: number
     ): GitLibraryInstallRequest {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseGitLibraryInstallRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.instance = Instance.decode(reader, reader.uint32());
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.url = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
                     message.overwrite = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -3454,6 +4082,12 @@ export const GitLibraryInstallRequest = {
         message.url !== undefined && (obj.url = message.url);
         message.overwrite !== undefined && (obj.overwrite = message.overwrite);
         return obj;
+    },
+
+    create(
+        base?: DeepPartial<GitLibraryInstallRequest>
+    ): GitLibraryInstallRequest {
+        return GitLibraryInstallRequest.fromPartial(base ?? {});
     },
 
     fromPartial(
@@ -3493,22 +4127,27 @@ export const GitLibraryInstallResponse = {
         length?: number
     ): GitLibraryInstallResponse {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseGitLibraryInstallResponse();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
                     message.taskProgress = TaskProgress.decode(
                         reader,
                         reader.uint32()
                     );
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -3530,6 +4169,12 @@ export const GitLibraryInstallResponse = {
         return obj;
     },
 
+    create(
+        base?: DeepPartial<GitLibraryInstallResponse>
+    ): GitLibraryInstallResponse {
+        return GitLibraryInstallResponse.fromPartial(base ?? {});
+    },
+
     fromPartial(
         object: DeepPartial<GitLibraryInstallResponse>
     ): GitLibraryInstallResponse {
@@ -3545,7 +4190,7 @@ export const GitLibraryInstallResponse = {
 declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
-var globalThis: any = (() => {
+var tsProtoGlobalThis: any = (() => {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
     }
@@ -3570,7 +4215,7 @@ type Builtin =
     | boolean
     | undefined;
 
-export type DeepPartial<T> = T extends Builtin
+type DeepPartial<T> = T extends Builtin
     ? T
     : T extends Array<infer U>
     ? Array<DeepPartial<U>>
@@ -3586,7 +4231,7 @@ export type DeepPartial<T> = T extends Builtin
 
 function longToNumber(long: Long): number {
     if (long.gt(Number.MAX_SAFE_INTEGER)) {
-        throw new globalThis.Error(
+        throw new tsProtoGlobalThis.Error(
             'Value is larger than Number.MAX_SAFE_INTEGER'
         );
     }

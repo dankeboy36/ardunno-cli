@@ -2,8 +2,6 @@
 import _m0 from 'protobufjs/minimal';
 import { Any } from '../protobuf/any';
 
-export const protobufPackage = 'google.rpc';
-
 /**
  * The `Status` type defines a logical error model that is suitable for
  * different programming environments, including REST APIs and RPC APIs. It is
@@ -56,25 +54,38 @@ export const Status = {
 
     decode(input: _m0.Reader | Uint8Array, length?: number): Status {
         const reader =
-            input instanceof _m0.Reader ? input : new _m0.Reader(input);
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
         const message = createBaseStatus();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
                 case 1:
+                    if (tag !== 8) {
+                        break;
+                    }
+
                     message.code = reader.int32();
-                    break;
+                    continue;
                 case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
                     message.message = reader.string();
-                    break;
+                    continue;
                 case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
                     message.details.push(Any.decode(reader, reader.uint32()));
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    continue;
             }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
         return message;
     },
@@ -103,6 +114,10 @@ export const Status = {
         return obj;
     },
 
+    create(base?: DeepPartial<Status>): Status {
+        return Status.fromPartial(base ?? {});
+    },
+
     fromPartial(object: DeepPartial<Status>): Status {
         const message = createBaseStatus();
         message.code = object.code ?? 0;
@@ -121,7 +136,7 @@ type Builtin =
     | boolean
     | undefined;
 
-export type DeepPartial<T> = T extends Builtin
+type DeepPartial<T> = T extends Builtin
     ? T
     : T extends Array<infer U>
     ? Array<DeepPartial<U>>
