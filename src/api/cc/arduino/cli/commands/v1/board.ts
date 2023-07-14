@@ -12,6 +12,11 @@ export interface BoardDetailsRequest {
      * (e.g., `arduino:avr:uno`).
      */
     fqbn: string;
+    /**
+     * If set to true the returned build properties will be left unexpanded, with
+     * the variables placeholders exactly as defined in the platform.
+     */
+    doNotExpandBuildProperties: boolean;
 }
 
 export interface BoardDetailsResponse {
@@ -46,6 +51,8 @@ export interface BoardDetailsResponse {
     debuggingSupported: boolean;
     /** Identifying information for the board (e.g., USB VID/PID). */
     identificationProperties: BoardIdentificationProperties[];
+    /** Board build properties used for compiling */
+    buildProperties: string[];
 }
 
 export interface BoardIdentificationProperties {
@@ -223,7 +230,7 @@ export interface BoardSearchResponse {
 }
 
 function createBaseBoardDetailsRequest(): BoardDetailsRequest {
-    return { instance: undefined, fqbn: '' };
+    return { instance: undefined, fqbn: '', doNotExpandBuildProperties: false };
 }
 
 export const BoardDetailsRequest = {
@@ -239,6 +246,9 @@ export const BoardDetailsRequest = {
         }
         if (message.fqbn !== '') {
             writer.uint32(18).string(message.fqbn);
+        }
+        if (message.doNotExpandBuildProperties === true) {
+            writer.uint32(24).bool(message.doNotExpandBuildProperties);
         }
         return writer;
     },
@@ -268,6 +278,13 @@ export const BoardDetailsRequest = {
 
                     message.fqbn = reader.string();
                     continue;
+                case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
+                    message.doNotExpandBuildProperties = reader.bool();
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -283,6 +300,9 @@ export const BoardDetailsRequest = {
                 ? Instance.fromJSON(object.instance)
                 : undefined,
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
+            doNotExpandBuildProperties: isSet(object.doNotExpandBuildProperties)
+                ? Boolean(object.doNotExpandBuildProperties)
+                : false,
         };
     },
 
@@ -293,6 +313,9 @@ export const BoardDetailsRequest = {
                 ? Instance.toJSON(message.instance)
                 : undefined);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
+        message.doNotExpandBuildProperties !== undefined &&
+            (obj.doNotExpandBuildProperties =
+                message.doNotExpandBuildProperties);
         return obj;
     },
 
@@ -307,6 +330,8 @@ export const BoardDetailsRequest = {
                 ? Instance.fromPartial(object.instance)
                 : undefined;
         message.fqbn = object.fqbn ?? '';
+        message.doNotExpandBuildProperties =
+            object.doNotExpandBuildProperties ?? false;
         return message;
     },
 };
@@ -327,6 +352,7 @@ function createBaseBoardDetailsResponse(): BoardDetailsResponse {
         programmers: [],
         debuggingSupported: false,
         identificationProperties: [],
+        buildProperties: [],
     };
 }
 
@@ -382,6 +408,9 @@ export const BoardDetailsResponse = {
                 v!,
                 writer.uint32(122).fork()
             ).ldelim();
+        }
+        for (const v of message.buildProperties) {
+            writer.uint32(130).string(v!);
         }
         return writer;
     },
@@ -509,6 +538,13 @@ export const BoardDetailsResponse = {
                         )
                     );
                     continue;
+                case 16:
+                    if (tag !== 130) {
+                        break;
+                    }
+
+                    message.buildProperties.push(reader.string());
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -555,6 +591,9 @@ export const BoardDetailsResponse = {
                 ? object.identificationProperties.map((e: any) =>
                       BoardIdentificationProperties.fromJSON(e)
                   )
+                : [],
+            buildProperties: Array.isArray(object?.buildProperties)
+                ? object.buildProperties.map((e: any) => String(e))
                 : [],
         };
     },
@@ -607,6 +646,11 @@ export const BoardDetailsResponse = {
         } else {
             obj.identificationProperties = [];
         }
+        if (message.buildProperties) {
+            obj.buildProperties = message.buildProperties.map((e) => e);
+        } else {
+            obj.buildProperties = [];
+        }
         return obj;
     },
 
@@ -646,6 +690,7 @@ export const BoardDetailsResponse = {
             object.identificationProperties?.map((e) =>
                 BoardIdentificationProperties.fromPartial(e)
             ) || [];
+        message.buildProperties = object.buildProperties?.map((e) => e) || [];
         return message;
     },
 };
@@ -2562,10 +2607,10 @@ export const BoardSearchResponse = {
     },
 };
 
-declare var self: any | undefined;
-declare var window: any | undefined;
-declare var global: any | undefined;
-var tsProtoGlobalThis: any = (() => {
+declare const self: any | undefined;
+declare const window: any | undefined;
+declare const global: any | undefined;
+const tsProtoGlobalThis: any = (() => {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
     }

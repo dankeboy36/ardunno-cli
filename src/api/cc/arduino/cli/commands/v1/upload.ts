@@ -559,7 +559,7 @@ export const UploadRequest_UserFieldsEntry = {
 };
 
 function createBaseUploadResponse(): UploadResponse {
-    return { outStream: new Uint8Array(), errStream: new Uint8Array() };
+    return { outStream: new Uint8Array(0), errStream: new Uint8Array(0) };
 }
 
 export const UploadResponse = {
@@ -611,10 +611,10 @@ export const UploadResponse = {
         return {
             outStream: isSet(object.outStream)
                 ? bytesFromBase64(object.outStream)
-                : new Uint8Array(),
+                : new Uint8Array(0),
             errStream: isSet(object.errStream)
                 ? bytesFromBase64(object.errStream)
-                : new Uint8Array(),
+                : new Uint8Array(0),
         };
     },
 
@@ -624,13 +624,13 @@ export const UploadResponse = {
             (obj.outStream = base64FromBytes(
                 message.outStream !== undefined
                     ? message.outStream
-                    : new Uint8Array()
+                    : new Uint8Array(0)
             ));
         message.errStream !== undefined &&
             (obj.errStream = base64FromBytes(
                 message.errStream !== undefined
                     ? message.errStream
-                    : new Uint8Array()
+                    : new Uint8Array(0)
             ));
         return obj;
     },
@@ -641,8 +641,8 @@ export const UploadResponse = {
 
     fromPartial(object: DeepPartial<UploadResponse>): UploadResponse {
         const message = createBaseUploadResponse();
-        message.outStream = object.outStream ?? new Uint8Array();
-        message.errStream = object.errStream ?? new Uint8Array();
+        message.outStream = object.outStream ?? new Uint8Array(0);
+        message.errStream = object.errStream ?? new Uint8Array(0);
         return message;
     },
 };
@@ -1053,7 +1053,7 @@ export const UploadUsingProgrammerRequest_UserFieldsEntry = {
 };
 
 function createBaseUploadUsingProgrammerResponse(): UploadUsingProgrammerResponse {
-    return { outStream: new Uint8Array(), errStream: new Uint8Array() };
+    return { outStream: new Uint8Array(0), errStream: new Uint8Array(0) };
 }
 
 export const UploadUsingProgrammerResponse = {
@@ -1108,10 +1108,10 @@ export const UploadUsingProgrammerResponse = {
         return {
             outStream: isSet(object.outStream)
                 ? bytesFromBase64(object.outStream)
-                : new Uint8Array(),
+                : new Uint8Array(0),
             errStream: isSet(object.errStream)
                 ? bytesFromBase64(object.errStream)
-                : new Uint8Array(),
+                : new Uint8Array(0),
         };
     },
 
@@ -1121,13 +1121,13 @@ export const UploadUsingProgrammerResponse = {
             (obj.outStream = base64FromBytes(
                 message.outStream !== undefined
                     ? message.outStream
-                    : new Uint8Array()
+                    : new Uint8Array(0)
             ));
         message.errStream !== undefined &&
             (obj.errStream = base64FromBytes(
                 message.errStream !== undefined
                     ? message.errStream
-                    : new Uint8Array()
+                    : new Uint8Array(0)
             ));
         return obj;
     },
@@ -1142,8 +1142,8 @@ export const UploadUsingProgrammerResponse = {
         object: DeepPartial<UploadUsingProgrammerResponse>
     ): UploadUsingProgrammerResponse {
         const message = createBaseUploadUsingProgrammerResponse();
-        message.outStream = object.outStream ?? new Uint8Array();
-        message.errStream = object.errStream ?? new Uint8Array();
+        message.outStream = object.outStream ?? new Uint8Array(0);
+        message.errStream = object.errStream ?? new Uint8Array(0);
         return message;
     },
 };
@@ -1445,7 +1445,7 @@ export const BurnBootloaderRequest_UserFieldsEntry = {
 };
 
 function createBaseBurnBootloaderResponse(): BurnBootloaderResponse {
-    return { outStream: new Uint8Array(), errStream: new Uint8Array() };
+    return { outStream: new Uint8Array(0), errStream: new Uint8Array(0) };
 }
 
 export const BurnBootloaderResponse = {
@@ -1500,10 +1500,10 @@ export const BurnBootloaderResponse = {
         return {
             outStream: isSet(object.outStream)
                 ? bytesFromBase64(object.outStream)
-                : new Uint8Array(),
+                : new Uint8Array(0),
             errStream: isSet(object.errStream)
                 ? bytesFromBase64(object.errStream)
-                : new Uint8Array(),
+                : new Uint8Array(0),
         };
     },
 
@@ -1513,13 +1513,13 @@ export const BurnBootloaderResponse = {
             (obj.outStream = base64FromBytes(
                 message.outStream !== undefined
                     ? message.outStream
-                    : new Uint8Array()
+                    : new Uint8Array(0)
             ));
         message.errStream !== undefined &&
             (obj.errStream = base64FromBytes(
                 message.errStream !== undefined
                     ? message.errStream
-                    : new Uint8Array()
+                    : new Uint8Array(0)
             ));
         return obj;
     },
@@ -1532,8 +1532,8 @@ export const BurnBootloaderResponse = {
         object: DeepPartial<BurnBootloaderResponse>
     ): BurnBootloaderResponse {
         const message = createBaseBurnBootloaderResponse();
-        message.outStream = object.outStream ?? new Uint8Array();
-        message.errStream = object.errStream ?? new Uint8Array();
+        message.outStream = object.outStream ?? new Uint8Array(0);
+        message.errStream = object.errStream ?? new Uint8Array(0);
         return message;
     },
 };
@@ -2000,10 +2000,10 @@ export const SupportedUserFieldsResponse = {
     },
 };
 
-declare var self: any | undefined;
-declare var window: any | undefined;
-declare var global: any | undefined;
-var tsProtoGlobalThis: any = (() => {
+declare const self: any | undefined;
+declare const window: any | undefined;
+declare const global: any | undefined;
+const tsProtoGlobalThis: any = (() => {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
     }

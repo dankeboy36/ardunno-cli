@@ -95,7 +95,7 @@ export interface GetDebugConfigResponse_ServerConfigurationEntry {
 function createBaseDebugRequest(): DebugRequest {
     return {
         debugRequest: undefined,
-        data: new Uint8Array(),
+        data: new Uint8Array(0),
         sendInterrupt: false,
     };
 }
@@ -168,7 +168,7 @@ export const DebugRequest = {
                 : undefined,
             data: isSet(object.data)
                 ? bytesFromBase64(object.data)
-                : new Uint8Array(),
+                : new Uint8Array(0),
             sendInterrupt: isSet(object.sendInterrupt)
                 ? Boolean(object.sendInterrupt)
                 : false,
@@ -183,7 +183,7 @@ export const DebugRequest = {
                 : undefined);
         message.data !== undefined &&
             (obj.data = base64FromBytes(
-                message.data !== undefined ? message.data : new Uint8Array()
+                message.data !== undefined ? message.data : new Uint8Array(0)
             ));
         message.sendInterrupt !== undefined &&
             (obj.sendInterrupt = message.sendInterrupt);
@@ -200,7 +200,7 @@ export const DebugRequest = {
             object.debugRequest !== undefined && object.debugRequest !== null
                 ? DebugConfigRequest.fromPartial(object.debugRequest)
                 : undefined;
-        message.data = object.data ?? new Uint8Array();
+        message.data = object.data ?? new Uint8Array(0);
         message.sendInterrupt = object.sendInterrupt ?? false;
         return message;
     },
@@ -382,7 +382,7 @@ export const DebugConfigRequest = {
 };
 
 function createBaseDebugResponse(): DebugResponse {
-    return { data: new Uint8Array(), error: '' };
+    return { data: new Uint8Array(0), error: '' };
 }
 
 export const DebugResponse = {
@@ -434,7 +434,7 @@ export const DebugResponse = {
         return {
             data: isSet(object.data)
                 ? bytesFromBase64(object.data)
-                : new Uint8Array(),
+                : new Uint8Array(0),
             error: isSet(object.error) ? String(object.error) : '',
         };
     },
@@ -443,7 +443,7 @@ export const DebugResponse = {
         const obj: any = {};
         message.data !== undefined &&
             (obj.data = base64FromBytes(
-                message.data !== undefined ? message.data : new Uint8Array()
+                message.data !== undefined ? message.data : new Uint8Array(0)
             ));
         message.error !== undefined && (obj.error = message.error);
         return obj;
@@ -455,7 +455,7 @@ export const DebugResponse = {
 
     fromPartial(object: DeepPartial<DebugResponse>): DebugResponse {
         const message = createBaseDebugResponse();
-        message.data = object.data ?? new Uint8Array();
+        message.data = object.data ?? new Uint8Array(0);
         message.error = object.error ?? '';
         return message;
     },
@@ -925,10 +925,10 @@ export interface DebugServiceClient<CallOptionsExt = {}> {
     ): Promise<GetDebugConfigResponse>;
 }
 
-declare var self: any | undefined;
-declare var window: any | undefined;
-declare var global: any | undefined;
-var tsProtoGlobalThis: any = (() => {
+declare const self: any | undefined;
+declare const window: any | undefined;
+declare const global: any | undefined;
+const tsProtoGlobalThis: any = (() => {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
     }

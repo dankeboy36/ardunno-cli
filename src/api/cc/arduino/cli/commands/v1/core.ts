@@ -86,6 +86,8 @@ export interface PlatformUpgradeResponse {
     progress: DownloadProgress | undefined;
     /** Description of the current stage of the upgrade. */
     taskProgress: TaskProgress | undefined;
+    /** The upgraded platform. */
+    platform: Platform | undefined;
 }
 
 export interface PlatformSearchRequest {
@@ -1044,7 +1046,11 @@ export const PlatformUpgradeRequest = {
 };
 
 function createBasePlatformUpgradeResponse(): PlatformUpgradeResponse {
-    return { progress: undefined, taskProgress: undefined };
+    return {
+        progress: undefined,
+        taskProgress: undefined,
+        platform: undefined,
+    };
 }
 
 export const PlatformUpgradeResponse = {
@@ -1062,6 +1068,12 @@ export const PlatformUpgradeResponse = {
             TaskProgress.encode(
                 message.taskProgress,
                 writer.uint32(18).fork()
+            ).ldelim();
+        }
+        if (message.platform !== undefined) {
+            Platform.encode(
+                message.platform,
+                writer.uint32(26).fork()
             ).ldelim();
         }
         return writer;
@@ -1098,6 +1110,13 @@ export const PlatformUpgradeResponse = {
                         reader.uint32()
                     );
                     continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
+                    message.platform = Platform.decode(reader, reader.uint32());
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -1115,6 +1134,9 @@ export const PlatformUpgradeResponse = {
             taskProgress: isSet(object.taskProgress)
                 ? TaskProgress.fromJSON(object.taskProgress)
                 : undefined,
+            platform: isSet(object.platform)
+                ? Platform.fromJSON(object.platform)
+                : undefined,
         };
     },
 
@@ -1127,6 +1149,10 @@ export const PlatformUpgradeResponse = {
         message.taskProgress !== undefined &&
             (obj.taskProgress = message.taskProgress
                 ? TaskProgress.toJSON(message.taskProgress)
+                : undefined);
+        message.platform !== undefined &&
+            (obj.platform = message.platform
+                ? Platform.toJSON(message.platform)
                 : undefined);
         return obj;
     },
@@ -1148,6 +1174,10 @@ export const PlatformUpgradeResponse = {
         message.taskProgress =
             object.taskProgress !== undefined && object.taskProgress !== null
                 ? TaskProgress.fromPartial(object.taskProgress)
+                : undefined;
+        message.platform =
+            object.platform !== undefined && object.platform !== null
+                ? Platform.fromPartial(object.platform)
                 : undefined;
         return message;
     },

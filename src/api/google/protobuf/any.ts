@@ -120,7 +120,7 @@ export interface Any {
 }
 
 function createBaseAny(): Any {
-    return { typeUrl: '', value: new Uint8Array() };
+    return { typeUrl: '', value: new Uint8Array(0) };
 }
 
 export const Any = {
@@ -170,7 +170,7 @@ export const Any = {
             typeUrl: isSet(object.typeUrl) ? String(object.typeUrl) : '',
             value: isSet(object.value)
                 ? bytesFromBase64(object.value)
-                : new Uint8Array(),
+                : new Uint8Array(0),
         };
     },
 
@@ -179,7 +179,7 @@ export const Any = {
         message.typeUrl !== undefined && (obj.typeUrl = message.typeUrl);
         message.value !== undefined &&
             (obj.value = base64FromBytes(
-                message.value !== undefined ? message.value : new Uint8Array()
+                message.value !== undefined ? message.value : new Uint8Array(0)
             ));
         return obj;
     },
@@ -191,15 +191,15 @@ export const Any = {
     fromPartial(object: DeepPartial<Any>): Any {
         const message = createBaseAny();
         message.typeUrl = object.typeUrl ?? '';
-        message.value = object.value ?? new Uint8Array();
+        message.value = object.value ?? new Uint8Array(0);
         return message;
     },
 };
 
-declare var self: any | undefined;
-declare var window: any | undefined;
-declare var global: any | undefined;
-var tsProtoGlobalThis: any = (() => {
+declare const self: any | undefined;
+declare const window: any | undefined;
+declare const global: any | undefined;
+const tsProtoGlobalThis: any = (() => {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
     }

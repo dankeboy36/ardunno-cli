@@ -153,7 +153,8 @@ export interface InitResponse {
         | {
               $case: 'profile';
               profile: Profile;
-          };
+          }
+        | undefined;
 }
 
 export interface InitResponse_Progress {
