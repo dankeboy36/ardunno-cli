@@ -1,6 +1,6 @@
 {
   "name": "ardunno-cli",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "nice-grpc API for the Arduino CLI",
   "main": "./dist/api/index.js",
   "exports": {
@@ -39,7 +39,7 @@
     "url": "git+https://github.com/dankeboy36/ardunno-cli.git"
   },
   "scripts": {
-    "generate:api": "ardunno-cli generate 0.32.2 -o src/api -f && ctix single -p ./tsconfig.json -o ./src/api/api.ts -w && replace-in-files --string ' type ' --replacement '' ./src/api/index.ts",
+    "generate:api": "ardunno-cli generate 0.33.1 -o src/api -f && ctix single -p ./tsconfig.json -o ./src/api/api.ts -w && replace-in-files --string ' type ' --replacement '' ./src/api/index.ts",
     "generate:config": "json2ts --input ./schemas/arduino-cli-schema.json --output ./src/config/index.ts --no-format --no-additionalProperties",
     "compile": "tsc -p ./",
     "watch": "tsc -p ./ -w",
@@ -54,7 +54,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.59.7",
     "@typescript-eslint/parser": "^5.59.7",
-    "ardunno-cli-gen": "^0.1.4",
+    "ardunno-cli-gen": "^0.1.5",
     "ctix": "^1.8.2",
     "eslint": "^8.41.0",
     "eslint-config-prettier": "^8.8.0",

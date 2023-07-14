@@ -87,7 +87,7 @@ function createBaseMonitorRequest(): MonitorRequest {
         instance: undefined,
         port: undefined,
         fqbn: '',
-        txData: new Uint8Array(),
+        txData: new Uint8Array(0),
         portConfiguration: undefined,
     };
 }
@@ -185,7 +185,7 @@ export const MonitorRequest = {
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
             txData: isSet(object.txData)
                 ? bytesFromBase64(object.txData)
-                : new Uint8Array(),
+                : new Uint8Array(0),
             portConfiguration: isSet(object.portConfiguration)
                 ? MonitorPortConfiguration.fromJSON(object.portConfiguration)
                 : undefined,
@@ -203,7 +203,9 @@ export const MonitorRequest = {
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         message.txData !== undefined &&
             (obj.txData = base64FromBytes(
-                message.txData !== undefined ? message.txData : new Uint8Array()
+                message.txData !== undefined
+                    ? message.txData
+                    : new Uint8Array(0)
             ));
         message.portConfiguration !== undefined &&
             (obj.portConfiguration = message.portConfiguration
@@ -227,7 +229,7 @@ export const MonitorRequest = {
                 ? Port.fromPartial(object.port)
                 : undefined;
         message.fqbn = object.fqbn ?? '';
-        message.txData = object.txData ?? new Uint8Array();
+        message.txData = object.txData ?? new Uint8Array(0);
         message.portConfiguration =
             object.portConfiguration !== undefined &&
             object.portConfiguration !== null
@@ -323,7 +325,7 @@ export const MonitorPortConfiguration = {
 function createBaseMonitorResponse(): MonitorResponse {
     return {
         error: '',
-        rxData: new Uint8Array(),
+        rxData: new Uint8Array(0),
         appliedSettings: [],
         success: false,
     };
@@ -401,7 +403,7 @@ export const MonitorResponse = {
             error: isSet(object.error) ? String(object.error) : '',
             rxData: isSet(object.rxData)
                 ? bytesFromBase64(object.rxData)
-                : new Uint8Array(),
+                : new Uint8Array(0),
             appliedSettings: Array.isArray(object?.appliedSettings)
                 ? object.appliedSettings.map((e: any) =>
                       MonitorPortSetting.fromJSON(e)
@@ -416,7 +418,9 @@ export const MonitorResponse = {
         message.error !== undefined && (obj.error = message.error);
         message.rxData !== undefined &&
             (obj.rxData = base64FromBytes(
-                message.rxData !== undefined ? message.rxData : new Uint8Array()
+                message.rxData !== undefined
+                    ? message.rxData
+                    : new Uint8Array(0)
             ));
         if (message.appliedSettings) {
             obj.appliedSettings = message.appliedSettings.map((e) =>
@@ -436,7 +440,7 @@ export const MonitorResponse = {
     fromPartial(object: DeepPartial<MonitorResponse>): MonitorResponse {
         const message = createBaseMonitorResponse();
         message.error = object.error ?? '';
-        message.rxData = object.rxData ?? new Uint8Array();
+        message.rxData = object.rxData ?? new Uint8Array(0);
         message.appliedSettings =
             object.appliedSettings?.map((e) =>
                 MonitorPortSetting.fromPartial(e)
@@ -850,10 +854,10 @@ export const MonitorPortSettingDescriptor = {
     },
 };
 
-declare var self: any | undefined;
-declare var window: any | undefined;
-declare var global: any | undefined;
-var tsProtoGlobalThis: any = (() => {
+declare const self: any | undefined;
+declare const window: any | undefined;
+declare const global: any | undefined;
+const tsProtoGlobalThis: any = (() => {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
     }

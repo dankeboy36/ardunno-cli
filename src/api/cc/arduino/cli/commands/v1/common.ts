@@ -14,7 +14,8 @@ export interface DownloadProgress {
         | {
               $case: 'end';
               end: DownloadProgressEnd;
-          };
+          }
+        | undefined;
 }
 
 export interface DownloadProgressStart {
@@ -97,6 +98,14 @@ export interface Platform {
      * to their online help service.
      */
     help: HelpResources | undefined;
+    /** If true the platform is indexed */
+    indexed: boolean;
+    /**
+     * This field is true when the platform is installed with the Arduino IDE 1.8.
+     * If the platform is also not indexed it may fail to work correctly in some
+     * circumstances, and it may need to be re-installed.
+     */
+    missingMetadata: boolean;
 }
 
 export interface InstalledPlatformReference {
@@ -810,6 +819,8 @@ function createBasePlatform(): Platform {
         deprecated: false,
         type: [],
         help: undefined,
+        indexed: false,
+        missingMetadata: false,
     };
 }
 
@@ -856,6 +867,12 @@ export const Platform = {
                 message.help,
                 writer.uint32(98).fork()
             ).ldelim();
+        }
+        if (message.indexed === true) {
+            writer.uint32(104).bool(message.indexed);
+        }
+        if (message.missingMetadata === true) {
+            writer.uint32(112).bool(message.missingMetadata);
         }
         return writer;
     },
@@ -955,6 +972,20 @@ export const Platform = {
                         reader.uint32()
                     );
                     continue;
+                case 13:
+                    if (tag !== 104) {
+                        break;
+                    }
+
+                    message.indexed = reader.bool();
+                    continue;
+                case 14:
+                    if (tag !== 112) {
+                        break;
+                    }
+
+                    message.missingMetadata = reader.bool();
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -990,6 +1021,10 @@ export const Platform = {
             help: isSet(object.help)
                 ? HelpResources.fromJSON(object.help)
                 : undefined,
+            indexed: isSet(object.indexed) ? Boolean(object.indexed) : false,
+            missingMetadata: isSet(object.missingMetadata)
+                ? Boolean(object.missingMetadata)
+                : false,
         };
     },
 
@@ -1023,6 +1058,9 @@ export const Platform = {
             (obj.help = message.help
                 ? HelpResources.toJSON(message.help)
                 : undefined);
+        message.indexed !== undefined && (obj.indexed = message.indexed);
+        message.missingMetadata !== undefined &&
+            (obj.missingMetadata = message.missingMetadata);
         return obj;
     },
 
@@ -1047,6 +1085,8 @@ export const Platform = {
             object.help !== undefined && object.help !== null
                 ? HelpResources.fromPartial(object.help)
                 : undefined;
+        message.indexed = object.indexed ?? false;
+        message.missingMetadata = object.missingMetadata ?? false;
         return message;
     },
 };
@@ -1375,10 +1415,10 @@ export const HelpResources = {
     },
 };
 
-declare var self: any | undefined;
-declare var window: any | undefined;
-declare var global: any | undefined;
-var tsProtoGlobalThis: any = (() => {
+declare const self: any | undefined;
+declare const window: any | undefined;
+declare const global: any | undefined;
+const tsProtoGlobalThis: any = (() => {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
     }

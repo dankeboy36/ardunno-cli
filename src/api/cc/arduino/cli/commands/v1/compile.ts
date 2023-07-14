@@ -95,6 +95,11 @@ export interface CompileRequest {
      * language servers to optimize the build speed in some particular cases.
      */
     skipLibrariesDiscovery: boolean;
+    /**
+     * If set to true the returned build properties will be left unexpanded, with
+     * the variables placeholders exactly as defined in the platform.
+     */
+    doNotExpandBuildProperties: boolean;
 }
 
 export interface CompileRequest_SourceOverrideEntry {
@@ -155,6 +160,7 @@ function createBaseCompileRequest(): CompileRequest {
         signKey: '',
         encryptKey: '',
         skipLibrariesDiscovery: false,
+        doNotExpandBuildProperties: false,
     };
 }
 
@@ -243,6 +249,9 @@ export const CompileRequest = {
         }
         if (message.skipLibrariesDiscovery === true) {
             writer.uint32(224).bool(message.skipLibrariesDiscovery);
+        }
+        if (message.doNotExpandBuildProperties === true) {
+            writer.uint32(232).bool(message.doNotExpandBuildProperties);
         }
         return writer;
     },
@@ -432,6 +441,13 @@ export const CompileRequest = {
 
                     message.skipLibrariesDiscovery = reader.bool();
                     continue;
+                case 29:
+                    if (tag !== 232) {
+                        break;
+                    }
+
+                    message.doNotExpandBuildProperties = reader.bool();
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -504,6 +520,9 @@ export const CompileRequest = {
             skipLibrariesDiscovery: isSet(object.skipLibrariesDiscovery)
                 ? Boolean(object.skipLibrariesDiscovery)
                 : false,
+            doNotExpandBuildProperties: isSet(object.doNotExpandBuildProperties)
+                ? Boolean(object.doNotExpandBuildProperties)
+                : false,
         };
     },
 
@@ -564,6 +583,9 @@ export const CompileRequest = {
             (obj.encryptKey = message.encryptKey);
         message.skipLibrariesDiscovery !== undefined &&
             (obj.skipLibrariesDiscovery = message.skipLibrariesDiscovery);
+        message.doNotExpandBuildProperties !== undefined &&
+            (obj.doNotExpandBuildProperties =
+                message.doNotExpandBuildProperties);
         return obj;
     },
 
@@ -608,6 +630,8 @@ export const CompileRequest = {
         message.signKey = object.signKey ?? '';
         message.encryptKey = object.encryptKey ?? '';
         message.skipLibrariesDiscovery = object.skipLibrariesDiscovery ?? false;
+        message.doNotExpandBuildProperties =
+            object.doNotExpandBuildProperties ?? false;
         return message;
     },
 };
@@ -696,8 +720,8 @@ export const CompileRequest_SourceOverrideEntry = {
 
 function createBaseCompileResponse(): CompileResponse {
     return {
-        outStream: new Uint8Array(),
-        errStream: new Uint8Array(),
+        outStream: new Uint8Array(0),
+        errStream: new Uint8Array(0),
         buildPath: '',
         usedLibraries: [],
         executableSectionsSize: [],
@@ -849,10 +873,10 @@ export const CompileResponse = {
         return {
             outStream: isSet(object.outStream)
                 ? bytesFromBase64(object.outStream)
-                : new Uint8Array(),
+                : new Uint8Array(0),
             errStream: isSet(object.errStream)
                 ? bytesFromBase64(object.errStream)
-                : new Uint8Array(),
+                : new Uint8Array(0),
             buildPath: isSet(object.buildPath) ? String(object.buildPath) : '',
             usedLibraries: Array.isArray(object?.usedLibraries)
                 ? object.usedLibraries.map((e: any) => Library.fromJSON(e))
@@ -885,13 +909,13 @@ export const CompileResponse = {
             (obj.outStream = base64FromBytes(
                 message.outStream !== undefined
                     ? message.outStream
-                    : new Uint8Array()
+                    : new Uint8Array(0)
             ));
         message.errStream !== undefined &&
             (obj.errStream = base64FromBytes(
                 message.errStream !== undefined
                     ? message.errStream
-                    : new Uint8Array()
+                    : new Uint8Array(0)
             ));
         message.buildPath !== undefined && (obj.buildPath = message.buildPath);
         if (message.usedLibraries) {
@@ -934,8 +958,8 @@ export const CompileResponse = {
 
     fromPartial(object: DeepPartial<CompileResponse>): CompileResponse {
         const message = createBaseCompileResponse();
-        message.outStream = object.outStream ?? new Uint8Array();
-        message.errStream = object.errStream ?? new Uint8Array();
+        message.outStream = object.outStream ?? new Uint8Array(0);
+        message.errStream = object.errStream ?? new Uint8Array(0);
         message.buildPath = object.buildPath ?? '';
         message.usedLibraries =
             object.usedLibraries?.map((e) => Library.fromPartial(e)) || [];
@@ -1054,10 +1078,10 @@ export const ExecutableSectionSize = {
     },
 };
 
-declare var self: any | undefined;
-declare var window: any | undefined;
-declare var global: any | undefined;
-var tsProtoGlobalThis: any = (() => {
+declare const self: any | undefined;
+declare const window: any | undefined;
+declare const global: any | undefined;
+const tsProtoGlobalThis: any = (() => {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
     }
