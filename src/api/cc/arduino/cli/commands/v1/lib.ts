@@ -291,13 +291,19 @@ export interface LibraryDependencyStatus {
 export interface LibrarySearchRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
-    /** The search query. */
+    /**
+     * Deprecated. Use search_args instead.
+     *
+     * @deprecated
+     */
     query: string;
     /**
      * Set to true to not populate the releases field in the response (may save a
      * lot of bandwidth/CPU).
      */
     omitReleasesDetails: boolean;
+    /** Keywords for the search. */
+    searchArgs: string;
 }
 
 export interface LibrarySearchResponse {
@@ -1879,7 +1885,12 @@ export const LibraryDependencyStatus = {
 };
 
 function createBaseLibrarySearchRequest(): LibrarySearchRequest {
-    return { instance: undefined, query: '', omitReleasesDetails: false };
+    return {
+        instance: undefined,
+        query: '',
+        omitReleasesDetails: false,
+        searchArgs: '',
+    };
 }
 
 export const LibrarySearchRequest = {
@@ -1898,6 +1909,9 @@ export const LibrarySearchRequest = {
         }
         if (message.omitReleasesDetails === true) {
             writer.uint32(24).bool(message.omitReleasesDetails);
+        }
+        if (message.searchArgs !== '') {
+            writer.uint32(34).string(message.searchArgs);
         }
         return writer;
     },
@@ -1934,6 +1948,13 @@ export const LibrarySearchRequest = {
 
                     message.omitReleasesDetails = reader.bool();
                     continue;
+                case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
+                    message.searchArgs = reader.string();
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -1952,6 +1973,9 @@ export const LibrarySearchRequest = {
             omitReleasesDetails: isSet(object.omitReleasesDetails)
                 ? Boolean(object.omitReleasesDetails)
                 : false,
+            searchArgs: isSet(object.searchArgs)
+                ? String(object.searchArgs)
+                : '',
         };
     },
 
@@ -1964,6 +1988,8 @@ export const LibrarySearchRequest = {
         message.query !== undefined && (obj.query = message.query);
         message.omitReleasesDetails !== undefined &&
             (obj.omitReleasesDetails = message.omitReleasesDetails);
+        message.searchArgs !== undefined &&
+            (obj.searchArgs = message.searchArgs);
         return obj;
     },
 
@@ -1981,6 +2007,7 @@ export const LibrarySearchRequest = {
                 : undefined;
         message.query = object.query ?? '';
         message.omitReleasesDetails = object.omitReleasesDetails ?? false;
+        message.searchArgs = object.searchArgs ?? '';
         return message;
     },
 };

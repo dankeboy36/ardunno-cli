@@ -1,30 +1,30 @@
 /* eslint-disable */
-import type { CallContext, CallOptions } from 'nice-grpc-common';
 import _m0 from 'protobufjs/minimal';
-import { Instance } from '../../commands/v1/common';
-import { Port } from '../../commands/v1/port';
+import { Any } from '../../../../../google/protobuf/any';
+import { Instance } from './common';
+import { Port } from './port';
 
 /**
  * The top-level message sent by the client for the `Debug` method.
- * Multiple `DebugReq` messages can be sent but the first message
- * must contain a `DebugConfigReq` message to initialize the debug session.
- * All subsequent messages must contain bytes to be sent to the debug session
- * and must not contain a `DebugReq` message.
+ * Multiple `DebugRequest` messages can be sent but the first message
+ * must contain a `GetDebugConfigRequest` message to initialize the debug
+ * session. All subsequent messages must contain bytes to be sent to the debug
+ * session and must not contain a `GetDebugConfigRequest` message.
  */
 export interface DebugRequest {
     /**
      * Provides information to the debug that specifies which is the target.
-     * The first `StreamingOpenReq` message must contain a `DebugReq`
+     * The first `DebugRequest` message must contain a `GetDebugConfigRequest`
      * message.
      */
-    debugRequest: DebugConfigRequest | undefined;
+    debugRequest: GetDebugConfigRequest | undefined;
     /** The data to be sent to the target being monitored. */
     data: Uint8Array;
     /** Set this to true to send and Interrupt signal to the debugger process */
     sendInterrupt: boolean;
 }
 
-export interface DebugConfigRequest {
+export interface GetDebugConfigRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
     /**
@@ -77,19 +77,29 @@ export interface GetDebugConfigResponse {
     /** The GDB server directory */
     serverPath: string;
     /** Extra configuration parameters wrt toolchain */
-    toolchainConfiguration: { [key: string]: string };
+    toolchainConfiguration: Any | undefined;
     /** Extra configuration parameters wrt GDB server */
-    serverConfiguration: { [key: string]: string };
+    serverConfiguration: Any | undefined;
+    /**
+     * cortex-debug custom JSON configuration, it is provided as is from
+     * the platform developers.
+     */
+    cortexDebugCustomJson: string;
+    /** the SVD file to use */
+    svdFile: string;
 }
 
-export interface GetDebugConfigResponse_ToolchainConfigurationEntry {
-    key: string;
-    value: string;
-}
+/** Configurations specific for the 'gcc' toolchain */
+export interface DebugGCCToolchainConfiguration {}
 
-export interface GetDebugConfigResponse_ServerConfigurationEntry {
-    key: string;
-    value: string;
+/** Configuration specific for the 'openocd` server */
+export interface DebugOpenOCDServerConfiguration {
+    /** path to openocd */
+    path: string;
+    /** path to openocd scripts */
+    scriptsDir: string;
+    /** list of scripts to execute by openocd */
+    scripts: string[];
 }
 
 function createBaseDebugRequest(): DebugRequest {
@@ -106,7 +116,7 @@ export const DebugRequest = {
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
         if (message.debugRequest !== undefined) {
-            DebugConfigRequest.encode(
+            GetDebugConfigRequest.encode(
                 message.debugRequest,
                 writer.uint32(10).fork()
             ).ldelim();
@@ -133,7 +143,7 @@ export const DebugRequest = {
                         break;
                     }
 
-                    message.debugRequest = DebugConfigRequest.decode(
+                    message.debugRequest = GetDebugConfigRequest.decode(
                         reader,
                         reader.uint32()
                     );
@@ -164,7 +174,7 @@ export const DebugRequest = {
     fromJSON(object: any): DebugRequest {
         return {
             debugRequest: isSet(object.debugRequest)
-                ? DebugConfigRequest.fromJSON(object.debugRequest)
+                ? GetDebugConfigRequest.fromJSON(object.debugRequest)
                 : undefined,
             data: isSet(object.data)
                 ? bytesFromBase64(object.data)
@@ -179,7 +189,7 @@ export const DebugRequest = {
         const obj: any = {};
         message.debugRequest !== undefined &&
             (obj.debugRequest = message.debugRequest
-                ? DebugConfigRequest.toJSON(message.debugRequest)
+                ? GetDebugConfigRequest.toJSON(message.debugRequest)
                 : undefined);
         message.data !== undefined &&
             (obj.data = base64FromBytes(
@@ -198,7 +208,7 @@ export const DebugRequest = {
         const message = createBaseDebugRequest();
         message.debugRequest =
             object.debugRequest !== undefined && object.debugRequest !== null
-                ? DebugConfigRequest.fromPartial(object.debugRequest)
+                ? GetDebugConfigRequest.fromPartial(object.debugRequest)
                 : undefined;
         message.data = object.data ?? new Uint8Array(0);
         message.sendInterrupt = object.sendInterrupt ?? false;
@@ -206,7 +216,7 @@ export const DebugRequest = {
     },
 };
 
-function createBaseDebugConfigRequest(): DebugConfigRequest {
+function createBaseGetDebugConfigRequest(): GetDebugConfigRequest {
     return {
         instance: undefined,
         fqbn: '',
@@ -218,9 +228,9 @@ function createBaseDebugConfigRequest(): DebugConfigRequest {
     };
 }
 
-export const DebugConfigRequest = {
+export const GetDebugConfigRequest = {
     encode(
-        message: DebugConfigRequest,
+        message: GetDebugConfigRequest,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
         if (message.instance !== undefined) {
@@ -253,11 +263,11 @@ export const DebugConfigRequest = {
     decode(
         input: _m0.Reader | Uint8Array,
         length?: number
-    ): DebugConfigRequest {
+    ): GetDebugConfigRequest {
         const reader =
             input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseDebugConfigRequest();
+        const message = createBaseGetDebugConfigRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
@@ -319,7 +329,7 @@ export const DebugConfigRequest = {
         return message;
     },
 
-    fromJSON(object: any): DebugConfigRequest {
+    fromJSON(object: any): GetDebugConfigRequest {
         return {
             instance: isSet(object.instance)
                 ? Instance.fromJSON(object.instance)
@@ -339,7 +349,7 @@ export const DebugConfigRequest = {
         };
     },
 
-    toJSON(message: DebugConfigRequest): unknown {
+    toJSON(message: GetDebugConfigRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
             (obj.instance = message.instance
@@ -358,12 +368,14 @@ export const DebugConfigRequest = {
         return obj;
     },
 
-    create(base?: DeepPartial<DebugConfigRequest>): DebugConfigRequest {
-        return DebugConfigRequest.fromPartial(base ?? {});
+    create(base?: DeepPartial<GetDebugConfigRequest>): GetDebugConfigRequest {
+        return GetDebugConfigRequest.fromPartial(base ?? {});
     },
 
-    fromPartial(object: DeepPartial<DebugConfigRequest>): DebugConfigRequest {
-        const message = createBaseDebugConfigRequest();
+    fromPartial(
+        object: DeepPartial<GetDebugConfigRequest>
+    ): GetDebugConfigRequest {
+        const message = createBaseGetDebugConfigRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
                 ? Instance.fromPartial(object.instance)
@@ -469,8 +481,10 @@ function createBaseGetDebugConfigResponse(): GetDebugConfigResponse {
         toolchainPrefix: '',
         server: '',
         serverPath: '',
-        toolchainConfiguration: {},
-        serverConfiguration: {},
+        toolchainConfiguration: undefined,
+        serverConfiguration: undefined,
+        cortexDebugCustomJson: '',
+        svdFile: '',
     };
 }
 
@@ -497,20 +511,24 @@ export const GetDebugConfigResponse = {
         if (message.serverPath !== '') {
             writer.uint32(50).string(message.serverPath);
         }
-        Object.entries(message.toolchainConfiguration).forEach(
-            ([key, value]) => {
-                GetDebugConfigResponse_ToolchainConfigurationEntry.encode(
-                    { key: key as any, value },
-                    writer.uint32(58).fork()
-                ).ldelim();
-            }
-        );
-        Object.entries(message.serverConfiguration).forEach(([key, value]) => {
-            GetDebugConfigResponse_ServerConfigurationEntry.encode(
-                { key: key as any, value },
+        if (message.toolchainConfiguration !== undefined) {
+            Any.encode(
+                message.toolchainConfiguration,
+                writer.uint32(58).fork()
+            ).ldelim();
+        }
+        if (message.serverConfiguration !== undefined) {
+            Any.encode(
+                message.serverConfiguration,
                 writer.uint32(66).fork()
             ).ldelim();
-        });
+        }
+        if (message.cortexDebugCustomJson !== '') {
+            writer.uint32(74).string(message.cortexDebugCustomJson);
+        }
+        if (message.svdFile !== '') {
+            writer.uint32(82).string(message.svdFile);
+        }
         return writer;
     },
 
@@ -572,29 +590,34 @@ export const GetDebugConfigResponse = {
                         break;
                     }
 
-                    const entry7 =
-                        GetDebugConfigResponse_ToolchainConfigurationEntry.decode(
-                            reader,
-                            reader.uint32()
-                        );
-                    if (entry7.value !== undefined) {
-                        message.toolchainConfiguration[entry7.key] =
-                            entry7.value;
-                    }
+                    message.toolchainConfiguration = Any.decode(
+                        reader,
+                        reader.uint32()
+                    );
                     continue;
                 case 8:
                     if (tag !== 66) {
                         break;
                     }
 
-                    const entry8 =
-                        GetDebugConfigResponse_ServerConfigurationEntry.decode(
-                            reader,
-                            reader.uint32()
-                        );
-                    if (entry8.value !== undefined) {
-                        message.serverConfiguration[entry8.key] = entry8.value;
+                    message.serverConfiguration = Any.decode(
+                        reader,
+                        reader.uint32()
+                    );
+                    continue;
+                case 9:
+                    if (tag !== 74) {
+                        break;
                     }
+
+                    message.cortexDebugCustomJson = reader.string();
+                    continue;
+                case 10:
+                    if (tag !== 82) {
+                        break;
+                    }
+
+                    message.svdFile = reader.string();
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -621,22 +644,16 @@ export const GetDebugConfigResponse = {
             serverPath: isSet(object.serverPath)
                 ? String(object.serverPath)
                 : '',
-            toolchainConfiguration: isObject(object.toolchainConfiguration)
-                ? Object.entries(object.toolchainConfiguration).reduce<{
-                      [key: string]: string;
-                  }>((acc, [key, value]) => {
-                      acc[key] = String(value);
-                      return acc;
-                  }, {})
-                : {},
-            serverConfiguration: isObject(object.serverConfiguration)
-                ? Object.entries(object.serverConfiguration).reduce<{
-                      [key: string]: string;
-                  }>((acc, [key, value]) => {
-                      acc[key] = String(value);
-                      return acc;
-                  }, {})
-                : {},
+            toolchainConfiguration: isSet(object.toolchainConfiguration)
+                ? Any.fromJSON(object.toolchainConfiguration)
+                : undefined,
+            serverConfiguration: isSet(object.serverConfiguration)
+                ? Any.fromJSON(object.serverConfiguration)
+                : undefined,
+            cortexDebugCustomJson: isSet(object.cortexDebugCustomJson)
+                ? String(object.cortexDebugCustomJson)
+                : '',
+            svdFile: isSet(object.svdFile) ? String(object.svdFile) : '',
         };
     },
 
@@ -652,18 +669,17 @@ export const GetDebugConfigResponse = {
         message.server !== undefined && (obj.server = message.server);
         message.serverPath !== undefined &&
             (obj.serverPath = message.serverPath);
-        obj.toolchainConfiguration = {};
-        if (message.toolchainConfiguration) {
-            Object.entries(message.toolchainConfiguration).forEach(([k, v]) => {
-                obj.toolchainConfiguration[k] = v;
-            });
-        }
-        obj.serverConfiguration = {};
-        if (message.serverConfiguration) {
-            Object.entries(message.serverConfiguration).forEach(([k, v]) => {
-                obj.serverConfiguration[k] = v;
-            });
-        }
+        message.toolchainConfiguration !== undefined &&
+            (obj.toolchainConfiguration = message.toolchainConfiguration
+                ? Any.toJSON(message.toolchainConfiguration)
+                : undefined);
+        message.serverConfiguration !== undefined &&
+            (obj.serverConfiguration = message.serverConfiguration
+                ? Any.toJSON(message.serverConfiguration)
+                : undefined);
+        message.cortexDebugCustomJson !== undefined &&
+            (obj.cortexDebugCustomJson = message.cortexDebugCustomJson);
+        message.svdFile !== undefined && (obj.svdFile = message.svdFile);
         return obj;
     },
 
@@ -681,40 +697,94 @@ export const GetDebugConfigResponse = {
         message.toolchainPrefix = object.toolchainPrefix ?? '';
         message.server = object.server ?? '';
         message.serverPath = object.serverPath ?? '';
-        message.toolchainConfiguration = Object.entries(
-            object.toolchainConfiguration ?? {}
-        ).reduce<{ [key: string]: string }>((acc, [key, value]) => {
-            if (value !== undefined) {
-                acc[key] = String(value);
-            }
-            return acc;
-        }, {});
-        message.serverConfiguration = Object.entries(
-            object.serverConfiguration ?? {}
-        ).reduce<{ [key: string]: string }>((acc, [key, value]) => {
-            if (value !== undefined) {
-                acc[key] = String(value);
-            }
-            return acc;
-        }, {});
+        message.toolchainConfiguration =
+            object.toolchainConfiguration !== undefined &&
+            object.toolchainConfiguration !== null
+                ? Any.fromPartial(object.toolchainConfiguration)
+                : undefined;
+        message.serverConfiguration =
+            object.serverConfiguration !== undefined &&
+            object.serverConfiguration !== null
+                ? Any.fromPartial(object.serverConfiguration)
+                : undefined;
+        message.cortexDebugCustomJson = object.cortexDebugCustomJson ?? '';
+        message.svdFile = object.svdFile ?? '';
         return message;
     },
 };
 
-function createBaseGetDebugConfigResponse_ToolchainConfigurationEntry(): GetDebugConfigResponse_ToolchainConfigurationEntry {
-    return { key: '', value: '' };
+function createBaseDebugGCCToolchainConfiguration(): DebugGCCToolchainConfiguration {
+    return {};
 }
 
-export const GetDebugConfigResponse_ToolchainConfigurationEntry = {
+export const DebugGCCToolchainConfiguration = {
     encode(
-        message: GetDebugConfigResponse_ToolchainConfigurationEntry,
+        _: DebugGCCToolchainConfiguration,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.key !== '') {
-            writer.uint32(10).string(message.key);
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): DebugGCCToolchainConfiguration {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDebugGCCToolchainConfiguration();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
         }
-        if (message.value !== '') {
-            writer.uint32(18).string(message.value);
+        return message;
+    },
+
+    fromJSON(_: any): DebugGCCToolchainConfiguration {
+        return {};
+    },
+
+    toJSON(_: DebugGCCToolchainConfiguration): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<DebugGCCToolchainConfiguration>
+    ): DebugGCCToolchainConfiguration {
+        return DebugGCCToolchainConfiguration.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        _: DeepPartial<DebugGCCToolchainConfiguration>
+    ): DebugGCCToolchainConfiguration {
+        const message = createBaseDebugGCCToolchainConfiguration();
+        return message;
+    },
+};
+
+function createBaseDebugOpenOCDServerConfiguration(): DebugOpenOCDServerConfiguration {
+    return { path: '', scriptsDir: '', scripts: [] };
+}
+
+export const DebugOpenOCDServerConfiguration = {
+    encode(
+        message: DebugOpenOCDServerConfiguration,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.path !== '') {
+            writer.uint32(10).string(message.path);
+        }
+        if (message.scriptsDir !== '') {
+            writer.uint32(18).string(message.scriptsDir);
+        }
+        for (const v of message.scripts) {
+            writer.uint32(26).string(v!);
         }
         return writer;
     },
@@ -722,12 +792,11 @@ export const GetDebugConfigResponse_ToolchainConfigurationEntry = {
     decode(
         input: _m0.Reader | Uint8Array,
         length?: number
-    ): GetDebugConfigResponse_ToolchainConfigurationEntry {
+    ): DebugOpenOCDServerConfiguration {
         const reader =
             input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message =
-            createBaseGetDebugConfigResponse_ToolchainConfigurationEntry();
+        const message = createBaseDebugOpenOCDServerConfiguration();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
@@ -736,14 +805,21 @@ export const GetDebugConfigResponse_ToolchainConfigurationEntry = {
                         break;
                     }
 
-                    message.key = reader.string();
+                    message.path = reader.string();
                     continue;
                 case 2:
                     if (tag !== 18) {
                         break;
                     }
 
-                    message.value = reader.string();
+                    message.scriptsDir = reader.string();
+                    continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
+                    message.scripts.push(reader.string());
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -754,176 +830,47 @@ export const GetDebugConfigResponse_ToolchainConfigurationEntry = {
         return message;
     },
 
-    fromJSON(object: any): GetDebugConfigResponse_ToolchainConfigurationEntry {
+    fromJSON(object: any): DebugOpenOCDServerConfiguration {
         return {
-            key: isSet(object.key) ? String(object.key) : '',
-            value: isSet(object.value) ? String(object.value) : '',
+            path: isSet(object.path) ? String(object.path) : '',
+            scriptsDir: isSet(object.scriptsDir)
+                ? String(object.scriptsDir)
+                : '',
+            scripts: Array.isArray(object?.scripts)
+                ? object.scripts.map((e: any) => String(e))
+                : [],
         };
     },
 
-    toJSON(
-        message: GetDebugConfigResponse_ToolchainConfigurationEntry
-    ): unknown {
+    toJSON(message: DebugOpenOCDServerConfiguration): unknown {
         const obj: any = {};
-        message.key !== undefined && (obj.key = message.key);
-        message.value !== undefined && (obj.value = message.value);
+        message.path !== undefined && (obj.path = message.path);
+        message.scriptsDir !== undefined &&
+            (obj.scriptsDir = message.scriptsDir);
+        if (message.scripts) {
+            obj.scripts = message.scripts.map((e) => e);
+        } else {
+            obj.scripts = [];
+        }
         return obj;
     },
 
     create(
-        base?: DeepPartial<GetDebugConfigResponse_ToolchainConfigurationEntry>
-    ): GetDebugConfigResponse_ToolchainConfigurationEntry {
-        return GetDebugConfigResponse_ToolchainConfigurationEntry.fromPartial(
-            base ?? {}
-        );
+        base?: DeepPartial<DebugOpenOCDServerConfiguration>
+    ): DebugOpenOCDServerConfiguration {
+        return DebugOpenOCDServerConfiguration.fromPartial(base ?? {});
     },
 
     fromPartial(
-        object: DeepPartial<GetDebugConfigResponse_ToolchainConfigurationEntry>
-    ): GetDebugConfigResponse_ToolchainConfigurationEntry {
-        const message =
-            createBaseGetDebugConfigResponse_ToolchainConfigurationEntry();
-        message.key = object.key ?? '';
-        message.value = object.value ?? '';
+        object: DeepPartial<DebugOpenOCDServerConfiguration>
+    ): DebugOpenOCDServerConfiguration {
+        const message = createBaseDebugOpenOCDServerConfiguration();
+        message.path = object.path ?? '';
+        message.scriptsDir = object.scriptsDir ?? '';
+        message.scripts = object.scripts?.map((e) => e) || [];
         return message;
     },
 };
-
-function createBaseGetDebugConfigResponse_ServerConfigurationEntry(): GetDebugConfigResponse_ServerConfigurationEntry {
-    return { key: '', value: '' };
-}
-
-export const GetDebugConfigResponse_ServerConfigurationEntry = {
-    encode(
-        message: GetDebugConfigResponse_ServerConfigurationEntry,
-        writer: _m0.Writer = _m0.Writer.create()
-    ): _m0.Writer {
-        if (message.key !== '') {
-            writer.uint32(10).string(message.key);
-        }
-        if (message.value !== '') {
-            writer.uint32(18).string(message.value);
-        }
-        return writer;
-    },
-
-    decode(
-        input: _m0.Reader | Uint8Array,
-        length?: number
-    ): GetDebugConfigResponse_ServerConfigurationEntry {
-        const reader =
-            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message =
-            createBaseGetDebugConfigResponse_ServerConfigurationEntry();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-
-                    message.key = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-
-                    message.value = reader.string();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
-
-    fromJSON(object: any): GetDebugConfigResponse_ServerConfigurationEntry {
-        return {
-            key: isSet(object.key) ? String(object.key) : '',
-            value: isSet(object.value) ? String(object.value) : '',
-        };
-    },
-
-    toJSON(message: GetDebugConfigResponse_ServerConfigurationEntry): unknown {
-        const obj: any = {};
-        message.key !== undefined && (obj.key = message.key);
-        message.value !== undefined && (obj.value = message.value);
-        return obj;
-    },
-
-    create(
-        base?: DeepPartial<GetDebugConfigResponse_ServerConfigurationEntry>
-    ): GetDebugConfigResponse_ServerConfigurationEntry {
-        return GetDebugConfigResponse_ServerConfigurationEntry.fromPartial(
-            base ?? {}
-        );
-    },
-
-    fromPartial(
-        object: DeepPartial<GetDebugConfigResponse_ServerConfigurationEntry>
-    ): GetDebugConfigResponse_ServerConfigurationEntry {
-        const message =
-            createBaseGetDebugConfigResponse_ServerConfigurationEntry();
-        message.key = object.key ?? '';
-        message.value = object.value ?? '';
-        return message;
-    },
-};
-
-/** DebugService abstracts a debug Session usage */
-export type DebugServiceDefinition = typeof DebugServiceDefinition;
-export const DebugServiceDefinition = {
-    name: 'DebugService',
-    fullName: 'cc.arduino.cli.debug.v1.DebugService',
-    methods: {
-        /** Start a debug session and communicate with the debugger tool. */
-        debug: {
-            name: 'Debug',
-            requestType: DebugRequest,
-            requestStream: true,
-            responseType: DebugResponse,
-            responseStream: true,
-            options: {},
-        },
-        getDebugConfig: {
-            name: 'GetDebugConfig',
-            requestType: DebugConfigRequest,
-            requestStream: false,
-            responseType: GetDebugConfigResponse,
-            responseStream: false,
-            options: {},
-        },
-    },
-} as const;
-
-export interface DebugServiceImplementation<CallContextExt = {}> {
-    /** Start a debug session and communicate with the debugger tool. */
-    debug(
-        request: AsyncIterable<DebugRequest>,
-        context: CallContext & CallContextExt
-    ): ServerStreamingMethodResult<DeepPartial<DebugResponse>>;
-    getDebugConfig(
-        request: DebugConfigRequest,
-        context: CallContext & CallContextExt
-    ): Promise<DeepPartial<GetDebugConfigResponse>>;
-}
-
-export interface DebugServiceClient<CallOptionsExt = {}> {
-    /** Start a debug session and communicate with the debugger tool. */
-    debug(
-        request: AsyncIterable<DeepPartial<DebugRequest>>,
-        options?: CallOptions & CallOptionsExt
-    ): AsyncIterable<DebugResponse>;
-    getDebugConfig(
-        request: DeepPartial<DebugConfigRequest>,
-        options?: CallOptions & CallOptionsExt
-    ): Promise<GetDebugConfigResponse>;
-}
 
 declare const self: any | undefined;
 declare const window: any | undefined;
@@ -992,14 +939,6 @@ type DeepPartial<T> = T extends Builtin
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;
 
-function isObject(value: any): boolean {
-    return typeof value === 'object' && value !== null;
-}
-
 function isSet(value: any): boolean {
     return value !== null && value !== undefined;
 }
-
-export type ServerStreamingMethodResult<Response> = {
-    [Symbol.asyncIterator](): AsyncIterator<Response, void>;
-};

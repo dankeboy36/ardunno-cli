@@ -188,8 +188,6 @@ export interface BoardListAllResponse {
 export interface BoardListWatchRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
-    /** Set this to true to stop the discovery process */
-    interrupt: boolean;
 }
 
 export interface BoardListWatchResponse {
@@ -2115,7 +2113,7 @@ export const BoardListAllResponse = {
 };
 
 function createBaseBoardListWatchRequest(): BoardListWatchRequest {
-    return { instance: undefined, interrupt: false };
+    return { instance: undefined };
 }
 
 export const BoardListWatchRequest = {
@@ -2128,9 +2126,6 @@ export const BoardListWatchRequest = {
                 message.instance,
                 writer.uint32(10).fork()
             ).ldelim();
-        }
-        if (message.interrupt === true) {
-            writer.uint32(16).bool(message.interrupt);
         }
         return writer;
     },
@@ -2153,13 +2148,6 @@ export const BoardListWatchRequest = {
 
                     message.instance = Instance.decode(reader, reader.uint32());
                     continue;
-                case 2:
-                    if (tag !== 16) {
-                        break;
-                    }
-
-                    message.interrupt = reader.bool();
-                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -2174,9 +2162,6 @@ export const BoardListWatchRequest = {
             instance: isSet(object.instance)
                 ? Instance.fromJSON(object.instance)
                 : undefined,
-            interrupt: isSet(object.interrupt)
-                ? Boolean(object.interrupt)
-                : false,
         };
     },
 
@@ -2186,7 +2171,6 @@ export const BoardListWatchRequest = {
             (obj.instance = message.instance
                 ? Instance.toJSON(message.instance)
                 : undefined);
-        message.interrupt !== undefined && (obj.interrupt = message.interrupt);
         return obj;
     },
 
@@ -2202,7 +2186,6 @@ export const BoardListWatchRequest = {
             object.instance !== undefined && object.instance !== null
                 ? Instance.fromPartial(object.instance)
                 : undefined;
-        message.interrupt = object.interrupt ?? false;
         return message;
     },
 };

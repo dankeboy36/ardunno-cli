@@ -31,6 +31,12 @@ import {
     PlatformUpgradeResponse,
 } from './core';
 import {
+    DebugRequest,
+    DebugResponse,
+    GetDebugConfigRequest,
+    GetDebugConfigResponse,
+} from './debug';
+import {
     GitLibraryInstallRequest,
     GitLibraryInstallResponse,
     LibraryDownloadRequest,
@@ -86,6 +92,11 @@ export enum FailedInstanceInitReason {
      * loading a tool
      */
     FAILED_INSTANCE_INIT_REASON_TOOL_LOAD_ERROR = 3,
+    /**
+     * FAILED_INSTANCE_INIT_REASON_INDEX_DOWNLOAD_ERROR - FAILED_INSTANCE_INIT_REASON_INDEX_DOWNLOAD_ERROR failure encountered while
+     * downloading an index
+     */
+    FAILED_INSTANCE_INIT_REASON_INDEX_DOWNLOAD_ERROR = 4,
     UNRECOGNIZED = -1,
 }
 
@@ -105,6 +116,9 @@ export function failedInstanceInitReasonFromJSON(
         case 3:
         case 'FAILED_INSTANCE_INIT_REASON_TOOL_LOAD_ERROR':
             return FailedInstanceInitReason.FAILED_INSTANCE_INIT_REASON_TOOL_LOAD_ERROR;
+        case 4:
+        case 'FAILED_INSTANCE_INIT_REASON_INDEX_DOWNLOAD_ERROR':
+            return FailedInstanceInitReason.FAILED_INSTANCE_INIT_REASON_INDEX_DOWNLOAD_ERROR;
         case -1:
         case 'UNRECOGNIZED':
         default:
@@ -124,6 +138,8 @@ export function failedInstanceInitReasonToJSON(
             return 'FAILED_INSTANCE_INIT_REASON_INDEX_LOAD_ERROR';
         case FailedInstanceInitReason.FAILED_INSTANCE_INIT_REASON_TOOL_LOAD_ERROR:
             return 'FAILED_INSTANCE_INIT_REASON_TOOL_LOAD_ERROR';
+        case FailedInstanceInitReason.FAILED_INSTANCE_INIT_REASON_INDEX_DOWNLOAD_ERROR:
+            return 'FAILED_INSTANCE_INIT_REASON_INDEX_DOWNLOAD_ERROR';
         case FailedInstanceInitReason.UNRECOGNIZED:
         default:
             return 'UNRECOGNIZED';
@@ -208,8 +224,6 @@ export interface VersionResponse {
 }
 
 export interface NewSketchRequest {
-    /** Arduino Core Service instance from the Init response. */
-    instance: Instance | undefined;
     /** New sketch name */
     sketchName: string;
     /**
@@ -229,10 +243,15 @@ export interface NewSketchResponse {
 }
 
 export interface LoadSketchRequest {
-    /** Arduino Core Service instance from the Init response. */
-    instance: Instance | undefined;
     /** Absolute path to single sketch file or a sketch folder */
     sketchPath: string;
+}
+
+export interface SketchProfile {
+    /** Name of the profile */
+    name: string;
+    /** FQBN used by the profile */
+    fqbn: string;
 }
 
 export interface LoadSketchResponse {
@@ -249,6 +268,16 @@ export interface LoadSketchResponse {
      * file excluded
      */
     rootFolderFiles: string[];
+    /** Default FQBN set in project file (sketch.yaml) */
+    defaultFqbn: string;
+    /** Default Port set in project file (sketch.yaml) */
+    defaultPort: string;
+    /** Default Protocol set in project file (sketch.yaml) */
+    defaultProtocol: string;
+    /** List of profiles present in the project file (sketch.yaml) */
+    profiles: SketchProfile[];
+    /** Default profile set in the project file (sketch.yaml) */
+    defaultProfile: SketchProfile | undefined;
 }
 
 export interface ArchiveSketchRequest {
@@ -266,6 +295,35 @@ export interface ArchiveSketchRequest {
 }
 
 export interface ArchiveSketchResponse {}
+
+export interface SetSketchDefaultsRequest {
+    /** Absolute path to Sketch file or folder containing Sketch file */
+    sketchPath: string;
+    /** The desired value for default_fqbn in project file (sketch.yaml) */
+    defaultFqbn: string;
+    /** The desired value for default_port in project file (sketch.yaml) */
+    defaultPortAddress: string;
+    /** The desired value for default_protocol in project file (sketch.yaml) */
+    defaultPortProtocol: string;
+}
+
+export interface SetSketchDefaultsResponse {
+    /**
+     * The value of default_fqnn that has been written in project file
+     * (sketch.yaml)
+     */
+    defaultFqbn: string;
+    /**
+     * The value of default_port that has been written in project file
+     * (sketch.yaml)
+     */
+    defaultPortAddress: string;
+    /**
+     * The value of default_protocol that has been written in project file
+     * (sketch.yaml)
+     */
+    defaultPortProtocol: string;
+}
 
 function createBaseCreateRequest(): CreateRequest {
     return {};
@@ -1413,12 +1471,7 @@ export const VersionResponse = {
 };
 
 function createBaseNewSketchRequest(): NewSketchRequest {
-    return {
-        instance: undefined,
-        sketchName: '',
-        sketchDir: '',
-        overwrite: false,
-    };
+    return { sketchName: '', sketchDir: '', overwrite: false };
 }
 
 export const NewSketchRequest = {
@@ -1426,12 +1479,6 @@ export const NewSketchRequest = {
         message: NewSketchRequest,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.instance !== undefined) {
-            Instance.encode(
-                message.instance,
-                writer.uint32(10).fork()
-            ).ldelim();
-        }
         if (message.sketchName !== '') {
             writer.uint32(18).string(message.sketchName);
         }
@@ -1452,13 +1499,6 @@ export const NewSketchRequest = {
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-
-                    message.instance = Instance.decode(reader, reader.uint32());
-                    continue;
                 case 2:
                     if (tag !== 18) {
                         break;
@@ -1491,9 +1531,6 @@ export const NewSketchRequest = {
 
     fromJSON(object: any): NewSketchRequest {
         return {
-            instance: isSet(object.instance)
-                ? Instance.fromJSON(object.instance)
-                : undefined,
             sketchName: isSet(object.sketchName)
                 ? String(object.sketchName)
                 : '',
@@ -1506,10 +1543,6 @@ export const NewSketchRequest = {
 
     toJSON(message: NewSketchRequest): unknown {
         const obj: any = {};
-        message.instance !== undefined &&
-            (obj.instance = message.instance
-                ? Instance.toJSON(message.instance)
-                : undefined);
         message.sketchName !== undefined &&
             (obj.sketchName = message.sketchName);
         message.sketchDir !== undefined && (obj.sketchDir = message.sketchDir);
@@ -1523,10 +1556,6 @@ export const NewSketchRequest = {
 
     fromPartial(object: DeepPartial<NewSketchRequest>): NewSketchRequest {
         const message = createBaseNewSketchRequest();
-        message.instance =
-            object.instance !== undefined && object.instance !== null
-                ? Instance.fromPartial(object.instance)
-                : undefined;
         message.sketchName = object.sketchName ?? '';
         message.sketchDir = object.sketchDir ?? '';
         message.overwrite = object.overwrite ?? false;
@@ -1597,7 +1626,7 @@ export const NewSketchResponse = {
 };
 
 function createBaseLoadSketchRequest(): LoadSketchRequest {
-    return { instance: undefined, sketchPath: '' };
+    return { sketchPath: '' };
 }
 
 export const LoadSketchRequest = {
@@ -1605,12 +1634,6 @@ export const LoadSketchRequest = {
         message: LoadSketchRequest,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.instance !== undefined) {
-            Instance.encode(
-                message.instance,
-                writer.uint32(10).fork()
-            ).ldelim();
-        }
         if (message.sketchPath !== '') {
             writer.uint32(18).string(message.sketchPath);
         }
@@ -1625,13 +1648,6 @@ export const LoadSketchRequest = {
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-
-                    message.instance = Instance.decode(reader, reader.uint32());
-                    continue;
                 case 2:
                     if (tag !== 18) {
                         break;
@@ -1650,9 +1666,6 @@ export const LoadSketchRequest = {
 
     fromJSON(object: any): LoadSketchRequest {
         return {
-            instance: isSet(object.instance)
-                ? Instance.fromJSON(object.instance)
-                : undefined,
             sketchPath: isSet(object.sketchPath)
                 ? String(object.sketchPath)
                 : '',
@@ -1661,10 +1674,6 @@ export const LoadSketchRequest = {
 
     toJSON(message: LoadSketchRequest): unknown {
         const obj: any = {};
-        message.instance !== undefined &&
-            (obj.instance = message.instance
-                ? Instance.toJSON(message.instance)
-                : undefined);
         message.sketchPath !== undefined &&
             (obj.sketchPath = message.sketchPath);
         return obj;
@@ -1676,11 +1685,82 @@ export const LoadSketchRequest = {
 
     fromPartial(object: DeepPartial<LoadSketchRequest>): LoadSketchRequest {
         const message = createBaseLoadSketchRequest();
-        message.instance =
-            object.instance !== undefined && object.instance !== null
-                ? Instance.fromPartial(object.instance)
-                : undefined;
         message.sketchPath = object.sketchPath ?? '';
+        return message;
+    },
+};
+
+function createBaseSketchProfile(): SketchProfile {
+    return { name: '', fqbn: '' };
+}
+
+export const SketchProfile = {
+    encode(
+        message: SketchProfile,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.name !== '') {
+            writer.uint32(10).string(message.name);
+        }
+        if (message.fqbn !== '') {
+            writer.uint32(18).string(message.fqbn);
+        }
+        return writer;
+    },
+
+    decode(input: _m0.Reader | Uint8Array, length?: number): SketchProfile {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseSketchProfile();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.name = reader.string();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.fqbn = reader.string();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): SketchProfile {
+        return {
+            name: isSet(object.name) ? String(object.name) : '',
+            fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
+        };
+    },
+
+    toJSON(message: SketchProfile): unknown {
+        const obj: any = {};
+        message.name !== undefined && (obj.name = message.name);
+        message.fqbn !== undefined && (obj.fqbn = message.fqbn);
+        return obj;
+    },
+
+    create(base?: DeepPartial<SketchProfile>): SketchProfile {
+        return SketchProfile.fromPartial(base ?? {});
+    },
+
+    fromPartial(object: DeepPartial<SketchProfile>): SketchProfile {
+        const message = createBaseSketchProfile();
+        message.name = object.name ?? '';
+        message.fqbn = object.fqbn ?? '';
         return message;
     },
 };
@@ -1692,6 +1772,11 @@ function createBaseLoadSketchResponse(): LoadSketchResponse {
         otherSketchFiles: [],
         additionalFiles: [],
         rootFolderFiles: [],
+        defaultFqbn: '',
+        defaultPort: '',
+        defaultProtocol: '',
+        profiles: [],
+        defaultProfile: undefined,
     };
 }
 
@@ -1714,6 +1799,24 @@ export const LoadSketchResponse = {
         }
         for (const v of message.rootFolderFiles) {
             writer.uint32(42).string(v!);
+        }
+        if (message.defaultFqbn !== '') {
+            writer.uint32(50).string(message.defaultFqbn);
+        }
+        if (message.defaultPort !== '') {
+            writer.uint32(58).string(message.defaultPort);
+        }
+        if (message.defaultProtocol !== '') {
+            writer.uint32(66).string(message.defaultProtocol);
+        }
+        for (const v of message.profiles) {
+            SketchProfile.encode(v!, writer.uint32(74).fork()).ldelim();
+        }
+        if (message.defaultProfile !== undefined) {
+            SketchProfile.encode(
+                message.defaultProfile,
+                writer.uint32(82).fork()
+            ).ldelim();
         }
         return writer;
     },
@@ -1764,6 +1867,46 @@ export const LoadSketchResponse = {
 
                     message.rootFolderFiles.push(reader.string());
                     continue;
+                case 6:
+                    if (tag !== 50) {
+                        break;
+                    }
+
+                    message.defaultFqbn = reader.string();
+                    continue;
+                case 7:
+                    if (tag !== 58) {
+                        break;
+                    }
+
+                    message.defaultPort = reader.string();
+                    continue;
+                case 8:
+                    if (tag !== 66) {
+                        break;
+                    }
+
+                    message.defaultProtocol = reader.string();
+                    continue;
+                case 9:
+                    if (tag !== 74) {
+                        break;
+                    }
+
+                    message.profiles.push(
+                        SketchProfile.decode(reader, reader.uint32())
+                    );
+                    continue;
+                case 10:
+                    if (tag !== 82) {
+                        break;
+                    }
+
+                    message.defaultProfile = SketchProfile.decode(
+                        reader,
+                        reader.uint32()
+                    );
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -1788,6 +1931,21 @@ export const LoadSketchResponse = {
             rootFolderFiles: Array.isArray(object?.rootFolderFiles)
                 ? object.rootFolderFiles.map((e: any) => String(e))
                 : [],
+            defaultFqbn: isSet(object.defaultFqbn)
+                ? String(object.defaultFqbn)
+                : '',
+            defaultPort: isSet(object.defaultPort)
+                ? String(object.defaultPort)
+                : '',
+            defaultProtocol: isSet(object.defaultProtocol)
+                ? String(object.defaultProtocol)
+                : '',
+            profiles: Array.isArray(object?.profiles)
+                ? object.profiles.map((e: any) => SketchProfile.fromJSON(e))
+                : [],
+            defaultProfile: isSet(object.defaultProfile)
+                ? SketchProfile.fromJSON(object.defaultProfile)
+                : undefined,
         };
     },
 
@@ -1811,6 +1969,23 @@ export const LoadSketchResponse = {
         } else {
             obj.rootFolderFiles = [];
         }
+        message.defaultFqbn !== undefined &&
+            (obj.defaultFqbn = message.defaultFqbn);
+        message.defaultPort !== undefined &&
+            (obj.defaultPort = message.defaultPort);
+        message.defaultProtocol !== undefined &&
+            (obj.defaultProtocol = message.defaultProtocol);
+        if (message.profiles) {
+            obj.profiles = message.profiles.map((e) =>
+                e ? SketchProfile.toJSON(e) : undefined
+            );
+        } else {
+            obj.profiles = [];
+        }
+        message.defaultProfile !== undefined &&
+            (obj.defaultProfile = message.defaultProfile
+                ? SketchProfile.toJSON(message.defaultProfile)
+                : undefined);
         return obj;
     },
 
@@ -1825,6 +2000,16 @@ export const LoadSketchResponse = {
         message.otherSketchFiles = object.otherSketchFiles?.map((e) => e) || [];
         message.additionalFiles = object.additionalFiles?.map((e) => e) || [];
         message.rootFolderFiles = object.rootFolderFiles?.map((e) => e) || [];
+        message.defaultFqbn = object.defaultFqbn ?? '';
+        message.defaultPort = object.defaultPort ?? '';
+        message.defaultProtocol = object.defaultProtocol ?? '';
+        message.profiles =
+            object.profiles?.map((e) => SketchProfile.fromPartial(e)) || [];
+        message.defaultProfile =
+            object.defaultProfile !== undefined &&
+            object.defaultProfile !== null
+                ? SketchProfile.fromPartial(object.defaultProfile)
+                : undefined;
         return message;
     },
 };
@@ -2002,6 +2187,235 @@ export const ArchiveSketchResponse = {
     },
 };
 
+function createBaseSetSketchDefaultsRequest(): SetSketchDefaultsRequest {
+    return {
+        sketchPath: '',
+        defaultFqbn: '',
+        defaultPortAddress: '',
+        defaultPortProtocol: '',
+    };
+}
+
+export const SetSketchDefaultsRequest = {
+    encode(
+        message: SetSketchDefaultsRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.sketchPath !== '') {
+            writer.uint32(10).string(message.sketchPath);
+        }
+        if (message.defaultFqbn !== '') {
+            writer.uint32(18).string(message.defaultFqbn);
+        }
+        if (message.defaultPortAddress !== '') {
+            writer.uint32(26).string(message.defaultPortAddress);
+        }
+        if (message.defaultPortProtocol !== '') {
+            writer.uint32(34).string(message.defaultPortProtocol);
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): SetSketchDefaultsRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseSetSketchDefaultsRequest();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.sketchPath = reader.string();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.defaultFqbn = reader.string();
+                    continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
+                    message.defaultPortAddress = reader.string();
+                    continue;
+                case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
+                    message.defaultPortProtocol = reader.string();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): SetSketchDefaultsRequest {
+        return {
+            sketchPath: isSet(object.sketchPath)
+                ? String(object.sketchPath)
+                : '',
+            defaultFqbn: isSet(object.defaultFqbn)
+                ? String(object.defaultFqbn)
+                : '',
+            defaultPortAddress: isSet(object.defaultPortAddress)
+                ? String(object.defaultPortAddress)
+                : '',
+            defaultPortProtocol: isSet(object.defaultPortProtocol)
+                ? String(object.defaultPortProtocol)
+                : '',
+        };
+    },
+
+    toJSON(message: SetSketchDefaultsRequest): unknown {
+        const obj: any = {};
+        message.sketchPath !== undefined &&
+            (obj.sketchPath = message.sketchPath);
+        message.defaultFqbn !== undefined &&
+            (obj.defaultFqbn = message.defaultFqbn);
+        message.defaultPortAddress !== undefined &&
+            (obj.defaultPortAddress = message.defaultPortAddress);
+        message.defaultPortProtocol !== undefined &&
+            (obj.defaultPortProtocol = message.defaultPortProtocol);
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<SetSketchDefaultsRequest>
+    ): SetSketchDefaultsRequest {
+        return SetSketchDefaultsRequest.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<SetSketchDefaultsRequest>
+    ): SetSketchDefaultsRequest {
+        const message = createBaseSetSketchDefaultsRequest();
+        message.sketchPath = object.sketchPath ?? '';
+        message.defaultFqbn = object.defaultFqbn ?? '';
+        message.defaultPortAddress = object.defaultPortAddress ?? '';
+        message.defaultPortProtocol = object.defaultPortProtocol ?? '';
+        return message;
+    },
+};
+
+function createBaseSetSketchDefaultsResponse(): SetSketchDefaultsResponse {
+    return { defaultFqbn: '', defaultPortAddress: '', defaultPortProtocol: '' };
+}
+
+export const SetSketchDefaultsResponse = {
+    encode(
+        message: SetSketchDefaultsResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.defaultFqbn !== '') {
+            writer.uint32(10).string(message.defaultFqbn);
+        }
+        if (message.defaultPortAddress !== '') {
+            writer.uint32(18).string(message.defaultPortAddress);
+        }
+        if (message.defaultPortProtocol !== '') {
+            writer.uint32(26).string(message.defaultPortProtocol);
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): SetSketchDefaultsResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseSetSketchDefaultsResponse();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.defaultFqbn = reader.string();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.defaultPortAddress = reader.string();
+                    continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
+                    message.defaultPortProtocol = reader.string();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): SetSketchDefaultsResponse {
+        return {
+            defaultFqbn: isSet(object.defaultFqbn)
+                ? String(object.defaultFqbn)
+                : '',
+            defaultPortAddress: isSet(object.defaultPortAddress)
+                ? String(object.defaultPortAddress)
+                : '',
+            defaultPortProtocol: isSet(object.defaultPortProtocol)
+                ? String(object.defaultPortProtocol)
+                : '',
+        };
+    },
+
+    toJSON(message: SetSketchDefaultsResponse): unknown {
+        const obj: any = {};
+        message.defaultFqbn !== undefined &&
+            (obj.defaultFqbn = message.defaultFqbn);
+        message.defaultPortAddress !== undefined &&
+            (obj.defaultPortAddress = message.defaultPortAddress);
+        message.defaultPortProtocol !== undefined &&
+            (obj.defaultPortProtocol = message.defaultPortProtocol);
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<SetSketchDefaultsResponse>
+    ): SetSketchDefaultsResponse {
+        return SetSketchDefaultsResponse.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<SetSketchDefaultsResponse>
+    ): SetSketchDefaultsResponse {
+        const message = createBaseSetSketchDefaultsResponse();
+        message.defaultFqbn = object.defaultFqbn ?? '';
+        message.defaultPortAddress = object.defaultPortAddress ?? '';
+        message.defaultPortProtocol = object.defaultPortProtocol ?? '';
+        return message;
+    },
+};
+
 /** The main Arduino Platform service API */
 export type ArduinoCoreServiceDefinition = typeof ArduinoCoreServiceDefinition;
 export const ArduinoCoreServiceDefinition = {
@@ -2092,6 +2506,19 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
+        /**
+         * Sets the sketch default FQBN and Port Address/Protocol in
+         * the sketch project file (sketch.yaml). These metadata can be retrieved
+         * using LoadSketch.
+         */
+        setSketchDefaults: {
+            name: 'SetSketchDefaults',
+            requestType: SetSketchDefaultsRequest,
+            requestStream: false,
+            responseType: SetSketchDefaultsResponse,
+            responseStream: false,
+            options: {},
+        },
         /** Requests details about a board */
         boardDetails: {
             name: 'BoardDetails',
@@ -2132,7 +2559,7 @@ export const ArduinoCoreServiceDefinition = {
         boardListWatch: {
             name: 'BoardListWatch',
             requestType: BoardListWatchRequest,
-            requestStream: true,
+            requestStream: false,
             responseType: BoardListWatchResponse,
             responseStream: true,
             options: {},
@@ -2368,6 +2795,23 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
+        /** Start a debug session and communicate with the debugger tool. */
+        debug: {
+            name: 'Debug',
+            requestType: DebugRequest,
+            requestStream: true,
+            responseType: DebugResponse,
+            responseStream: true,
+            options: {},
+        },
+        getDebugConfig: {
+            name: 'GetDebugConfig',
+            requestType: GetDebugConfigRequest,
+            requestStream: false,
+            responseType: GetDebugConfigResponse,
+            responseStream: false,
+            options: {},
+        },
     },
 } as const;
 
@@ -2420,6 +2864,15 @@ export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
         request: ArchiveSketchRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<ArchiveSketchResponse>>;
+    /**
+     * Sets the sketch default FQBN and Port Address/Protocol in
+     * the sketch project file (sketch.yaml). These metadata can be retrieved
+     * using LoadSketch.
+     */
+    setSketchDefaults(
+        request: SetSketchDefaultsRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<SetSketchDefaultsResponse>>;
     /** Requests details about a board */
     boardDetails(
         request: BoardDetailsRequest,
@@ -2442,7 +2895,7 @@ export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
     ): Promise<DeepPartial<BoardSearchResponse>>;
     /** List boards connection and disconnected events. */
     boardListWatch(
-        request: AsyncIterable<BoardListWatchRequest>,
+        request: BoardListWatchRequest,
         context: CallContext & CallContextExt
     ): ServerStreamingMethodResult<DeepPartial<BoardListWatchResponse>>;
     /** Compile an Arduino sketch. */
@@ -2580,6 +3033,15 @@ export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
         request: EnumerateMonitorPortSettingsRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<EnumerateMonitorPortSettingsResponse>>;
+    /** Start a debug session and communicate with the debugger tool. */
+    debug(
+        request: AsyncIterable<DebugRequest>,
+        context: CallContext & CallContextExt
+    ): ServerStreamingMethodResult<DeepPartial<DebugResponse>>;
+    getDebugConfig(
+        request: GetDebugConfigRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<GetDebugConfigResponse>>;
 }
 
 export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
@@ -2631,6 +3093,15 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
         request: DeepPartial<ArchiveSketchRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<ArchiveSketchResponse>;
+    /**
+     * Sets the sketch default FQBN and Port Address/Protocol in
+     * the sketch project file (sketch.yaml). These metadata can be retrieved
+     * using LoadSketch.
+     */
+    setSketchDefaults(
+        request: DeepPartial<SetSketchDefaultsRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<SetSketchDefaultsResponse>;
     /** Requests details about a board */
     boardDetails(
         request: DeepPartial<BoardDetailsRequest>,
@@ -2653,7 +3124,7 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
     ): Promise<BoardSearchResponse>;
     /** List boards connection and disconnected events. */
     boardListWatch(
-        request: AsyncIterable<DeepPartial<BoardListWatchRequest>>,
+        request: DeepPartial<BoardListWatchRequest>,
         options?: CallOptions & CallOptionsExt
     ): AsyncIterable<BoardListWatchResponse>;
     /** Compile an Arduino sketch. */
@@ -2791,6 +3262,15 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
         request: DeepPartial<EnumerateMonitorPortSettingsRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<EnumerateMonitorPortSettingsResponse>;
+    /** Start a debug session and communicate with the debugger tool. */
+    debug(
+        request: AsyncIterable<DeepPartial<DebugRequest>>,
+        options?: CallOptions & CallOptionsExt
+    ): AsyncIterable<DebugResponse>;
+    getDebugConfig(
+        request: DeepPartial<GetDebugConfigRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<GetDebugConfigResponse>;
 }
 
 type Builtin =
