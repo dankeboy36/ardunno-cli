@@ -115,6 +115,15 @@ export interface ArduinoCLIConfigurationSchema {
         enabled?: boolean;
     };
     /**
+     * settings related to text output.
+     */
+    output?: {
+        /**
+         * ANSI color escape codes are added by default to the output. Set to `true` to disable colored text output.
+         */
+        no_color?: boolean;
+    };
+    /**
      * configuration options relating to [Arduino sketches][sketch specification].
      */
     sketch?: {

@@ -42,9 +42,12 @@ export {
     NewSketchRequest,
     NewSketchResponse,
     LoadSketchRequest,
+    SketchProfile,
     LoadSketchResponse,
     ArchiveSketchRequest,
     ArchiveSketchResponse,
+    SetSketchDefaultsRequest,
+    SetSketchDefaultsResponse,
     ArduinoCoreServiceDefinition,
     ArduinoCoreServiceImplementation,
     ArduinoCoreServiceClient,
@@ -85,6 +88,14 @@ export {
     PlatformListRequest,
     PlatformListResponse,
 } from './cc/arduino/cli/commands/v1/core';
+export {
+    DebugRequest,
+    GetDebugConfigRequest,
+    DebugResponse,
+    GetDebugConfigResponse,
+    DebugGCCToolchainConfiguration,
+    DebugOpenOCDServerConfiguration,
+} from './cc/arduino/cli/commands/v1/debug';
 export {
     libraryInstallLocationFromJSON,
     libraryInstallLocationToJSON,
@@ -143,6 +154,7 @@ export {
     UploadRequest,
     UploadRequest_UserFieldsEntry,
     UploadResponse,
+    UploadResult,
     ProgrammerIsRequiredForUploadError,
     UploadUsingProgrammerRequest,
     UploadUsingProgrammerRequest_UserFieldsEntry,
@@ -157,17 +169,6 @@ export {
     SupportedUserFieldsResponse,
 } from './cc/arduino/cli/commands/v1/upload';
 export {
-    DebugRequest,
-    DebugConfigRequest,
-    DebugResponse,
-    GetDebugConfigResponse,
-    GetDebugConfigResponse_ToolchainConfigurationEntry,
-    GetDebugConfigResponse_ServerConfigurationEntry,
-    DebugServiceDefinition,
-    DebugServiceImplementation,
-    DebugServiceClient,
-} from './cc/arduino/cli/debug/v1/debug';
-export {
     GetAllResponse,
     MergeRequest,
     GetValueResponse,
@@ -178,6 +179,8 @@ export {
     SetValueResponse,
     WriteRequest,
     WriteResponse,
+    DeleteRequest,
+    DeleteResponse,
     SettingsServiceDefinition,
     SettingsServiceImplementation,
     SettingsServiceClient,

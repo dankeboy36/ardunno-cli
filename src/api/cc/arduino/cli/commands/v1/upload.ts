@@ -64,10 +64,22 @@ export interface UploadRequest_UserFieldsEntry {
 }
 
 export interface UploadResponse {
-    /** The output of the upload process. */
-    outStream: Uint8Array;
-    /** The error output of the upload process. */
-    errStream: Uint8Array;
+    message?:
+        | { $case: 'outStream'; outStream: Uint8Array }
+        | { $case: 'errStream'; errStream: Uint8Array }
+        | {
+              $case: 'result';
+              result: UploadResult;
+          }
+        | undefined;
+}
+
+export interface UploadResult {
+    /**
+     * When a board requires a port disconnection to perform the upload, this
+     * field returns the port where the board reconnects after the upload.
+     */
+    updatedUploadPort: Port | undefined;
 }
 
 export interface ProgrammerIsRequiredForUploadError {}
@@ -559,7 +571,7 @@ export const UploadRequest_UserFieldsEntry = {
 };
 
 function createBaseUploadResponse(): UploadResponse {
-    return { outStream: new Uint8Array(0), errStream: new Uint8Array(0) };
+    return { message: undefined };
 }
 
 export const UploadResponse = {
@@ -567,11 +579,19 @@ export const UploadResponse = {
         message: UploadResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.outStream.length !== 0) {
-            writer.uint32(10).bytes(message.outStream);
-        }
-        if (message.errStream.length !== 0) {
-            writer.uint32(18).bytes(message.errStream);
+        switch (message.message?.$case) {
+            case 'outStream':
+                writer.uint32(10).bytes(message.message.outStream);
+                break;
+            case 'errStream':
+                writer.uint32(18).bytes(message.message.errStream);
+                break;
+            case 'result':
+                UploadResult.encode(
+                    message.message.result,
+                    writer.uint32(26).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -589,14 +609,30 @@ export const UploadResponse = {
                         break;
                     }
 
-                    message.outStream = reader.bytes();
+                    message.message = {
+                        $case: 'outStream',
+                        outStream: reader.bytes(),
+                    };
                     continue;
                 case 2:
                     if (tag !== 18) {
                         break;
                     }
 
-                    message.errStream = reader.bytes();
+                    message.message = {
+                        $case: 'errStream',
+                        errStream: reader.bytes(),
+                    };
+                    continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'result',
+                        result: UploadResult.decode(reader, reader.uint32()),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -609,29 +645,41 @@ export const UploadResponse = {
 
     fromJSON(object: any): UploadResponse {
         return {
-            outStream: isSet(object.outStream)
-                ? bytesFromBase64(object.outStream)
-                : new Uint8Array(0),
-            errStream: isSet(object.errStream)
-                ? bytesFromBase64(object.errStream)
-                : new Uint8Array(0),
+            message: isSet(object.outStream)
+                ? {
+                      $case: 'outStream',
+                      outStream: bytesFromBase64(object.outStream),
+                  }
+                : isSet(object.errStream)
+                ? {
+                      $case: 'errStream',
+                      errStream: bytesFromBase64(object.errStream),
+                  }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: UploadResult.fromJSON(object.result),
+                  }
+                : undefined,
         };
     },
 
     toJSON(message: UploadResponse): unknown {
         const obj: any = {};
-        message.outStream !== undefined &&
-            (obj.outStream = base64FromBytes(
-                message.outStream !== undefined
-                    ? message.outStream
-                    : new Uint8Array(0)
-            ));
-        message.errStream !== undefined &&
-            (obj.errStream = base64FromBytes(
-                message.errStream !== undefined
-                    ? message.errStream
-                    : new Uint8Array(0)
-            ));
+        message.message?.$case === 'outStream' &&
+            (obj.outStream =
+                message.message?.outStream !== undefined
+                    ? base64FromBytes(message.message?.outStream)
+                    : undefined);
+        message.message?.$case === 'errStream' &&
+            (obj.errStream =
+                message.message?.errStream !== undefined
+                    ? base64FromBytes(message.message?.errStream)
+                    : undefined);
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? UploadResult.toJSON(message.message?.result)
+                : undefined);
         return obj;
     },
 
@@ -641,8 +689,113 @@ export const UploadResponse = {
 
     fromPartial(object: DeepPartial<UploadResponse>): UploadResponse {
         const message = createBaseUploadResponse();
-        message.outStream = object.outStream ?? new Uint8Array(0);
-        message.errStream = object.errStream ?? new Uint8Array(0);
+        if (
+            object.message?.$case === 'outStream' &&
+            object.message?.outStream !== undefined &&
+            object.message?.outStream !== null
+        ) {
+            message.message = {
+                $case: 'outStream',
+                outStream: object.message.outStream,
+            };
+        }
+        if (
+            object.message?.$case === 'errStream' &&
+            object.message?.errStream !== undefined &&
+            object.message?.errStream !== null
+        ) {
+            message.message = {
+                $case: 'errStream',
+                errStream: object.message.errStream,
+            };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: UploadResult.fromPartial(object.message.result),
+            };
+        }
+        return message;
+    },
+};
+
+function createBaseUploadResult(): UploadResult {
+    return { updatedUploadPort: undefined };
+}
+
+export const UploadResult = {
+    encode(
+        message: UploadResult,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.updatedUploadPort !== undefined) {
+            Port.encode(
+                message.updatedUploadPort,
+                writer.uint32(10).fork()
+            ).ldelim();
+        }
+        return writer;
+    },
+
+    decode(input: _m0.Reader | Uint8Array, length?: number): UploadResult {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseUploadResult();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.updatedUploadPort = Port.decode(
+                        reader,
+                        reader.uint32()
+                    );
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): UploadResult {
+        return {
+            updatedUploadPort: isSet(object.updatedUploadPort)
+                ? Port.fromJSON(object.updatedUploadPort)
+                : undefined,
+        };
+    },
+
+    toJSON(message: UploadResult): unknown {
+        const obj: any = {};
+        message.updatedUploadPort !== undefined &&
+            (obj.updatedUploadPort = message.updatedUploadPort
+                ? Port.toJSON(message.updatedUploadPort)
+                : undefined);
+        return obj;
+    },
+
+    create(base?: DeepPartial<UploadResult>): UploadResult {
+        return UploadResult.fromPartial(base ?? {});
+    },
+
+    fromPartial(object: DeepPartial<UploadResult>): UploadResult {
+        const message = createBaseUploadResult();
+        message.updatedUploadPort =
+            object.updatedUploadPort !== undefined &&
+            object.updatedUploadPort !== null
+                ? Port.fromPartial(object.updatedUploadPort)
+                : undefined;
         return message;
     },
 };

@@ -21,6 +21,11 @@ export interface PlatformInstallRequest {
      * is already installed.
      */
     noOverwrite: boolean;
+    /**
+     * Set to true to not run (eventual) pre uninstall scripts for trusted
+     * platforms when performing platform upgrades
+     */
+    skipPreUninstall: boolean;
 }
 
 export interface PlatformInstallResponse {
@@ -54,6 +59,11 @@ export interface PlatformUninstallRequest {
     platformPackage: string;
     /** Architecture name of the platform (e.g., `avr`). */
     architecture: string;
+    /**
+     * Set to true to not run (eventual) pre uninstall scripts for trusted
+     * platforms
+     */
+    skipPreUninstall: boolean;
 }
 
 export interface PlatformUninstallResponse {
@@ -79,6 +89,11 @@ export interface PlatformUpgradeRequest {
      * platforms
      */
     skipPostInstall: boolean;
+    /**
+     * Set to true to not run (eventual) pre uninstall scripts for trusted
+     * platforms when performing platform upgrades
+     */
+    skipPreUninstall: boolean;
 }
 
 export interface PlatformUpgradeResponse {
@@ -136,6 +151,7 @@ function createBasePlatformInstallRequest(): PlatformInstallRequest {
         version: '',
         skipPostInstall: false,
         noOverwrite: false,
+        skipPreUninstall: false,
     };
 }
 
@@ -164,6 +180,9 @@ export const PlatformInstallRequest = {
         }
         if (message.noOverwrite === true) {
             writer.uint32(48).bool(message.noOverwrite);
+        }
+        if (message.skipPreUninstall === true) {
+            writer.uint32(56).bool(message.skipPreUninstall);
         }
         return writer;
     },
@@ -221,6 +240,13 @@ export const PlatformInstallRequest = {
 
                     message.noOverwrite = reader.bool();
                     continue;
+                case 7:
+                    if (tag !== 56) {
+                        break;
+                    }
+
+                    message.skipPreUninstall = reader.bool();
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -248,6 +274,9 @@ export const PlatformInstallRequest = {
             noOverwrite: isSet(object.noOverwrite)
                 ? Boolean(object.noOverwrite)
                 : false,
+            skipPreUninstall: isSet(object.skipPreUninstall)
+                ? Boolean(object.skipPreUninstall)
+                : false,
         };
     },
 
@@ -266,6 +295,8 @@ export const PlatformInstallRequest = {
             (obj.skipPostInstall = message.skipPostInstall);
         message.noOverwrite !== undefined &&
             (obj.noOverwrite = message.noOverwrite);
+        message.skipPreUninstall !== undefined &&
+            (obj.skipPreUninstall = message.skipPreUninstall);
         return obj;
     },
 
@@ -286,6 +317,7 @@ export const PlatformInstallRequest = {
         message.version = object.version ?? '';
         message.skipPostInstall = object.skipPostInstall ?? false;
         message.noOverwrite = object.noOverwrite ?? false;
+        message.skipPreUninstall = object.skipPreUninstall ?? false;
         return message;
     },
 };
@@ -665,7 +697,12 @@ export const PlatformDownloadResponse = {
 };
 
 function createBasePlatformUninstallRequest(): PlatformUninstallRequest {
-    return { instance: undefined, platformPackage: '', architecture: '' };
+    return {
+        instance: undefined,
+        platformPackage: '',
+        architecture: '',
+        skipPreUninstall: false,
+    };
 }
 
 export const PlatformUninstallRequest = {
@@ -684,6 +721,9 @@ export const PlatformUninstallRequest = {
         }
         if (message.architecture !== '') {
             writer.uint32(26).string(message.architecture);
+        }
+        if (message.skipPreUninstall === true) {
+            writer.uint32(32).bool(message.skipPreUninstall);
         }
         return writer;
     },
@@ -720,6 +760,13 @@ export const PlatformUninstallRequest = {
 
                     message.architecture = reader.string();
                     continue;
+                case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
+                    message.skipPreUninstall = reader.bool();
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -740,6 +787,9 @@ export const PlatformUninstallRequest = {
             architecture: isSet(object.architecture)
                 ? String(object.architecture)
                 : '',
+            skipPreUninstall: isSet(object.skipPreUninstall)
+                ? Boolean(object.skipPreUninstall)
+                : false,
         };
     },
 
@@ -753,6 +803,8 @@ export const PlatformUninstallRequest = {
             (obj.platformPackage = message.platformPackage);
         message.architecture !== undefined &&
             (obj.architecture = message.architecture);
+        message.skipPreUninstall !== undefined &&
+            (obj.skipPreUninstall = message.skipPreUninstall);
         return obj;
     },
 
@@ -772,6 +824,7 @@ export const PlatformUninstallRequest = {
                 : undefined;
         message.platformPackage = object.platformPackage ?? '';
         message.architecture = object.architecture ?? '';
+        message.skipPreUninstall = object.skipPreUninstall ?? false;
         return message;
     },
 };
@@ -920,6 +973,7 @@ function createBasePlatformUpgradeRequest(): PlatformUpgradeRequest {
         platformPackage: '',
         architecture: '',
         skipPostInstall: false,
+        skipPreUninstall: false,
     };
 }
 
@@ -942,6 +996,9 @@ export const PlatformUpgradeRequest = {
         }
         if (message.skipPostInstall === true) {
             writer.uint32(32).bool(message.skipPostInstall);
+        }
+        if (message.skipPreUninstall === true) {
+            writer.uint32(40).bool(message.skipPreUninstall);
         }
         return writer;
     },
@@ -985,6 +1042,13 @@ export const PlatformUpgradeRequest = {
 
                     message.skipPostInstall = reader.bool();
                     continue;
+                case 5:
+                    if (tag !== 40) {
+                        break;
+                    }
+
+                    message.skipPreUninstall = reader.bool();
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -1008,6 +1072,9 @@ export const PlatformUpgradeRequest = {
             skipPostInstall: isSet(object.skipPostInstall)
                 ? Boolean(object.skipPostInstall)
                 : false,
+            skipPreUninstall: isSet(object.skipPreUninstall)
+                ? Boolean(object.skipPreUninstall)
+                : false,
         };
     },
 
@@ -1023,6 +1090,8 @@ export const PlatformUpgradeRequest = {
             (obj.architecture = message.architecture);
         message.skipPostInstall !== undefined &&
             (obj.skipPostInstall = message.skipPostInstall);
+        message.skipPreUninstall !== undefined &&
+            (obj.skipPreUninstall = message.skipPreUninstall);
         return obj;
     },
 
@@ -1041,6 +1110,7 @@ export const PlatformUpgradeRequest = {
         message.platformPackage = object.platformPackage ?? '';
         message.architecture = object.architecture ?? '';
         message.skipPostInstall = object.skipPostInstall ?? false;
+        message.skipPreUninstall = object.skipPreUninstall ?? false;
         return message;
     },
 };

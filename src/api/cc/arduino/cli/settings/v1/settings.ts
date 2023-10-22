@@ -44,6 +44,13 @@ export interface WriteRequest {
 
 export interface WriteResponse {}
 
+export interface DeleteRequest {
+    /** The key of the setting to delete. */
+    key: string;
+}
+
+export interface DeleteResponse {}
+
 function createBaseGetAllResponse(): GetAllResponse {
     return { jsonData: '' };
 }
@@ -632,6 +639,114 @@ export const WriteResponse = {
     },
 };
 
+function createBaseDeleteRequest(): DeleteRequest {
+    return { key: '' };
+}
+
+export const DeleteRequest = {
+    encode(
+        message: DeleteRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.key !== '') {
+            writer.uint32(10).string(message.key);
+        }
+        return writer;
+    },
+
+    decode(input: _m0.Reader | Uint8Array, length?: number): DeleteRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDeleteRequest();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.key = reader.string();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): DeleteRequest {
+        return { key: isSet(object.key) ? String(object.key) : '' };
+    },
+
+    toJSON(message: DeleteRequest): unknown {
+        const obj: any = {};
+        message.key !== undefined && (obj.key = message.key);
+        return obj;
+    },
+
+    create(base?: DeepPartial<DeleteRequest>): DeleteRequest {
+        return DeleteRequest.fromPartial(base ?? {});
+    },
+
+    fromPartial(object: DeepPartial<DeleteRequest>): DeleteRequest {
+        const message = createBaseDeleteRequest();
+        message.key = object.key ?? '';
+        return message;
+    },
+};
+
+function createBaseDeleteResponse(): DeleteResponse {
+    return {};
+}
+
+export const DeleteResponse = {
+    encode(
+        _: DeleteResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        return writer;
+    },
+
+    decode(input: _m0.Reader | Uint8Array, length?: number): DeleteResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDeleteResponse();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(_: any): DeleteResponse {
+        return {};
+    },
+
+    toJSON(_: DeleteResponse): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(base?: DeepPartial<DeleteResponse>): DeleteResponse {
+        return DeleteResponse.fromPartial(base ?? {});
+    },
+
+    fromPartial(_: DeepPartial<DeleteResponse>): DeleteResponse {
+        const message = createBaseDeleteResponse();
+        return message;
+    },
+};
+
 /**
  * The SettingsService provides an interface to Arduino CLI configuration
  * options
@@ -686,6 +801,15 @@ export const SettingsServiceDefinition = {
             responseStream: false,
             options: {},
         },
+        /** Deletes an entry and rewrites the file settings */
+        delete: {
+            name: 'Delete',
+            requestType: DeleteRequest,
+            requestStream: false,
+            responseType: DeleteResponse,
+            responseStream: false,
+            options: {},
+        },
     },
 } as const;
 
@@ -715,6 +839,11 @@ export interface SettingsServiceImplementation<CallContextExt = {}> {
         request: WriteRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<WriteResponse>>;
+    /** Deletes an entry and rewrites the file settings */
+    delete(
+        request: DeleteRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<DeleteResponse>>;
 }
 
 export interface SettingsServiceClient<CallOptionsExt = {}> {
@@ -743,6 +872,11 @@ export interface SettingsServiceClient<CallOptionsExt = {}> {
         request: DeepPartial<WriteRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<WriteResponse>;
+    /** Deletes an entry and rewrites the file settings */
+    delete(
+        request: DeepPartial<DeleteRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<DeleteResponse>;
 }
 
 type Builtin =
