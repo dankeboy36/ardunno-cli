@@ -81,12 +81,21 @@ export interface GetDebugConfigResponse {
     /** Extra configuration parameters wrt GDB server */
     serverConfiguration: Any | undefined;
     /**
-     * cortex-debug custom JSON configuration, it is provided as is from
-     * the platform developers.
+     * Custom debugger configurations (not handled directly by Arduino CLI but
+     * provided for 3rd party plugins/debuggers). The map keys identifies which
+     * 3rd party plugin/debugger is referred, the map string values contains a
+     * JSON configuration for it.
      */
-    cortexDebugCustomJson: string;
+    customConfigs: { [key: string]: string };
     /** the SVD file to use */
     svdFile: string;
+    /** The programmer specified in the request */
+    programmer: string;
+}
+
+export interface GetDebugConfigResponse_CustomConfigsEntry {
+    key: string;
+    value: string;
 }
 
 /** Configurations specific for the 'gcc' toolchain */
@@ -483,8 +492,9 @@ function createBaseGetDebugConfigResponse(): GetDebugConfigResponse {
         serverPath: '',
         toolchainConfiguration: undefined,
         serverConfiguration: undefined,
-        cortexDebugCustomJson: '',
+        customConfigs: {},
         svdFile: '',
+        programmer: '',
     };
 }
 
@@ -523,11 +533,17 @@ export const GetDebugConfigResponse = {
                 writer.uint32(66).fork()
             ).ldelim();
         }
-        if (message.cortexDebugCustomJson !== '') {
-            writer.uint32(74).string(message.cortexDebugCustomJson);
-        }
+        Object.entries(message.customConfigs).forEach(([key, value]) => {
+            GetDebugConfigResponse_CustomConfigsEntry.encode(
+                { key: key as any, value },
+                writer.uint32(74).fork()
+            ).ldelim();
+        });
         if (message.svdFile !== '') {
             writer.uint32(82).string(message.svdFile);
+        }
+        if (message.programmer !== '') {
+            writer.uint32(90).string(message.programmer);
         }
         return writer;
     },
@@ -610,7 +626,14 @@ export const GetDebugConfigResponse = {
                         break;
                     }
 
-                    message.cortexDebugCustomJson = reader.string();
+                    const entry9 =
+                        GetDebugConfigResponse_CustomConfigsEntry.decode(
+                            reader,
+                            reader.uint32()
+                        );
+                    if (entry9.value !== undefined) {
+                        message.customConfigs[entry9.key] = entry9.value;
+                    }
                     continue;
                 case 10:
                     if (tag !== 82) {
@@ -618,6 +641,13 @@ export const GetDebugConfigResponse = {
                     }
 
                     message.svdFile = reader.string();
+                    continue;
+                case 11:
+                    if (tag !== 90) {
+                        break;
+                    }
+
+                    message.programmer = reader.string();
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -650,10 +680,18 @@ export const GetDebugConfigResponse = {
             serverConfiguration: isSet(object.serverConfiguration)
                 ? Any.fromJSON(object.serverConfiguration)
                 : undefined,
-            cortexDebugCustomJson: isSet(object.cortexDebugCustomJson)
-                ? String(object.cortexDebugCustomJson)
-                : '',
+            customConfigs: isObject(object.customConfigs)
+                ? Object.entries(object.customConfigs).reduce<{
+                      [key: string]: string;
+                  }>((acc, [key, value]) => {
+                      acc[key] = String(value);
+                      return acc;
+                  }, {})
+                : {},
             svdFile: isSet(object.svdFile) ? String(object.svdFile) : '',
+            programmer: isSet(object.programmer)
+                ? String(object.programmer)
+                : '',
         };
     },
 
@@ -677,9 +715,15 @@ export const GetDebugConfigResponse = {
             (obj.serverConfiguration = message.serverConfiguration
                 ? Any.toJSON(message.serverConfiguration)
                 : undefined);
-        message.cortexDebugCustomJson !== undefined &&
-            (obj.cortexDebugCustomJson = message.cortexDebugCustomJson);
+        obj.customConfigs = {};
+        if (message.customConfigs) {
+            Object.entries(message.customConfigs).forEach(([k, v]) => {
+                obj.customConfigs[k] = v;
+            });
+        }
         message.svdFile !== undefined && (obj.svdFile = message.svdFile);
+        message.programmer !== undefined &&
+            (obj.programmer = message.programmer);
         return obj;
     },
 
@@ -707,8 +751,100 @@ export const GetDebugConfigResponse = {
             object.serverConfiguration !== null
                 ? Any.fromPartial(object.serverConfiguration)
                 : undefined;
-        message.cortexDebugCustomJson = object.cortexDebugCustomJson ?? '';
+        message.customConfigs = Object.entries(
+            object.customConfigs ?? {}
+        ).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+            if (value !== undefined) {
+                acc[key] = String(value);
+            }
+            return acc;
+        }, {});
         message.svdFile = object.svdFile ?? '';
+        message.programmer = object.programmer ?? '';
+        return message;
+    },
+};
+
+function createBaseGetDebugConfigResponse_CustomConfigsEntry(): GetDebugConfigResponse_CustomConfigsEntry {
+    return { key: '', value: '' };
+}
+
+export const GetDebugConfigResponse_CustomConfigsEntry = {
+    encode(
+        message: GetDebugConfigResponse_CustomConfigsEntry,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.key !== '') {
+            writer.uint32(10).string(message.key);
+        }
+        if (message.value !== '') {
+            writer.uint32(18).string(message.value);
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): GetDebugConfigResponse_CustomConfigsEntry {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseGetDebugConfigResponse_CustomConfigsEntry();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.key = reader.string();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.value = reader.string();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): GetDebugConfigResponse_CustomConfigsEntry {
+        return {
+            key: isSet(object.key) ? String(object.key) : '',
+            value: isSet(object.value) ? String(object.value) : '',
+        };
+    },
+
+    toJSON(message: GetDebugConfigResponse_CustomConfigsEntry): unknown {
+        const obj: any = {};
+        message.key !== undefined && (obj.key = message.key);
+        message.value !== undefined && (obj.value = message.value);
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<GetDebugConfigResponse_CustomConfigsEntry>
+    ): GetDebugConfigResponse_CustomConfigsEntry {
+        return GetDebugConfigResponse_CustomConfigsEntry.fromPartial(
+            base ?? {}
+        );
+    },
+
+    fromPartial(
+        object: DeepPartial<GetDebugConfigResponse_CustomConfigsEntry>
+    ): GetDebugConfigResponse_CustomConfigsEntry {
+        const message = createBaseGetDebugConfigResponse_CustomConfigsEntry();
+        message.key = object.key ?? '';
+        message.value = object.value ?? '';
         return message;
     },
 };
@@ -938,6 +1074,10 @@ type DeepPartial<T> = T extends Builtin
     : T extends {}
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;
+
+function isObject(value: any): boolean {
+    return typeof value === 'object' && value !== null;
+}
 
 function isSet(value: any): boolean {
     return value !== null && value !== undefined;
