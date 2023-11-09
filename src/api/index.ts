@@ -93,6 +93,7 @@ export {
     GetDebugConfigRequest,
     DebugResponse,
     GetDebugConfigResponse,
+    GetDebugConfigResponse_CustomConfigsEntry,
     DebugGCCToolchainConfiguration,
     DebugOpenOCDServerConfiguration,
 } from './cc/arduino/cli/commands/v1/debug';
