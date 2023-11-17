@@ -1,51 +1,34 @@
 {
   "name": "ardunno-cli",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "nice-grpc API for the Arduino CLI",
-  "main": "./dist/api/index.js",
+  "license": "MIT",
+  "author": "dankeboy36",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dankeboy36/ardunno-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dankeboy36/ardunno-cli/issues"
+  },
   "exports": {
     ".": "./dist/api/index.js",
     "./api": "./dist/api/index.js",
     "./config": "./dist/config/index.js"
   },
-  "typesVersions": {
-    "*": {
-      "api": [
-        "dist/api/index.d.ts"
-      ],
-      "config": [
-        "dist/config/index.d.ts"
-      ]
-    }
-  },
+  "main": "./dist/api/index.js",
   "files": [
     "dist",
     "schemas"
   ],
-  "keywords": [
-    "arduino",
-    "arduino-cli",
-    "proto",
-    "grpc",
-    "nice-grpc"
-  ],
-  "author": "dankeboy36",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/dankeboy36/ardunno-cli/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dankeboy36/ardunno-cli.git"
-  },
   "scripts": {
-    "generate:api": "ardunno-cli generate v0.35.0-rc.2 -o src/api -f && ctix single -p ./tsconfig.json -o ./src/api/api.ts -w && replace-in-files --string ' type ' --replacement '' ./src/api/index.ts",
-    "generate:config": "json2ts --input ./schemas/arduino-cli-schema.json --output ./src/config/index.ts --no-format --no-additionalProperties",
     "compile": "tsc -p ./",
-    "watch": "tsc -p ./ -w",
-    "format": "prettier --write .",
+    "format": "prettier --write . && prettier-package-json --write ./package.json",
+    "generate:api": "ardunno-cli generate v0.35.0-rc.3 -o src/api -f && ctix single -p ./tsconfig.json -o ./src/api/api.ts -w && replace-in-files --string ' type ' --replacement '' ./src/api/index.ts",
+    "generate:config": "json2ts --input ./schemas/arduino-cli-schema.json --output ./src/config/index.ts --no-format --no-additionalProperties",
     "lint": "eslint ./src --ext ts",
-    "prepublishOnly": "npm run generate:api && npm run generate:config && npm run format && npm run compile && npm run lint"
+    "prepublishOnly": "npm run generate:api && npm run generate:config && npm run format && npm run compile && npm run lint",
+    "watch": "tsc -p ./ -w"
   },
   "dependencies": {
     "nice-grpc-common": "^2.0.2",
@@ -61,8 +44,26 @@
     "eslint-plugin-prettier": "^4.2.1",
     "json-schema-to-typescript": "^13.0.1",
     "prettier": "^2.8.8",
+    "prettier-package-json": "^2.8.0",
     "replace-in-files-cli": "^2.2.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.3"
+  },
+  "keywords": [
+    "arduino",
+    "arduino-cli",
+    "grpc",
+    "nice-grpc",
+    "proto"
+  ],
+  "typesVersions": {
+    "*": {
+      "api": [
+        "dist/api/index.d.ts"
+      ],
+      "config": [
+        "dist/config/index.d.ts"
+      ]
+    }
   }
 }

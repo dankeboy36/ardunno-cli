@@ -67,7 +67,7 @@ export interface GetDebugConfigResponse {
     toolchain: string;
     /** The toolchain directory */
     toolchainPath: string;
-    /** The toolchain architecture prefix (for example "arm-none-eabi-") */
+    /** The toolchain architecture prefix (for example "arm-none-eabi") */
     toolchainPrefix: string;
     /**
      * The GDB server type used to connect to the programmer/board (for example

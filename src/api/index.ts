@@ -60,6 +60,7 @@ export {
     DownloadProgressEnd,
     TaskProgress,
     Programmer,
+    MissingProgrammerError,
     Platform,
     InstalledPlatformReference,
     Board,
