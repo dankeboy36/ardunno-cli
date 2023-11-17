@@ -53,6 +53,8 @@ export interface BoardDetailsResponse {
     identificationProperties: BoardIdentificationProperties[];
     /** Board build properties used for compiling */
     buildProperties: string[];
+    /** Default programmer for the board */
+    defaultProgrammerId: string;
 }
 
 export interface BoardIdentificationProperties {
@@ -351,6 +353,7 @@ function createBaseBoardDetailsResponse(): BoardDetailsResponse {
         debuggingSupported: false,
         identificationProperties: [],
         buildProperties: [],
+        defaultProgrammerId: '',
     };
 }
 
@@ -409,6 +412,9 @@ export const BoardDetailsResponse = {
         }
         for (const v of message.buildProperties) {
             writer.uint32(130).string(v!);
+        }
+        if (message.defaultProgrammerId !== '') {
+            writer.uint32(138).string(message.defaultProgrammerId);
         }
         return writer;
     },
@@ -543,6 +549,13 @@ export const BoardDetailsResponse = {
 
                     message.buildProperties.push(reader.string());
                     continue;
+                case 17:
+                    if (tag !== 138) {
+                        break;
+                    }
+
+                    message.defaultProgrammerId = reader.string();
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -593,6 +606,9 @@ export const BoardDetailsResponse = {
             buildProperties: Array.isArray(object?.buildProperties)
                 ? object.buildProperties.map((e: any) => String(e))
                 : [],
+            defaultProgrammerId: isSet(object.defaultProgrammerId)
+                ? String(object.defaultProgrammerId)
+                : '',
         };
     },
 
@@ -649,6 +665,8 @@ export const BoardDetailsResponse = {
         } else {
             obj.buildProperties = [];
         }
+        message.defaultProgrammerId !== undefined &&
+            (obj.defaultProgrammerId = message.defaultProgrammerId);
         return obj;
     },
 
@@ -689,6 +707,7 @@ export const BoardDetailsResponse = {
                 BoardIdentificationProperties.fromPartial(e)
             ) || [];
         message.buildProperties = object.buildProperties?.map((e) => e) || [];
+        message.defaultProgrammerId = object.defaultProgrammerId ?? '';
         return message;
     },
 };

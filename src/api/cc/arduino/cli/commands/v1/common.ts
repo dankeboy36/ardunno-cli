@@ -54,10 +54,19 @@ export interface TaskProgress {
 }
 
 export interface Programmer {
+    /** Platform name */
     platform: string;
+    /** Programmer ID */
     id: string;
+    /** Programmer name */
     name: string;
 }
+
+/**
+ * MissingProgrammerError is a status error detail that is returned when
+ * the operation can not be completed due to a missing programmer argument.
+ */
+export interface MissingProgrammerError {}
 
 export interface Platform {
     /** Platform ID (e.g., `arduino:avr`). */
@@ -801,6 +810,59 @@ export const Programmer = {
         message.platform = object.platform ?? '';
         message.id = object.id ?? '';
         message.name = object.name ?? '';
+        return message;
+    },
+};
+
+function createBaseMissingProgrammerError(): MissingProgrammerError {
+    return {};
+}
+
+export const MissingProgrammerError = {
+    encode(
+        _: MissingProgrammerError,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): MissingProgrammerError {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseMissingProgrammerError();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(_: any): MissingProgrammerError {
+        return {};
+    },
+
+    toJSON(_: MissingProgrammerError): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(base?: DeepPartial<MissingProgrammerError>): MissingProgrammerError {
+        return MissingProgrammerError.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        _: DeepPartial<MissingProgrammerError>
+    ): MissingProgrammerError {
+        const message = createBaseMissingProgrammerError();
         return message;
     },
 };
