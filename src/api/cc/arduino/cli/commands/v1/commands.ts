@@ -35,6 +35,8 @@ import {
     DebugResponse,
     GetDebugConfigRequest,
     GetDebugConfigResponse,
+    IsDebugSupportedRequest,
+    IsDebugSupportedResponse,
 } from './debug';
 import {
     GitLibraryInstallRequest,
@@ -2804,6 +2806,16 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: true,
             options: {},
         },
+        /** Determine if debugging is suported given a specific configuration. */
+        isDebugSupported: {
+            name: 'IsDebugSupported',
+            requestType: IsDebugSupportedRequest,
+            requestStream: false,
+            responseType: IsDebugSupportedResponse,
+            responseStream: false,
+            options: {},
+        },
+        /** Query the debugger information given a specific configuration. */
         getDebugConfig: {
             name: 'GetDebugConfig',
             requestType: GetDebugConfigRequest,
@@ -3038,6 +3050,12 @@ export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
         request: AsyncIterable<DebugRequest>,
         context: CallContext & CallContextExt
     ): ServerStreamingMethodResult<DeepPartial<DebugResponse>>;
+    /** Determine if debugging is suported given a specific configuration. */
+    isDebugSupported(
+        request: IsDebugSupportedRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<IsDebugSupportedResponse>>;
+    /** Query the debugger information given a specific configuration. */
     getDebugConfig(
         request: GetDebugConfigRequest,
         context: CallContext & CallContextExt
@@ -3267,6 +3285,12 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
         request: AsyncIterable<DeepPartial<DebugRequest>>,
         options?: CallOptions & CallOptionsExt
     ): AsyncIterable<DebugResponse>;
+    /** Determine if debugging is suported given a specific configuration. */
+    isDebugSupported(
+        request: DeepPartial<IsDebugSupportedRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<IsDebugSupportedResponse>;
+    /** Query the debugger information given a specific configuration. */
     getDebugConfig(
         request: DeepPartial<GetDebugConfigRequest>,
         options?: CallOptions & CallOptionsExt
