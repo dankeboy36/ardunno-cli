@@ -24,6 +24,45 @@ export interface DebugRequest {
     sendInterrupt: boolean;
 }
 
+/**
+ * The streaming response may contain chunks of data from the debugger or an
+ * error.
+ */
+export interface DebugResponse {
+    /** Incoming data from the debugger tool. */
+    data: Uint8Array;
+    /** Incoming error output from the debugger tool. */
+    error: string;
+}
+
+export interface IsDebugSupportedRequest {
+    /** Arduino Core Service instance from the `Init` response. */
+    instance: Instance | undefined;
+    /**
+     * Fully qualified board name of the board in use (e.g.,
+     * `arduino:samd:mkr1000`).
+     */
+    fqbn: string;
+    /** Port of the debugger (optional). */
+    port: Port | undefined;
+    /** Which GDB command interpreter to use. */
+    interpreter: string;
+    /** The programmer to use for debugging. */
+    programmer: string;
+}
+
+export interface IsDebugSupportedResponse {
+    /** True if debugging is supported */
+    debuggingSupported: boolean;
+    /**
+     * This is the same FQBN given in the IsDebugSupportedRequest but cleaned
+     * up of the board options that do not affect the debugger configuration.
+     * It may be used by clients/IDE to group slightly different boards option
+     * selections under the same debug configuration.
+     */
+    debugFqbn: string;
+}
+
 export interface GetDebugConfigRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
@@ -50,14 +89,6 @@ export interface GetDebugConfigRequest {
     importDir: string;
     /** The programmer to use for debugging. */
     programmer: string;
-}
-
-/**  */
-export interface DebugResponse {
-    /** Incoming data from the debugger tool. */
-    data: Uint8Array;
-    /** Incoming error output from the debugger tool. */
-    error: string;
 }
 
 export interface GetDebugConfigResponse {
@@ -221,6 +252,319 @@ export const DebugRequest = {
                 : undefined;
         message.data = object.data ?? new Uint8Array(0);
         message.sendInterrupt = object.sendInterrupt ?? false;
+        return message;
+    },
+};
+
+function createBaseDebugResponse(): DebugResponse {
+    return { data: new Uint8Array(0), error: '' };
+}
+
+export const DebugResponse = {
+    encode(
+        message: DebugResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.data.length !== 0) {
+            writer.uint32(10).bytes(message.data);
+        }
+        if (message.error !== '') {
+            writer.uint32(18).string(message.error);
+        }
+        return writer;
+    },
+
+    decode(input: _m0.Reader | Uint8Array, length?: number): DebugResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDebugResponse();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.data = reader.bytes();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.error = reader.string();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): DebugResponse {
+        return {
+            data: isSet(object.data)
+                ? bytesFromBase64(object.data)
+                : new Uint8Array(0),
+            error: isSet(object.error) ? String(object.error) : '',
+        };
+    },
+
+    toJSON(message: DebugResponse): unknown {
+        const obj: any = {};
+        message.data !== undefined &&
+            (obj.data = base64FromBytes(
+                message.data !== undefined ? message.data : new Uint8Array(0)
+            ));
+        message.error !== undefined && (obj.error = message.error);
+        return obj;
+    },
+
+    create(base?: DeepPartial<DebugResponse>): DebugResponse {
+        return DebugResponse.fromPartial(base ?? {});
+    },
+
+    fromPartial(object: DeepPartial<DebugResponse>): DebugResponse {
+        const message = createBaseDebugResponse();
+        message.data = object.data ?? new Uint8Array(0);
+        message.error = object.error ?? '';
+        return message;
+    },
+};
+
+function createBaseIsDebugSupportedRequest(): IsDebugSupportedRequest {
+    return {
+        instance: undefined,
+        fqbn: '',
+        port: undefined,
+        interpreter: '',
+        programmer: '',
+    };
+}
+
+export const IsDebugSupportedRequest = {
+    encode(
+        message: IsDebugSupportedRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.instance !== undefined) {
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
+        }
+        if (message.fqbn !== '') {
+            writer.uint32(18).string(message.fqbn);
+        }
+        if (message.port !== undefined) {
+            Port.encode(message.port, writer.uint32(26).fork()).ldelim();
+        }
+        if (message.interpreter !== '') {
+            writer.uint32(34).string(message.interpreter);
+        }
+        if (message.programmer !== '') {
+            writer.uint32(42).string(message.programmer);
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): IsDebugSupportedRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseIsDebugSupportedRequest();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.instance = Instance.decode(reader, reader.uint32());
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.fqbn = reader.string();
+                    continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
+                    message.port = Port.decode(reader, reader.uint32());
+                    continue;
+                case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
+                    message.interpreter = reader.string();
+                    continue;
+                case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
+                    message.programmer = reader.string();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): IsDebugSupportedRequest {
+        return {
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+            fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
+            port: isSet(object.port) ? Port.fromJSON(object.port) : undefined,
+            interpreter: isSet(object.interpreter)
+                ? String(object.interpreter)
+                : '',
+            programmer: isSet(object.programmer)
+                ? String(object.programmer)
+                : '',
+        };
+    },
+
+    toJSON(message: IsDebugSupportedRequest): unknown {
+        const obj: any = {};
+        message.instance !== undefined &&
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
+        message.fqbn !== undefined && (obj.fqbn = message.fqbn);
+        message.port !== undefined &&
+            (obj.port = message.port ? Port.toJSON(message.port) : undefined);
+        message.interpreter !== undefined &&
+            (obj.interpreter = message.interpreter);
+        message.programmer !== undefined &&
+            (obj.programmer = message.programmer);
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<IsDebugSupportedRequest>
+    ): IsDebugSupportedRequest {
+        return IsDebugSupportedRequest.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<IsDebugSupportedRequest>
+    ): IsDebugSupportedRequest {
+        const message = createBaseIsDebugSupportedRequest();
+        message.instance =
+            object.instance !== undefined && object.instance !== null
+                ? Instance.fromPartial(object.instance)
+                : undefined;
+        message.fqbn = object.fqbn ?? '';
+        message.port =
+            object.port !== undefined && object.port !== null
+                ? Port.fromPartial(object.port)
+                : undefined;
+        message.interpreter = object.interpreter ?? '';
+        message.programmer = object.programmer ?? '';
+        return message;
+    },
+};
+
+function createBaseIsDebugSupportedResponse(): IsDebugSupportedResponse {
+    return { debuggingSupported: false, debugFqbn: '' };
+}
+
+export const IsDebugSupportedResponse = {
+    encode(
+        message: IsDebugSupportedResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.debuggingSupported === true) {
+            writer.uint32(8).bool(message.debuggingSupported);
+        }
+        if (message.debugFqbn !== '') {
+            writer.uint32(18).string(message.debugFqbn);
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): IsDebugSupportedResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseIsDebugSupportedResponse();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 8) {
+                        break;
+                    }
+
+                    message.debuggingSupported = reader.bool();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.debugFqbn = reader.string();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): IsDebugSupportedResponse {
+        return {
+            debuggingSupported: isSet(object.debuggingSupported)
+                ? Boolean(object.debuggingSupported)
+                : false,
+            debugFqbn: isSet(object.debugFqbn) ? String(object.debugFqbn) : '',
+        };
+    },
+
+    toJSON(message: IsDebugSupportedResponse): unknown {
+        const obj: any = {};
+        message.debuggingSupported !== undefined &&
+            (obj.debuggingSupported = message.debuggingSupported);
+        message.debugFqbn !== undefined && (obj.debugFqbn = message.debugFqbn);
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<IsDebugSupportedResponse>
+    ): IsDebugSupportedResponse {
+        return IsDebugSupportedResponse.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<IsDebugSupportedResponse>
+    ): IsDebugSupportedResponse {
+        const message = createBaseIsDebugSupportedResponse();
+        message.debuggingSupported = object.debuggingSupported ?? false;
+        message.debugFqbn = object.debugFqbn ?? '';
         return message;
     },
 };
@@ -398,86 +742,6 @@ export const GetDebugConfigRequest = {
         message.interpreter = object.interpreter ?? '';
         message.importDir = object.importDir ?? '';
         message.programmer = object.programmer ?? '';
-        return message;
-    },
-};
-
-function createBaseDebugResponse(): DebugResponse {
-    return { data: new Uint8Array(0), error: '' };
-}
-
-export const DebugResponse = {
-    encode(
-        message: DebugResponse,
-        writer: _m0.Writer = _m0.Writer.create()
-    ): _m0.Writer {
-        if (message.data.length !== 0) {
-            writer.uint32(10).bytes(message.data);
-        }
-        if (message.error !== '') {
-            writer.uint32(18).string(message.error);
-        }
-        return writer;
-    },
-
-    decode(input: _m0.Reader | Uint8Array, length?: number): DebugResponse {
-        const reader =
-            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseDebugResponse();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-
-                    message.data = reader.bytes();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-
-                    message.error = reader.string();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
-
-    fromJSON(object: any): DebugResponse {
-        return {
-            data: isSet(object.data)
-                ? bytesFromBase64(object.data)
-                : new Uint8Array(0),
-            error: isSet(object.error) ? String(object.error) : '',
-        };
-    },
-
-    toJSON(message: DebugResponse): unknown {
-        const obj: any = {};
-        message.data !== undefined &&
-            (obj.data = base64FromBytes(
-                message.data !== undefined ? message.data : new Uint8Array(0)
-            ));
-        message.error !== undefined && (obj.error = message.error);
-        return obj;
-    },
-
-    create(base?: DeepPartial<DebugResponse>): DebugResponse {
-        return DebugResponse.fromPartial(base ?? {});
-    },
-
-    fromPartial(object: DeepPartial<DebugResponse>): DebugResponse {
-        const message = createBaseDebugResponse();
-        message.data = object.data ?? new Uint8Array(0);
-        message.error = object.error ?? '';
         return message;
     },
 };

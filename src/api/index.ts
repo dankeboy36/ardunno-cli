@@ -91,8 +91,10 @@ export {
 } from './cc/arduino/cli/commands/v1/core';
 export {
     DebugRequest,
-    GetDebugConfigRequest,
     DebugResponse,
+    IsDebugSupportedRequest,
+    IsDebugSupportedResponse,
+    GetDebugConfigRequest,
     GetDebugConfigResponse,
     GetDebugConfigResponse_CustomConfigsEntry,
     DebugGCCToolchainConfiguration,

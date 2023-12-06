@@ -47,8 +47,6 @@ export interface BoardDetailsResponse {
     configOptions: ConfigOption[];
     /** List of programmers supported by the board */
     programmers: Programmer[];
-    /** Set to true if the board supports debugging */
-    debuggingSupported: boolean;
     /** Identifying information for the board (e.g., USB VID/PID). */
     identificationProperties: BoardIdentificationProperties[];
     /** Board build properties used for compiling */
@@ -350,7 +348,6 @@ function createBaseBoardDetailsResponse(): BoardDetailsResponse {
         toolsDependencies: [],
         configOptions: [],
         programmers: [],
-        debuggingSupported: false,
         identificationProperties: [],
         buildProperties: [],
         defaultProgrammerId: '',
@@ -400,9 +397,6 @@ export const BoardDetailsResponse = {
         }
         for (const v of message.programmers) {
             Programmer.encode(v!, writer.uint32(106).fork()).ldelim();
-        }
-        if (message.debuggingSupported === true) {
-            writer.uint32(112).bool(message.debuggingSupported);
         }
         for (const v of message.identificationProperties) {
             BoardIdentificationProperties.encode(
@@ -523,13 +517,6 @@ export const BoardDetailsResponse = {
                         Programmer.decode(reader, reader.uint32())
                     );
                     continue;
-                case 14:
-                    if (tag !== 112) {
-                        break;
-                    }
-
-                    message.debuggingSupported = reader.bool();
-                    continue;
                 case 15:
                     if (tag !== 122) {
                         break;
@@ -593,9 +580,6 @@ export const BoardDetailsResponse = {
             programmers: Array.isArray(object?.programmers)
                 ? object.programmers.map((e: any) => Programmer.fromJSON(e))
                 : [],
-            debuggingSupported: isSet(object.debuggingSupported)
-                ? Boolean(object.debuggingSupported)
-                : false,
             identificationProperties: Array.isArray(
                 object?.identificationProperties
             )
@@ -651,8 +635,6 @@ export const BoardDetailsResponse = {
         } else {
             obj.programmers = [];
         }
-        message.debuggingSupported !== undefined &&
-            (obj.debuggingSupported = message.debuggingSupported);
         if (message.identificationProperties) {
             obj.identificationProperties = message.identificationProperties.map(
                 (e) => (e ? BoardIdentificationProperties.toJSON(e) : undefined)
@@ -701,7 +683,6 @@ export const BoardDetailsResponse = {
             object.configOptions?.map((e) => ConfigOption.fromPartial(e)) || [];
         message.programmers =
             object.programmers?.map((e) => Programmer.fromPartial(e)) || [];
-        message.debuggingSupported = object.debuggingSupported ?? false;
         message.identificationProperties =
             object.identificationProperties?.map((e) =>
                 BoardIdentificationProperties.fromPartial(e)
