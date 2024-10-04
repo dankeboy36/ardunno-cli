@@ -1,6 +1,6 @@
 {
   "name": "ardunno-cli",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "nice-grpc API for the Arduino CLI",
   "license": "MIT",
   "author": "dankeboy36",
