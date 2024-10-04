@@ -4,6 +4,18 @@ import { Instance } from './common';
 import { Port } from './port';
 
 export interface MonitorRequest {
+    message?:
+        | { $case: 'openRequest'; openRequest: MonitorPortOpenRequest }
+        | { $case: 'txData'; txData: Uint8Array }
+        | {
+              $case: 'updatedConfiguration';
+              updatedConfiguration: MonitorPortConfiguration;
+          }
+        | { $case: 'close'; close: boolean }
+        | undefined;
+}
+
+export interface MonitorPortOpenRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
     /** Port to open, must be filled only on the first request */
@@ -14,33 +26,25 @@ export interface MonitorRequest {
      * monitor for a given port protocol.
      */
     fqbn: string;
-    /** Data to send to the port */
-    txData: Uint8Array;
     /** Port configuration, optional, contains settings of the port to be applied */
     portConfiguration: MonitorPortConfiguration | undefined;
 }
 
 export interface MonitorPortConfiguration {
-    /** The port configuration parameters to configure */
+    /** The port configuration parameters */
     settings: MonitorPortSetting[];
 }
 
 export interface MonitorResponse {
-    /** Eventual errors dealing with monitor port */
-    error: string;
-    /** Data received from the port */
-    rxData: Uint8Array;
-    /**
-     * Settings applied to the port, may be returned after a port is opened (to
-     * report the default settings) or after a new port_configuration is sent
-     * (to report the new settings applied)
-     */
-    appliedSettings: MonitorPortSetting[];
-    /**
-     * A message with this field set to true is sent as soon as the port is
-     * succesfully opened
-     */
-    success: boolean;
+    message?:
+        | { $case: 'error'; error: string }
+        | { $case: 'rxData'; rxData: Uint8Array }
+        | {
+              $case: 'appliedSettings';
+              appliedSettings: MonitorPortConfiguration;
+          }
+        | { $case: 'success'; success: boolean }
+        | undefined;
 }
 
 export interface MonitorPortSetting {
@@ -83,18 +87,206 @@ export interface MonitorPortSettingDescriptor {
 }
 
 function createBaseMonitorRequest(): MonitorRequest {
-    return {
-        instance: undefined,
-        port: undefined,
-        fqbn: '',
-        txData: new Uint8Array(0),
-        portConfiguration: undefined,
-    };
+    return { message: undefined };
 }
 
 export const MonitorRequest = {
     encode(
         message: MonitorRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        switch (message.message?.$case) {
+            case 'openRequest':
+                MonitorPortOpenRequest.encode(
+                    message.message.openRequest,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'txData':
+                writer.uint32(18).bytes(message.message.txData);
+                break;
+            case 'updatedConfiguration':
+                MonitorPortConfiguration.encode(
+                    message.message.updatedConfiguration,
+                    writer.uint32(26).fork()
+                ).ldelim();
+                break;
+            case 'close':
+                writer.uint32(32).bool(message.message.close);
+                break;
+        }
+        return writer;
+    },
+
+    decode(input: _m0.Reader | Uint8Array, length?: number): MonitorRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseMonitorRequest();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'openRequest',
+                        openRequest: MonitorPortOpenRequest.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'txData',
+                        txData: reader.bytes(),
+                    };
+                    continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'updatedConfiguration',
+                        updatedConfiguration: MonitorPortConfiguration.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
+                    continue;
+                case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
+                    message.message = { $case: 'close', close: reader.bool() };
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): MonitorRequest {
+        return {
+            message: isSet(object.openRequest)
+                ? {
+                      $case: 'openRequest',
+                      openRequest: MonitorPortOpenRequest.fromJSON(
+                          object.openRequest
+                      ),
+                  }
+                : isSet(object.txData)
+                ? { $case: 'txData', txData: bytesFromBase64(object.txData) }
+                : isSet(object.updatedConfiguration)
+                ? {
+                      $case: 'updatedConfiguration',
+                      updatedConfiguration: MonitorPortConfiguration.fromJSON(
+                          object.updatedConfiguration
+                      ),
+                  }
+                : isSet(object.close)
+                ? { $case: 'close', close: Boolean(object.close) }
+                : undefined,
+        };
+    },
+
+    toJSON(message: MonitorRequest): unknown {
+        const obj: any = {};
+        message.message?.$case === 'openRequest' &&
+            (obj.openRequest = message.message?.openRequest
+                ? MonitorPortOpenRequest.toJSON(message.message?.openRequest)
+                : undefined);
+        message.message?.$case === 'txData' &&
+            (obj.txData =
+                message.message?.txData !== undefined
+                    ? base64FromBytes(message.message?.txData)
+                    : undefined);
+        message.message?.$case === 'updatedConfiguration' &&
+            (obj.updatedConfiguration = message.message?.updatedConfiguration
+                ? MonitorPortConfiguration.toJSON(
+                      message.message?.updatedConfiguration
+                  )
+                : undefined);
+        message.message?.$case === 'close' &&
+            (obj.close = message.message?.close);
+        return obj;
+    },
+
+    create(base?: DeepPartial<MonitorRequest>): MonitorRequest {
+        return MonitorRequest.fromPartial(base ?? {});
+    },
+
+    fromPartial(object: DeepPartial<MonitorRequest>): MonitorRequest {
+        const message = createBaseMonitorRequest();
+        if (
+            object.message?.$case === 'openRequest' &&
+            object.message?.openRequest !== undefined &&
+            object.message?.openRequest !== null
+        ) {
+            message.message = {
+                $case: 'openRequest',
+                openRequest: MonitorPortOpenRequest.fromPartial(
+                    object.message.openRequest
+                ),
+            };
+        }
+        if (
+            object.message?.$case === 'txData' &&
+            object.message?.txData !== undefined &&
+            object.message?.txData !== null
+        ) {
+            message.message = {
+                $case: 'txData',
+                txData: object.message.txData,
+            };
+        }
+        if (
+            object.message?.$case === 'updatedConfiguration' &&
+            object.message?.updatedConfiguration !== undefined &&
+            object.message?.updatedConfiguration !== null
+        ) {
+            message.message = {
+                $case: 'updatedConfiguration',
+                updatedConfiguration: MonitorPortConfiguration.fromPartial(
+                    object.message.updatedConfiguration
+                ),
+            };
+        }
+        if (
+            object.message?.$case === 'close' &&
+            object.message?.close !== undefined &&
+            object.message?.close !== null
+        ) {
+            message.message = { $case: 'close', close: object.message.close };
+        }
+        return message;
+    },
+};
+
+function createBaseMonitorPortOpenRequest(): MonitorPortOpenRequest {
+    return {
+        instance: undefined,
+        port: undefined,
+        fqbn: '',
+        portConfiguration: undefined,
+    };
+}
+
+export const MonitorPortOpenRequest = {
+    encode(
+        message: MonitorPortOpenRequest,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
         if (message.instance !== undefined) {
@@ -109,23 +301,23 @@ export const MonitorRequest = {
         if (message.fqbn !== '') {
             writer.uint32(26).string(message.fqbn);
         }
-        if (message.txData.length !== 0) {
-            writer.uint32(34).bytes(message.txData);
-        }
         if (message.portConfiguration !== undefined) {
             MonitorPortConfiguration.encode(
                 message.portConfiguration,
-                writer.uint32(42).fork()
+                writer.uint32(34).fork()
             ).ldelim();
         }
         return writer;
     },
 
-    decode(input: _m0.Reader | Uint8Array, length?: number): MonitorRequest {
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): MonitorPortOpenRequest {
         const reader =
             input instanceof _m0.Reader ? input : _m0.Reader.create(input);
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseMonitorRequest();
+        const message = createBaseMonitorPortOpenRequest();
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
@@ -155,13 +347,6 @@ export const MonitorRequest = {
                         break;
                     }
 
-                    message.txData = reader.bytes();
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-
                     message.portConfiguration = MonitorPortConfiguration.decode(
                         reader,
                         reader.uint32()
@@ -176,23 +361,20 @@ export const MonitorRequest = {
         return message;
     },
 
-    fromJSON(object: any): MonitorRequest {
+    fromJSON(object: any): MonitorPortOpenRequest {
         return {
             instance: isSet(object.instance)
                 ? Instance.fromJSON(object.instance)
                 : undefined,
             port: isSet(object.port) ? Port.fromJSON(object.port) : undefined,
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
-            txData: isSet(object.txData)
-                ? bytesFromBase64(object.txData)
-                : new Uint8Array(0),
             portConfiguration: isSet(object.portConfiguration)
                 ? MonitorPortConfiguration.fromJSON(object.portConfiguration)
                 : undefined,
         };
     },
 
-    toJSON(message: MonitorRequest): unknown {
+    toJSON(message: MonitorPortOpenRequest): unknown {
         const obj: any = {};
         message.instance !== undefined &&
             (obj.instance = message.instance
@@ -201,12 +383,6 @@ export const MonitorRequest = {
         message.port !== undefined &&
             (obj.port = message.port ? Port.toJSON(message.port) : undefined);
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
-        message.txData !== undefined &&
-            (obj.txData = base64FromBytes(
-                message.txData !== undefined
-                    ? message.txData
-                    : new Uint8Array(0)
-            ));
         message.portConfiguration !== undefined &&
             (obj.portConfiguration = message.portConfiguration
                 ? MonitorPortConfiguration.toJSON(message.portConfiguration)
@@ -214,12 +390,14 @@ export const MonitorRequest = {
         return obj;
     },
 
-    create(base?: DeepPartial<MonitorRequest>): MonitorRequest {
-        return MonitorRequest.fromPartial(base ?? {});
+    create(base?: DeepPartial<MonitorPortOpenRequest>): MonitorPortOpenRequest {
+        return MonitorPortOpenRequest.fromPartial(base ?? {});
     },
 
-    fromPartial(object: DeepPartial<MonitorRequest>): MonitorRequest {
-        const message = createBaseMonitorRequest();
+    fromPartial(
+        object: DeepPartial<MonitorPortOpenRequest>
+    ): MonitorPortOpenRequest {
+        const message = createBaseMonitorPortOpenRequest();
         message.instance =
             object.instance !== undefined && object.instance !== null
                 ? Instance.fromPartial(object.instance)
@@ -229,7 +407,6 @@ export const MonitorRequest = {
                 ? Port.fromPartial(object.port)
                 : undefined;
         message.fqbn = object.fqbn ?? '';
-        message.txData = object.txData ?? new Uint8Array(0);
         message.portConfiguration =
             object.portConfiguration !== undefined &&
             object.portConfiguration !== null
@@ -323,12 +500,7 @@ export const MonitorPortConfiguration = {
 };
 
 function createBaseMonitorResponse(): MonitorResponse {
-    return {
-        error: '',
-        rxData: new Uint8Array(0),
-        appliedSettings: [],
-        success: false,
-    };
+    return { message: undefined };
 }
 
 export const MonitorResponse = {
@@ -336,17 +508,22 @@ export const MonitorResponse = {
         message: MonitorResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.error !== '') {
-            writer.uint32(10).string(message.error);
-        }
-        if (message.rxData.length !== 0) {
-            writer.uint32(18).bytes(message.rxData);
-        }
-        for (const v of message.appliedSettings) {
-            MonitorPortSetting.encode(v!, writer.uint32(26).fork()).ldelim();
-        }
-        if (message.success === true) {
-            writer.uint32(32).bool(message.success);
+        switch (message.message?.$case) {
+            case 'error':
+                writer.uint32(10).string(message.message.error);
+                break;
+            case 'rxData':
+                writer.uint32(18).bytes(message.message.rxData);
+                break;
+            case 'appliedSettings':
+                MonitorPortConfiguration.encode(
+                    message.message.appliedSettings,
+                    writer.uint32(26).fork()
+                ).ldelim();
+                break;
+            case 'success':
+                writer.uint32(32).bool(message.message.success);
+                break;
         }
         return writer;
     },
@@ -364,30 +541,43 @@ export const MonitorResponse = {
                         break;
                     }
 
-                    message.error = reader.string();
+                    message.message = {
+                        $case: 'error',
+                        error: reader.string(),
+                    };
                     continue;
                 case 2:
                     if (tag !== 18) {
                         break;
                     }
 
-                    message.rxData = reader.bytes();
+                    message.message = {
+                        $case: 'rxData',
+                        rxData: reader.bytes(),
+                    };
                     continue;
                 case 3:
                     if (tag !== 26) {
                         break;
                     }
 
-                    message.appliedSettings.push(
-                        MonitorPortSetting.decode(reader, reader.uint32())
-                    );
+                    message.message = {
+                        $case: 'appliedSettings',
+                        appliedSettings: MonitorPortConfiguration.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
                 case 4:
                     if (tag !== 32) {
                         break;
                     }
 
-                    message.success = reader.bool();
+                    message.message = {
+                        $case: 'success',
+                        success: reader.bool(),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -400,36 +590,40 @@ export const MonitorResponse = {
 
     fromJSON(object: any): MonitorResponse {
         return {
-            error: isSet(object.error) ? String(object.error) : '',
-            rxData: isSet(object.rxData)
-                ? bytesFromBase64(object.rxData)
-                : new Uint8Array(0),
-            appliedSettings: Array.isArray(object?.appliedSettings)
-                ? object.appliedSettings.map((e: any) =>
-                      MonitorPortSetting.fromJSON(e)
-                  )
-                : [],
-            success: isSet(object.success) ? Boolean(object.success) : false,
+            message: isSet(object.error)
+                ? { $case: 'error', error: String(object.error) }
+                : isSet(object.rxData)
+                ? { $case: 'rxData', rxData: bytesFromBase64(object.rxData) }
+                : isSet(object.appliedSettings)
+                ? {
+                      $case: 'appliedSettings',
+                      appliedSettings: MonitorPortConfiguration.fromJSON(
+                          object.appliedSettings
+                      ),
+                  }
+                : isSet(object.success)
+                ? { $case: 'success', success: Boolean(object.success) }
+                : undefined,
         };
     },
 
     toJSON(message: MonitorResponse): unknown {
         const obj: any = {};
-        message.error !== undefined && (obj.error = message.error);
-        message.rxData !== undefined &&
-            (obj.rxData = base64FromBytes(
-                message.rxData !== undefined
-                    ? message.rxData
-                    : new Uint8Array(0)
-            ));
-        if (message.appliedSettings) {
-            obj.appliedSettings = message.appliedSettings.map((e) =>
-                e ? MonitorPortSetting.toJSON(e) : undefined
-            );
-        } else {
-            obj.appliedSettings = [];
-        }
-        message.success !== undefined && (obj.success = message.success);
+        message.message?.$case === 'error' &&
+            (obj.error = message.message?.error);
+        message.message?.$case === 'rxData' &&
+            (obj.rxData =
+                message.message?.rxData !== undefined
+                    ? base64FromBytes(message.message?.rxData)
+                    : undefined);
+        message.message?.$case === 'appliedSettings' &&
+            (obj.appliedSettings = message.message?.appliedSettings
+                ? MonitorPortConfiguration.toJSON(
+                      message.message?.appliedSettings
+                  )
+                : undefined);
+        message.message?.$case === 'success' &&
+            (obj.success = message.message?.success);
         return obj;
     },
 
@@ -439,13 +633,45 @@ export const MonitorResponse = {
 
     fromPartial(object: DeepPartial<MonitorResponse>): MonitorResponse {
         const message = createBaseMonitorResponse();
-        message.error = object.error ?? '';
-        message.rxData = object.rxData ?? new Uint8Array(0);
-        message.appliedSettings =
-            object.appliedSettings?.map((e) =>
-                MonitorPortSetting.fromPartial(e)
-            ) || [];
-        message.success = object.success ?? false;
+        if (
+            object.message?.$case === 'error' &&
+            object.message?.error !== undefined &&
+            object.message?.error !== null
+        ) {
+            message.message = { $case: 'error', error: object.message.error };
+        }
+        if (
+            object.message?.$case === 'rxData' &&
+            object.message?.rxData !== undefined &&
+            object.message?.rxData !== null
+        ) {
+            message.message = {
+                $case: 'rxData',
+                rxData: object.message.rxData,
+            };
+        }
+        if (
+            object.message?.$case === 'appliedSettings' &&
+            object.message?.appliedSettings !== undefined &&
+            object.message?.appliedSettings !== null
+        ) {
+            message.message = {
+                $case: 'appliedSettings',
+                appliedSettings: MonitorPortConfiguration.fromPartial(
+                    object.message.appliedSettings
+                ),
+            };
+        }
+        if (
+            object.message?.$case === 'success' &&
+            object.message?.success !== undefined &&
+            object.message?.success !== null
+        ) {
+            message.message = {
+                $case: 'success',
+                success: object.message.success,
+            };
+        }
         return message;
     },
 };

@@ -1,6 +1,6 @@
 {
   "name": "ardunno-cli",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "nice-grpc API for the Arduino CLI",
   "license": "MIT",
   "author": "dankeboy36",
@@ -11,6 +11,7 @@
   "bugs": {
     "url": "https://github.com/dankeboy36/ardunno-cli/issues"
   },
+  "type": "module",
   "exports": {
     ".": "./dist/api/index.js",
     "./api": "./dist/api/index.js",
@@ -24,8 +25,8 @@
   "scripts": {
     "compile": "tsc -p ./",
     "format": "prettier --write . && prettier-package-json --write ./package.json",
-    "generate:api": "ardunno-cli generate v0.35.0-rc.7 -o src/api -f && ctix single -p ./tsconfig.json -o ./src/api/api.ts -w && replace-in-files --string ' type ' --replacement '' ./src/api/index.ts",
-    "generate:config": "json2ts --input ./schemas/arduino-cli-schema.json --output ./src/config/index.ts --no-format --no-additionalProperties",
+    "generate:api": "ardunno-cli generate v1.0.4 -o src/api -f && ctix single -p ./tsconfig.json -o ./src/api/api.ts -w && replace-in-files --string ' type ' --replacement '' ./src/api/index.ts",
+    "generate:config": "node ./scripts/getSchema.js v1.0.4 && json2ts --input ./schemas/arduino-cli-schema.json --output ./src/config/index.ts --no-format --no-additionalProperties",
     "lint": "eslint ./src --ext ts",
     "prepublishOnly": "npm run generate:api && npm run generate:config && npm run format && npm run compile && npm run lint",
     "watch": "tsc -p ./ -w"
@@ -42,10 +43,12 @@
     "eslint": "^8.41.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "ipull": "^3.8.0",
     "json-schema-to-typescript": "^13.0.1",
     "prettier": "^2.8.8",
     "prettier-package-json": "^2.8.0",
     "replace-in-files-cli": "^2.2.0",
+    "semver": "^7.6.3",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.3"
   },

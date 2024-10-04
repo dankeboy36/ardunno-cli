@@ -1,4 +1,5 @@
 /* eslint-disable */
+import Long from 'long';
 import type { CallContext, CallOptions } from 'nice-grpc-common';
 import _m0 from 'protobufjs/minimal';
 import { Status } from '../../../../../google/rpc/status';
@@ -14,15 +15,19 @@ import {
     BoardSearchRequest,
     BoardSearchResponse,
 } from './board';
-import { DownloadProgress, Instance, Profile, TaskProgress } from './common';
+import {
+    DownloadProgress,
+    Instance,
+    Sketch,
+    SketchProfile,
+    TaskProgress,
+} from './common';
 import { CompileRequest, CompileResponse } from './compile';
 import {
     PlatformDownloadRequest,
     PlatformDownloadResponse,
     PlatformInstallRequest,
     PlatformInstallResponse,
-    PlatformListRequest,
-    PlatformListResponse,
     PlatformSearchRequest,
     PlatformSearchResponse,
     PlatformUninstallRequest,
@@ -66,6 +71,20 @@ import {
     MonitorRequest,
     MonitorResponse,
 } from './monitor';
+import {
+    ConfigurationGetRequest,
+    ConfigurationGetResponse,
+    ConfigurationOpenRequest,
+    ConfigurationOpenResponse,
+    ConfigurationSaveRequest,
+    ConfigurationSaveResponse,
+    SettingsEnumerateRequest,
+    SettingsEnumerateResponse,
+    SettingsGetValueRequest,
+    SettingsGetValueResponse,
+    SettingsSetValueRequest,
+    SettingsSetValueResponse,
+} from './settings';
 import {
     BurnBootloaderRequest,
     BurnBootloaderResponse,
@@ -170,7 +189,7 @@ export interface InitResponse {
         | { $case: 'error'; error: Status }
         | {
               $case: 'profile';
-              profile: Profile;
+              profile: SketchProfile;
           }
         | undefined;
 }
@@ -201,21 +220,118 @@ export interface UpdateIndexRequest {
     instance: Instance | undefined;
     /** If set to true user defined package indexes will not be updated. */
     ignoreCustomPackageIndexes: boolean;
+    /**
+     * Only perform index update if the index file is older than this value in
+     * seconds.
+     */
+    updateIfOlderThanSecs: number;
 }
 
 export interface UpdateIndexResponse {
-    /** Progress of the package index download. */
-    downloadProgress: DownloadProgress | undefined;
+    message?:
+        | { $case: 'downloadProgress'; downloadProgress: DownloadProgress }
+        | {
+              $case: 'result';
+              result: UpdateIndexResponse_Result;
+          }
+        | undefined;
+}
+
+export interface UpdateIndexResponse_Result {
+    /** The result of the packages index update. */
+    updatedIndexes: IndexUpdateReport[];
 }
 
 export interface UpdateLibrariesIndexRequest {
     /** Arduino Core Service instance from the Init response. */
     instance: Instance | undefined;
+    /**
+     * Only perform index update if the index file is older than this value in
+     * seconds.
+     */
+    updateIfOlderThanSecs: number;
 }
 
 export interface UpdateLibrariesIndexResponse {
-    /** Progress of the libraries index download. */
-    downloadProgress: DownloadProgress | undefined;
+    message?:
+        | { $case: 'downloadProgress'; downloadProgress: DownloadProgress }
+        | {
+              $case: 'result';
+              result: UpdateLibrariesIndexResponse_Result;
+          }
+        | undefined;
+}
+
+export interface UpdateLibrariesIndexResponse_Result {
+    /** The result of the libraries index update. */
+    librariesIndex: IndexUpdateReport | undefined;
+}
+
+export interface IndexUpdateReport {
+    /** The URL of the index that was updated. */
+    indexUrl: string;
+    /** The result of the index update. */
+    status: IndexUpdateReport_Status;
+}
+
+export enum IndexUpdateReport_Status {
+    /** STATUS_UNSPECIFIED - The status of the index update is unspecified. */
+    STATUS_UNSPECIFIED = 0,
+    /** STATUS_UPDATED - The index has been successfully updated. */
+    STATUS_UPDATED = 1,
+    /** STATUS_ALREADY_UP_TO_DATE - The index was already up to date. */
+    STATUS_ALREADY_UP_TO_DATE = 2,
+    /** STATUS_FAILED - The index update failed. */
+    STATUS_FAILED = 3,
+    /** STATUS_SKIPPED - The index update was skipped. */
+    STATUS_SKIPPED = 4,
+    UNRECOGNIZED = -1,
+}
+
+export function indexUpdateReport_StatusFromJSON(
+    object: any
+): IndexUpdateReport_Status {
+    switch (object) {
+        case 0:
+        case 'STATUS_UNSPECIFIED':
+            return IndexUpdateReport_Status.STATUS_UNSPECIFIED;
+        case 1:
+        case 'STATUS_UPDATED':
+            return IndexUpdateReport_Status.STATUS_UPDATED;
+        case 2:
+        case 'STATUS_ALREADY_UP_TO_DATE':
+            return IndexUpdateReport_Status.STATUS_ALREADY_UP_TO_DATE;
+        case 3:
+        case 'STATUS_FAILED':
+            return IndexUpdateReport_Status.STATUS_FAILED;
+        case 4:
+        case 'STATUS_SKIPPED':
+            return IndexUpdateReport_Status.STATUS_SKIPPED;
+        case -1:
+        case 'UNRECOGNIZED':
+        default:
+            return IndexUpdateReport_Status.UNRECOGNIZED;
+    }
+}
+
+export function indexUpdateReport_StatusToJSON(
+    object: IndexUpdateReport_Status
+): string {
+    switch (object) {
+        case IndexUpdateReport_Status.STATUS_UNSPECIFIED:
+            return 'STATUS_UNSPECIFIED';
+        case IndexUpdateReport_Status.STATUS_UPDATED:
+            return 'STATUS_UPDATED';
+        case IndexUpdateReport_Status.STATUS_ALREADY_UP_TO_DATE:
+            return 'STATUS_ALREADY_UP_TO_DATE';
+        case IndexUpdateReport_Status.STATUS_FAILED:
+            return 'STATUS_FAILED';
+        case IndexUpdateReport_Status.STATUS_SKIPPED:
+            return 'STATUS_SKIPPED';
+        case IndexUpdateReport_Status.UNRECOGNIZED:
+        default:
+            return 'UNRECOGNIZED';
+    }
 }
 
 export interface VersionRequest {}
@@ -249,37 +365,9 @@ export interface LoadSketchRequest {
     sketchPath: string;
 }
 
-export interface SketchProfile {
-    /** Name of the profile */
-    name: string;
-    /** FQBN used by the profile */
-    fqbn: string;
-}
-
 export interface LoadSketchResponse {
-    /** Absolute path to a main sketch files */
-    mainFile: string;
-    /** Absolute path to folder that contains main_file */
-    locationPath: string;
-    /** List of absolute paths to other sketch files */
-    otherSketchFiles: string[];
-    /** List of absolute paths to additional sketch files */
-    additionalFiles: string[];
-    /**
-     * List of absolute paths to supported files in the sketch root folder, main
-     * file excluded
-     */
-    rootFolderFiles: string[];
-    /** Default FQBN set in project file (sketch.yaml) */
-    defaultFqbn: string;
-    /** Default Port set in project file (sketch.yaml) */
-    defaultPort: string;
-    /** Default Protocol set in project file (sketch.yaml) */
-    defaultProtocol: string;
-    /** List of profiles present in the project file (sketch.yaml) */
-    profiles: SketchProfile[];
-    /** Default profile set in the project file (sketch.yaml) */
-    defaultProfile: SketchProfile | undefined;
+    /** The loaded sketch */
+    sketch: Sketch | undefined;
 }
 
 export interface ArchiveSketchRequest {
@@ -307,6 +395,8 @@ export interface SetSketchDefaultsRequest {
     defaultPortAddress: string;
     /** The desired value for default_protocol in project file (sketch.yaml) */
     defaultPortProtocol: string;
+    /** The desired value for default_programmer in project file (sketch.yaml) */
+    defaultProgrammer: string;
 }
 
 export interface SetSketchDefaultsResponse {
@@ -325,7 +415,35 @@ export interface SetSketchDefaultsResponse {
      * (sketch.yaml)
      */
     defaultPortProtocol: string;
+    /**
+     * The value of default_programmer that has been written in project file
+     * (sketch.yaml)
+     */
+    defaultProgrammer: string;
 }
+
+export interface CheckForArduinoCLIUpdatesRequest {
+    /**
+     * Force the check, even if the configuration says not to check for
+     * updates.
+     */
+    forceCheck: boolean;
+}
+
+export interface CheckForArduinoCLIUpdatesResponse {
+    /**
+     * The latest version of Arduino CLI available, if bigger than the
+     * current version.
+     */
+    newestVersion: string;
+}
+
+export interface CleanDownloadCacheDirectoryRequest {
+    /** The Arduino Core Service instance. */
+    instance: Instance | undefined;
+}
+
+export interface CleanDownloadCacheDirectoryResponse {}
 
 function createBaseCreateRequest(): CreateRequest {
     return {};
@@ -573,7 +691,7 @@ export const InitResponse = {
                 ).ldelim();
                 break;
             case 'profile':
-                Profile.encode(
+                SketchProfile.encode(
                     message.message.profile,
                     writer.uint32(26).fork()
                 ).ldelim();
@@ -620,7 +738,7 @@ export const InitResponse = {
 
                     message.message = {
                         $case: 'profile',
-                        profile: Profile.decode(reader, reader.uint32()),
+                        profile: SketchProfile.decode(reader, reader.uint32()),
                     };
                     continue;
             }
@@ -646,7 +764,7 @@ export const InitResponse = {
                 : isSet(object.profile)
                 ? {
                       $case: 'profile',
-                      profile: Profile.fromJSON(object.profile),
+                      profile: SketchProfile.fromJSON(object.profile),
                   }
                 : undefined,
         };
@@ -664,7 +782,7 @@ export const InitResponse = {
                 : undefined);
         message.message?.$case === 'profile' &&
             (obj.profile = message.message?.profile
-                ? Profile.toJSON(message.message?.profile)
+                ? SketchProfile.toJSON(message.message?.profile)
                 : undefined);
         return obj;
     },
@@ -704,7 +822,7 @@ export const InitResponse = {
         ) {
             message.message = {
                 $case: 'profile',
-                profile: Profile.fromPartial(object.message.profile),
+                profile: SketchProfile.fromPartial(object.message.profile),
             };
         }
         return message;
@@ -1027,7 +1145,11 @@ export const DestroyResponse = {
 };
 
 function createBaseUpdateIndexRequest(): UpdateIndexRequest {
-    return { instance: undefined, ignoreCustomPackageIndexes: false };
+    return {
+        instance: undefined,
+        ignoreCustomPackageIndexes: false,
+        updateIfOlderThanSecs: 0,
+    };
 }
 
 export const UpdateIndexRequest = {
@@ -1043,6 +1165,9 @@ export const UpdateIndexRequest = {
         }
         if (message.ignoreCustomPackageIndexes === true) {
             writer.uint32(16).bool(message.ignoreCustomPackageIndexes);
+        }
+        if (message.updateIfOlderThanSecs !== 0) {
+            writer.uint32(24).int64(message.updateIfOlderThanSecs);
         }
         return writer;
     },
@@ -1072,6 +1197,15 @@ export const UpdateIndexRequest = {
 
                     message.ignoreCustomPackageIndexes = reader.bool();
                     continue;
+                case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
+                    message.updateIfOlderThanSecs = longToNumber(
+                        reader.int64() as Long
+                    );
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -1089,6 +1223,9 @@ export const UpdateIndexRequest = {
             ignoreCustomPackageIndexes: isSet(object.ignoreCustomPackageIndexes)
                 ? Boolean(object.ignoreCustomPackageIndexes)
                 : false,
+            updateIfOlderThanSecs: isSet(object.updateIfOlderThanSecs)
+                ? Number(object.updateIfOlderThanSecs)
+                : 0,
         };
     },
 
@@ -1101,6 +1238,10 @@ export const UpdateIndexRequest = {
         message.ignoreCustomPackageIndexes !== undefined &&
             (obj.ignoreCustomPackageIndexes =
                 message.ignoreCustomPackageIndexes);
+        message.updateIfOlderThanSecs !== undefined &&
+            (obj.updateIfOlderThanSecs = Math.round(
+                message.updateIfOlderThanSecs
+            ));
         return obj;
     },
 
@@ -1116,12 +1257,13 @@ export const UpdateIndexRequest = {
                 : undefined;
         message.ignoreCustomPackageIndexes =
             object.ignoreCustomPackageIndexes ?? false;
+        message.updateIfOlderThanSecs = object.updateIfOlderThanSecs ?? 0;
         return message;
     },
 };
 
 function createBaseUpdateIndexResponse(): UpdateIndexResponse {
-    return { downloadProgress: undefined };
+    return { message: undefined };
 }
 
 export const UpdateIndexResponse = {
@@ -1129,11 +1271,19 @@ export const UpdateIndexResponse = {
         message: UpdateIndexResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.downloadProgress !== undefined) {
-            DownloadProgress.encode(
-                message.downloadProgress,
-                writer.uint32(10).fork()
-            ).ldelim();
+        switch (message.message?.$case) {
+            case 'downloadProgress':
+                DownloadProgress.encode(
+                    message.message.downloadProgress,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'result':
+                UpdateIndexResponse_Result.encode(
+                    message.message.result,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -1154,10 +1304,26 @@ export const UpdateIndexResponse = {
                         break;
                     }
 
-                    message.downloadProgress = DownloadProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'downloadProgress',
+                        downloadProgress: DownloadProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'result',
+                        result: UpdateIndexResponse_Result.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -1170,17 +1336,33 @@ export const UpdateIndexResponse = {
 
     fromJSON(object: any): UpdateIndexResponse {
         return {
-            downloadProgress: isSet(object.downloadProgress)
-                ? DownloadProgress.fromJSON(object.downloadProgress)
+            message: isSet(object.downloadProgress)
+                ? {
+                      $case: 'downloadProgress',
+                      downloadProgress: DownloadProgress.fromJSON(
+                          object.downloadProgress
+                      ),
+                  }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: UpdateIndexResponse_Result.fromJSON(
+                          object.result
+                      ),
+                  }
                 : undefined,
         };
     },
 
     toJSON(message: UpdateIndexResponse): unknown {
         const obj: any = {};
-        message.downloadProgress !== undefined &&
-            (obj.downloadProgress = message.downloadProgress
-                ? DownloadProgress.toJSON(message.downloadProgress)
+        message.message?.$case === 'downloadProgress' &&
+            (obj.downloadProgress = message.message?.downloadProgress
+                ? DownloadProgress.toJSON(message.message?.downloadProgress)
+                : undefined);
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? UpdateIndexResponse_Result.toJSON(message.message?.result)
                 : undefined);
         return obj;
     },
@@ -1191,17 +1373,120 @@ export const UpdateIndexResponse = {
 
     fromPartial(object: DeepPartial<UpdateIndexResponse>): UpdateIndexResponse {
         const message = createBaseUpdateIndexResponse();
-        message.downloadProgress =
-            object.downloadProgress !== undefined &&
-            object.downloadProgress !== null
-                ? DownloadProgress.fromPartial(object.downloadProgress)
-                : undefined;
+        if (
+            object.message?.$case === 'downloadProgress' &&
+            object.message?.downloadProgress !== undefined &&
+            object.message?.downloadProgress !== null
+        ) {
+            message.message = {
+                $case: 'downloadProgress',
+                downloadProgress: DownloadProgress.fromPartial(
+                    object.message.downloadProgress
+                ),
+            };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: UpdateIndexResponse_Result.fromPartial(
+                    object.message.result
+                ),
+            };
+        }
+        return message;
+    },
+};
+
+function createBaseUpdateIndexResponse_Result(): UpdateIndexResponse_Result {
+    return { updatedIndexes: [] };
+}
+
+export const UpdateIndexResponse_Result = {
+    encode(
+        message: UpdateIndexResponse_Result,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        for (const v of message.updatedIndexes) {
+            IndexUpdateReport.encode(v!, writer.uint32(10).fork()).ldelim();
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): UpdateIndexResponse_Result {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseUpdateIndexResponse_Result();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.updatedIndexes.push(
+                        IndexUpdateReport.decode(reader, reader.uint32())
+                    );
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): UpdateIndexResponse_Result {
+        return {
+            updatedIndexes: Array.isArray(object?.updatedIndexes)
+                ? object.updatedIndexes.map((e: any) =>
+                      IndexUpdateReport.fromJSON(e)
+                  )
+                : [],
+        };
+    },
+
+    toJSON(message: UpdateIndexResponse_Result): unknown {
+        const obj: any = {};
+        if (message.updatedIndexes) {
+            obj.updatedIndexes = message.updatedIndexes.map((e) =>
+                e ? IndexUpdateReport.toJSON(e) : undefined
+            );
+        } else {
+            obj.updatedIndexes = [];
+        }
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<UpdateIndexResponse_Result>
+    ): UpdateIndexResponse_Result {
+        return UpdateIndexResponse_Result.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<UpdateIndexResponse_Result>
+    ): UpdateIndexResponse_Result {
+        const message = createBaseUpdateIndexResponse_Result();
+        message.updatedIndexes =
+            object.updatedIndexes?.map((e) =>
+                IndexUpdateReport.fromPartial(e)
+            ) || [];
         return message;
     },
 };
 
 function createBaseUpdateLibrariesIndexRequest(): UpdateLibrariesIndexRequest {
-    return { instance: undefined };
+    return { instance: undefined, updateIfOlderThanSecs: 0 };
 }
 
 export const UpdateLibrariesIndexRequest = {
@@ -1214,6 +1499,9 @@ export const UpdateLibrariesIndexRequest = {
                 message.instance,
                 writer.uint32(10).fork()
             ).ldelim();
+        }
+        if (message.updateIfOlderThanSecs !== 0) {
+            writer.uint32(16).int64(message.updateIfOlderThanSecs);
         }
         return writer;
     },
@@ -1236,6 +1524,15 @@ export const UpdateLibrariesIndexRequest = {
 
                     message.instance = Instance.decode(reader, reader.uint32());
                     continue;
+                case 2:
+                    if (tag !== 16) {
+                        break;
+                    }
+
+                    message.updateIfOlderThanSecs = longToNumber(
+                        reader.int64() as Long
+                    );
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -1250,6 +1547,9 @@ export const UpdateLibrariesIndexRequest = {
             instance: isSet(object.instance)
                 ? Instance.fromJSON(object.instance)
                 : undefined,
+            updateIfOlderThanSecs: isSet(object.updateIfOlderThanSecs)
+                ? Number(object.updateIfOlderThanSecs)
+                : 0,
         };
     },
 
@@ -1259,6 +1559,10 @@ export const UpdateLibrariesIndexRequest = {
             (obj.instance = message.instance
                 ? Instance.toJSON(message.instance)
                 : undefined);
+        message.updateIfOlderThanSecs !== undefined &&
+            (obj.updateIfOlderThanSecs = Math.round(
+                message.updateIfOlderThanSecs
+            ));
         return obj;
     },
 
@@ -1276,12 +1580,13 @@ export const UpdateLibrariesIndexRequest = {
             object.instance !== undefined && object.instance !== null
                 ? Instance.fromPartial(object.instance)
                 : undefined;
+        message.updateIfOlderThanSecs = object.updateIfOlderThanSecs ?? 0;
         return message;
     },
 };
 
 function createBaseUpdateLibrariesIndexResponse(): UpdateLibrariesIndexResponse {
-    return { downloadProgress: undefined };
+    return { message: undefined };
 }
 
 export const UpdateLibrariesIndexResponse = {
@@ -1289,11 +1594,19 @@ export const UpdateLibrariesIndexResponse = {
         message: UpdateLibrariesIndexResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.downloadProgress !== undefined) {
-            DownloadProgress.encode(
-                message.downloadProgress,
-                writer.uint32(10).fork()
-            ).ldelim();
+        switch (message.message?.$case) {
+            case 'downloadProgress':
+                DownloadProgress.encode(
+                    message.message.downloadProgress,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'result':
+                UpdateLibrariesIndexResponse_Result.encode(
+                    message.message.result,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -1314,10 +1627,26 @@ export const UpdateLibrariesIndexResponse = {
                         break;
                     }
 
-                    message.downloadProgress = DownloadProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'downloadProgress',
+                        downloadProgress: DownloadProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'result',
+                        result: UpdateLibrariesIndexResponse_Result.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -1330,17 +1659,35 @@ export const UpdateLibrariesIndexResponse = {
 
     fromJSON(object: any): UpdateLibrariesIndexResponse {
         return {
-            downloadProgress: isSet(object.downloadProgress)
-                ? DownloadProgress.fromJSON(object.downloadProgress)
+            message: isSet(object.downloadProgress)
+                ? {
+                      $case: 'downloadProgress',
+                      downloadProgress: DownloadProgress.fromJSON(
+                          object.downloadProgress
+                      ),
+                  }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: UpdateLibrariesIndexResponse_Result.fromJSON(
+                          object.result
+                      ),
+                  }
                 : undefined,
         };
     },
 
     toJSON(message: UpdateLibrariesIndexResponse): unknown {
         const obj: any = {};
-        message.downloadProgress !== undefined &&
-            (obj.downloadProgress = message.downloadProgress
-                ? DownloadProgress.toJSON(message.downloadProgress)
+        message.message?.$case === 'downloadProgress' &&
+            (obj.downloadProgress = message.message?.downloadProgress
+                ? DownloadProgress.toJSON(message.message?.downloadProgress)
+                : undefined);
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? UpdateLibrariesIndexResponse_Result.toJSON(
+                      message.message?.result
+                  )
                 : undefined);
         return obj;
     },
@@ -1355,11 +1702,192 @@ export const UpdateLibrariesIndexResponse = {
         object: DeepPartial<UpdateLibrariesIndexResponse>
     ): UpdateLibrariesIndexResponse {
         const message = createBaseUpdateLibrariesIndexResponse();
-        message.downloadProgress =
-            object.downloadProgress !== undefined &&
-            object.downloadProgress !== null
-                ? DownloadProgress.fromPartial(object.downloadProgress)
+        if (
+            object.message?.$case === 'downloadProgress' &&
+            object.message?.downloadProgress !== undefined &&
+            object.message?.downloadProgress !== null
+        ) {
+            message.message = {
+                $case: 'downloadProgress',
+                downloadProgress: DownloadProgress.fromPartial(
+                    object.message.downloadProgress
+                ),
+            };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: UpdateLibrariesIndexResponse_Result.fromPartial(
+                    object.message.result
+                ),
+            };
+        }
+        return message;
+    },
+};
+
+function createBaseUpdateLibrariesIndexResponse_Result(): UpdateLibrariesIndexResponse_Result {
+    return { librariesIndex: undefined };
+}
+
+export const UpdateLibrariesIndexResponse_Result = {
+    encode(
+        message: UpdateLibrariesIndexResponse_Result,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.librariesIndex !== undefined) {
+            IndexUpdateReport.encode(
+                message.librariesIndex,
+                writer.uint32(10).fork()
+            ).ldelim();
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): UpdateLibrariesIndexResponse_Result {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseUpdateLibrariesIndexResponse_Result();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.librariesIndex = IndexUpdateReport.decode(
+                        reader,
+                        reader.uint32()
+                    );
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): UpdateLibrariesIndexResponse_Result {
+        return {
+            librariesIndex: isSet(object.librariesIndex)
+                ? IndexUpdateReport.fromJSON(object.librariesIndex)
+                : undefined,
+        };
+    },
+
+    toJSON(message: UpdateLibrariesIndexResponse_Result): unknown {
+        const obj: any = {};
+        message.librariesIndex !== undefined &&
+            (obj.librariesIndex = message.librariesIndex
+                ? IndexUpdateReport.toJSON(message.librariesIndex)
+                : undefined);
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<UpdateLibrariesIndexResponse_Result>
+    ): UpdateLibrariesIndexResponse_Result {
+        return UpdateLibrariesIndexResponse_Result.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<UpdateLibrariesIndexResponse_Result>
+    ): UpdateLibrariesIndexResponse_Result {
+        const message = createBaseUpdateLibrariesIndexResponse_Result();
+        message.librariesIndex =
+            object.librariesIndex !== undefined &&
+            object.librariesIndex !== null
+                ? IndexUpdateReport.fromPartial(object.librariesIndex)
                 : undefined;
+        return message;
+    },
+};
+
+function createBaseIndexUpdateReport(): IndexUpdateReport {
+    return { indexUrl: '', status: 0 };
+}
+
+export const IndexUpdateReport = {
+    encode(
+        message: IndexUpdateReport,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.indexUrl !== '') {
+            writer.uint32(10).string(message.indexUrl);
+        }
+        if (message.status !== 0) {
+            writer.uint32(16).int32(message.status);
+        }
+        return writer;
+    },
+
+    decode(input: _m0.Reader | Uint8Array, length?: number): IndexUpdateReport {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseIndexUpdateReport();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.indexUrl = reader.string();
+                    continue;
+                case 2:
+                    if (tag !== 16) {
+                        break;
+                    }
+
+                    message.status = reader.int32() as any;
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): IndexUpdateReport {
+        return {
+            indexUrl: isSet(object.indexUrl) ? String(object.indexUrl) : '',
+            status: isSet(object.status)
+                ? indexUpdateReport_StatusFromJSON(object.status)
+                : 0,
+        };
+    },
+
+    toJSON(message: IndexUpdateReport): unknown {
+        const obj: any = {};
+        message.indexUrl !== undefined && (obj.indexUrl = message.indexUrl);
+        message.status !== undefined &&
+            (obj.status = indexUpdateReport_StatusToJSON(message.status));
+        return obj;
+    },
+
+    create(base?: DeepPartial<IndexUpdateReport>): IndexUpdateReport {
+        return IndexUpdateReport.fromPartial(base ?? {});
+    },
+
+    fromPartial(object: DeepPartial<IndexUpdateReport>): IndexUpdateReport {
+        const message = createBaseIndexUpdateReport();
+        message.indexUrl = object.indexUrl ?? '';
+        message.status = object.status ?? 0;
         return message;
     },
 };
@@ -1692,94 +2220,8 @@ export const LoadSketchRequest = {
     },
 };
 
-function createBaseSketchProfile(): SketchProfile {
-    return { name: '', fqbn: '' };
-}
-
-export const SketchProfile = {
-    encode(
-        message: SketchProfile,
-        writer: _m0.Writer = _m0.Writer.create()
-    ): _m0.Writer {
-        if (message.name !== '') {
-            writer.uint32(10).string(message.name);
-        }
-        if (message.fqbn !== '') {
-            writer.uint32(18).string(message.fqbn);
-        }
-        return writer;
-    },
-
-    decode(input: _m0.Reader | Uint8Array, length?: number): SketchProfile {
-        const reader =
-            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseSketchProfile();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-
-                    message.name = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-
-                    message.fqbn = reader.string();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
-
-    fromJSON(object: any): SketchProfile {
-        return {
-            name: isSet(object.name) ? String(object.name) : '',
-            fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
-        };
-    },
-
-    toJSON(message: SketchProfile): unknown {
-        const obj: any = {};
-        message.name !== undefined && (obj.name = message.name);
-        message.fqbn !== undefined && (obj.fqbn = message.fqbn);
-        return obj;
-    },
-
-    create(base?: DeepPartial<SketchProfile>): SketchProfile {
-        return SketchProfile.fromPartial(base ?? {});
-    },
-
-    fromPartial(object: DeepPartial<SketchProfile>): SketchProfile {
-        const message = createBaseSketchProfile();
-        message.name = object.name ?? '';
-        message.fqbn = object.fqbn ?? '';
-        return message;
-    },
-};
-
 function createBaseLoadSketchResponse(): LoadSketchResponse {
-    return {
-        mainFile: '',
-        locationPath: '',
-        otherSketchFiles: [],
-        additionalFiles: [],
-        rootFolderFiles: [],
-        defaultFqbn: '',
-        defaultPort: '',
-        defaultProtocol: '',
-        profiles: [],
-        defaultProfile: undefined,
-    };
+    return { sketch: undefined };
 }
 
 export const LoadSketchResponse = {
@@ -1787,38 +2229,8 @@ export const LoadSketchResponse = {
         message: LoadSketchResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.mainFile !== '') {
-            writer.uint32(10).string(message.mainFile);
-        }
-        if (message.locationPath !== '') {
-            writer.uint32(18).string(message.locationPath);
-        }
-        for (const v of message.otherSketchFiles) {
-            writer.uint32(26).string(v!);
-        }
-        for (const v of message.additionalFiles) {
-            writer.uint32(34).string(v!);
-        }
-        for (const v of message.rootFolderFiles) {
-            writer.uint32(42).string(v!);
-        }
-        if (message.defaultFqbn !== '') {
-            writer.uint32(50).string(message.defaultFqbn);
-        }
-        if (message.defaultPort !== '') {
-            writer.uint32(58).string(message.defaultPort);
-        }
-        if (message.defaultProtocol !== '') {
-            writer.uint32(66).string(message.defaultProtocol);
-        }
-        for (const v of message.profiles) {
-            SketchProfile.encode(v!, writer.uint32(74).fork()).ldelim();
-        }
-        if (message.defaultProfile !== undefined) {
-            SketchProfile.encode(
-                message.defaultProfile,
-                writer.uint32(82).fork()
-            ).ldelim();
+        if (message.sketch !== undefined) {
+            Sketch.encode(message.sketch, writer.uint32(10).fork()).ldelim();
         }
         return writer;
     },
@@ -1839,75 +2251,7 @@ export const LoadSketchResponse = {
                         break;
                     }
 
-                    message.mainFile = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-
-                    message.locationPath = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-
-                    message.otherSketchFiles.push(reader.string());
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-
-                    message.additionalFiles.push(reader.string());
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-
-                    message.rootFolderFiles.push(reader.string());
-                    continue;
-                case 6:
-                    if (tag !== 50) {
-                        break;
-                    }
-
-                    message.defaultFqbn = reader.string();
-                    continue;
-                case 7:
-                    if (tag !== 58) {
-                        break;
-                    }
-
-                    message.defaultPort = reader.string();
-                    continue;
-                case 8:
-                    if (tag !== 66) {
-                        break;
-                    }
-
-                    message.defaultProtocol = reader.string();
-                    continue;
-                case 9:
-                    if (tag !== 74) {
-                        break;
-                    }
-
-                    message.profiles.push(
-                        SketchProfile.decode(reader, reader.uint32())
-                    );
-                    continue;
-                case 10:
-                    if (tag !== 82) {
-                        break;
-                    }
-
-                    message.defaultProfile = SketchProfile.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.sketch = Sketch.decode(reader, reader.uint32());
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -1920,73 +2264,17 @@ export const LoadSketchResponse = {
 
     fromJSON(object: any): LoadSketchResponse {
         return {
-            mainFile: isSet(object.mainFile) ? String(object.mainFile) : '',
-            locationPath: isSet(object.locationPath)
-                ? String(object.locationPath)
-                : '',
-            otherSketchFiles: Array.isArray(object?.otherSketchFiles)
-                ? object.otherSketchFiles.map((e: any) => String(e))
-                : [],
-            additionalFiles: Array.isArray(object?.additionalFiles)
-                ? object.additionalFiles.map((e: any) => String(e))
-                : [],
-            rootFolderFiles: Array.isArray(object?.rootFolderFiles)
-                ? object.rootFolderFiles.map((e: any) => String(e))
-                : [],
-            defaultFqbn: isSet(object.defaultFqbn)
-                ? String(object.defaultFqbn)
-                : '',
-            defaultPort: isSet(object.defaultPort)
-                ? String(object.defaultPort)
-                : '',
-            defaultProtocol: isSet(object.defaultProtocol)
-                ? String(object.defaultProtocol)
-                : '',
-            profiles: Array.isArray(object?.profiles)
-                ? object.profiles.map((e: any) => SketchProfile.fromJSON(e))
-                : [],
-            defaultProfile: isSet(object.defaultProfile)
-                ? SketchProfile.fromJSON(object.defaultProfile)
+            sketch: isSet(object.sketch)
+                ? Sketch.fromJSON(object.sketch)
                 : undefined,
         };
     },
 
     toJSON(message: LoadSketchResponse): unknown {
         const obj: any = {};
-        message.mainFile !== undefined && (obj.mainFile = message.mainFile);
-        message.locationPath !== undefined &&
-            (obj.locationPath = message.locationPath);
-        if (message.otherSketchFiles) {
-            obj.otherSketchFiles = message.otherSketchFiles.map((e) => e);
-        } else {
-            obj.otherSketchFiles = [];
-        }
-        if (message.additionalFiles) {
-            obj.additionalFiles = message.additionalFiles.map((e) => e);
-        } else {
-            obj.additionalFiles = [];
-        }
-        if (message.rootFolderFiles) {
-            obj.rootFolderFiles = message.rootFolderFiles.map((e) => e);
-        } else {
-            obj.rootFolderFiles = [];
-        }
-        message.defaultFqbn !== undefined &&
-            (obj.defaultFqbn = message.defaultFqbn);
-        message.defaultPort !== undefined &&
-            (obj.defaultPort = message.defaultPort);
-        message.defaultProtocol !== undefined &&
-            (obj.defaultProtocol = message.defaultProtocol);
-        if (message.profiles) {
-            obj.profiles = message.profiles.map((e) =>
-                e ? SketchProfile.toJSON(e) : undefined
-            );
-        } else {
-            obj.profiles = [];
-        }
-        message.defaultProfile !== undefined &&
-            (obj.defaultProfile = message.defaultProfile
-                ? SketchProfile.toJSON(message.defaultProfile)
+        message.sketch !== undefined &&
+            (obj.sketch = message.sketch
+                ? Sketch.toJSON(message.sketch)
                 : undefined);
         return obj;
     },
@@ -1997,20 +2285,9 @@ export const LoadSketchResponse = {
 
     fromPartial(object: DeepPartial<LoadSketchResponse>): LoadSketchResponse {
         const message = createBaseLoadSketchResponse();
-        message.mainFile = object.mainFile ?? '';
-        message.locationPath = object.locationPath ?? '';
-        message.otherSketchFiles = object.otherSketchFiles?.map((e) => e) || [];
-        message.additionalFiles = object.additionalFiles?.map((e) => e) || [];
-        message.rootFolderFiles = object.rootFolderFiles?.map((e) => e) || [];
-        message.defaultFqbn = object.defaultFqbn ?? '';
-        message.defaultPort = object.defaultPort ?? '';
-        message.defaultProtocol = object.defaultProtocol ?? '';
-        message.profiles =
-            object.profiles?.map((e) => SketchProfile.fromPartial(e)) || [];
-        message.defaultProfile =
-            object.defaultProfile !== undefined &&
-            object.defaultProfile !== null
-                ? SketchProfile.fromPartial(object.defaultProfile)
+        message.sketch =
+            object.sketch !== undefined && object.sketch !== null
+                ? Sketch.fromPartial(object.sketch)
                 : undefined;
         return message;
     },
@@ -2195,6 +2472,7 @@ function createBaseSetSketchDefaultsRequest(): SetSketchDefaultsRequest {
         defaultFqbn: '',
         defaultPortAddress: '',
         defaultPortProtocol: '',
+        defaultProgrammer: '',
     };
 }
 
@@ -2214,6 +2492,9 @@ export const SetSketchDefaultsRequest = {
         }
         if (message.defaultPortProtocol !== '') {
             writer.uint32(34).string(message.defaultPortProtocol);
+        }
+        if (message.defaultProgrammer !== '') {
+            writer.uint32(42).string(message.defaultProgrammer);
         }
         return writer;
     },
@@ -2257,6 +2538,13 @@ export const SetSketchDefaultsRequest = {
 
                     message.defaultPortProtocol = reader.string();
                     continue;
+                case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
+                    message.defaultProgrammer = reader.string();
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -2280,6 +2568,9 @@ export const SetSketchDefaultsRequest = {
             defaultPortProtocol: isSet(object.defaultPortProtocol)
                 ? String(object.defaultPortProtocol)
                 : '',
+            defaultProgrammer: isSet(object.defaultProgrammer)
+                ? String(object.defaultProgrammer)
+                : '',
         };
     },
 
@@ -2293,6 +2584,8 @@ export const SetSketchDefaultsRequest = {
             (obj.defaultPortAddress = message.defaultPortAddress);
         message.defaultPortProtocol !== undefined &&
             (obj.defaultPortProtocol = message.defaultPortProtocol);
+        message.defaultProgrammer !== undefined &&
+            (obj.defaultProgrammer = message.defaultProgrammer);
         return obj;
     },
 
@@ -2310,12 +2603,18 @@ export const SetSketchDefaultsRequest = {
         message.defaultFqbn = object.defaultFqbn ?? '';
         message.defaultPortAddress = object.defaultPortAddress ?? '';
         message.defaultPortProtocol = object.defaultPortProtocol ?? '';
+        message.defaultProgrammer = object.defaultProgrammer ?? '';
         return message;
     },
 };
 
 function createBaseSetSketchDefaultsResponse(): SetSketchDefaultsResponse {
-    return { defaultFqbn: '', defaultPortAddress: '', defaultPortProtocol: '' };
+    return {
+        defaultFqbn: '',
+        defaultPortAddress: '',
+        defaultPortProtocol: '',
+        defaultProgrammer: '',
+    };
 }
 
 export const SetSketchDefaultsResponse = {
@@ -2331,6 +2630,9 @@ export const SetSketchDefaultsResponse = {
         }
         if (message.defaultPortProtocol !== '') {
             writer.uint32(26).string(message.defaultPortProtocol);
+        }
+        if (message.defaultProgrammer !== '') {
+            writer.uint32(34).string(message.defaultProgrammer);
         }
         return writer;
     },
@@ -2367,6 +2669,13 @@ export const SetSketchDefaultsResponse = {
 
                     message.defaultPortProtocol = reader.string();
                     continue;
+                case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
+                    message.defaultProgrammer = reader.string();
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -2387,6 +2696,9 @@ export const SetSketchDefaultsResponse = {
             defaultPortProtocol: isSet(object.defaultPortProtocol)
                 ? String(object.defaultPortProtocol)
                 : '',
+            defaultProgrammer: isSet(object.defaultProgrammer)
+                ? String(object.defaultProgrammer)
+                : '',
         };
     },
 
@@ -2398,6 +2710,8 @@ export const SetSketchDefaultsResponse = {
             (obj.defaultPortAddress = message.defaultPortAddress);
         message.defaultPortProtocol !== undefined &&
             (obj.defaultPortProtocol = message.defaultPortProtocol);
+        message.defaultProgrammer !== undefined &&
+            (obj.defaultProgrammer = message.defaultProgrammer);
         return obj;
     },
 
@@ -2414,6 +2728,286 @@ export const SetSketchDefaultsResponse = {
         message.defaultFqbn = object.defaultFqbn ?? '';
         message.defaultPortAddress = object.defaultPortAddress ?? '';
         message.defaultPortProtocol = object.defaultPortProtocol ?? '';
+        message.defaultProgrammer = object.defaultProgrammer ?? '';
+        return message;
+    },
+};
+
+function createBaseCheckForArduinoCLIUpdatesRequest(): CheckForArduinoCLIUpdatesRequest {
+    return { forceCheck: false };
+}
+
+export const CheckForArduinoCLIUpdatesRequest = {
+    encode(
+        message: CheckForArduinoCLIUpdatesRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.forceCheck === true) {
+            writer.uint32(8).bool(message.forceCheck);
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): CheckForArduinoCLIUpdatesRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseCheckForArduinoCLIUpdatesRequest();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 8) {
+                        break;
+                    }
+
+                    message.forceCheck = reader.bool();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): CheckForArduinoCLIUpdatesRequest {
+        return {
+            forceCheck: isSet(object.forceCheck)
+                ? Boolean(object.forceCheck)
+                : false,
+        };
+    },
+
+    toJSON(message: CheckForArduinoCLIUpdatesRequest): unknown {
+        const obj: any = {};
+        message.forceCheck !== undefined &&
+            (obj.forceCheck = message.forceCheck);
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<CheckForArduinoCLIUpdatesRequest>
+    ): CheckForArduinoCLIUpdatesRequest {
+        return CheckForArduinoCLIUpdatesRequest.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<CheckForArduinoCLIUpdatesRequest>
+    ): CheckForArduinoCLIUpdatesRequest {
+        const message = createBaseCheckForArduinoCLIUpdatesRequest();
+        message.forceCheck = object.forceCheck ?? false;
+        return message;
+    },
+};
+
+function createBaseCheckForArduinoCLIUpdatesResponse(): CheckForArduinoCLIUpdatesResponse {
+    return { newestVersion: '' };
+}
+
+export const CheckForArduinoCLIUpdatesResponse = {
+    encode(
+        message: CheckForArduinoCLIUpdatesResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.newestVersion !== '') {
+            writer.uint32(10).string(message.newestVersion);
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): CheckForArduinoCLIUpdatesResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseCheckForArduinoCLIUpdatesResponse();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.newestVersion = reader.string();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): CheckForArduinoCLIUpdatesResponse {
+        return {
+            newestVersion: isSet(object.newestVersion)
+                ? String(object.newestVersion)
+                : '',
+        };
+    },
+
+    toJSON(message: CheckForArduinoCLIUpdatesResponse): unknown {
+        const obj: any = {};
+        message.newestVersion !== undefined &&
+            (obj.newestVersion = message.newestVersion);
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<CheckForArduinoCLIUpdatesResponse>
+    ): CheckForArduinoCLIUpdatesResponse {
+        return CheckForArduinoCLIUpdatesResponse.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<CheckForArduinoCLIUpdatesResponse>
+    ): CheckForArduinoCLIUpdatesResponse {
+        const message = createBaseCheckForArduinoCLIUpdatesResponse();
+        message.newestVersion = object.newestVersion ?? '';
+        return message;
+    },
+};
+
+function createBaseCleanDownloadCacheDirectoryRequest(): CleanDownloadCacheDirectoryRequest {
+    return { instance: undefined };
+}
+
+export const CleanDownloadCacheDirectoryRequest = {
+    encode(
+        message: CleanDownloadCacheDirectoryRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.instance !== undefined) {
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): CleanDownloadCacheDirectoryRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseCleanDownloadCacheDirectoryRequest();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.instance = Instance.decode(reader, reader.uint32());
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): CleanDownloadCacheDirectoryRequest {
+        return {
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+        };
+    },
+
+    toJSON(message: CleanDownloadCacheDirectoryRequest): unknown {
+        const obj: any = {};
+        message.instance !== undefined &&
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<CleanDownloadCacheDirectoryRequest>
+    ): CleanDownloadCacheDirectoryRequest {
+        return CleanDownloadCacheDirectoryRequest.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<CleanDownloadCacheDirectoryRequest>
+    ): CleanDownloadCacheDirectoryRequest {
+        const message = createBaseCleanDownloadCacheDirectoryRequest();
+        message.instance =
+            object.instance !== undefined && object.instance !== null
+                ? Instance.fromPartial(object.instance)
+                : undefined;
+        return message;
+    },
+};
+
+function createBaseCleanDownloadCacheDirectoryResponse(): CleanDownloadCacheDirectoryResponse {
+    return {};
+}
+
+export const CleanDownloadCacheDirectoryResponse = {
+    encode(
+        _: CleanDownloadCacheDirectoryResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): CleanDownloadCacheDirectoryResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseCleanDownloadCacheDirectoryResponse();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(_: any): CleanDownloadCacheDirectoryResponse {
+        return {};
+    },
+
+    toJSON(_: CleanDownloadCacheDirectoryResponse): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<CleanDownloadCacheDirectoryResponse>
+    ): CleanDownloadCacheDirectoryResponse {
+        return CleanDownloadCacheDirectoryResponse.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        _: DeepPartial<CleanDownloadCacheDirectoryResponse>
+    ): CleanDownloadCacheDirectoryResponse {
+        const message = createBaseCleanDownloadCacheDirectoryResponse();
         return message;
     },
 };
@@ -2674,15 +3268,6 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** List all installed platforms. */
-        platformList: {
-            name: 'PlatformList',
-            requestType: PlatformListRequest,
-            requestStream: false,
-            responseType: PlatformListResponse,
-            responseStream: false,
-            options: {},
-        },
         /**
          * Download the archive file of an Arduino library in the libraries index to
          * the staging directory.
@@ -2821,6 +3406,77 @@ export const ArduinoCoreServiceDefinition = {
             requestType: GetDebugConfigRequest,
             requestStream: false,
             responseType: GetDebugConfigResponse,
+            responseStream: false,
+            options: {},
+        },
+        /** Check for updates to the Arduino CLI. */
+        checkForArduinoCLIUpdates: {
+            name: 'CheckForArduinoCLIUpdates',
+            requestType: CheckForArduinoCLIUpdatesRequest,
+            requestStream: false,
+            responseType: CheckForArduinoCLIUpdatesResponse,
+            responseStream: false,
+            options: {},
+        },
+        /** Clean the download cache directory (where archives are downloaded). */
+        cleanDownloadCacheDirectory: {
+            name: 'CleanDownloadCacheDirectory',
+            requestType: CleanDownloadCacheDirectoryRequest,
+            requestStream: false,
+            responseType: CleanDownloadCacheDirectoryResponse,
+            responseStream: false,
+            options: {},
+        },
+        /** Writes the settings currently stored in memory in a YAML file */
+        configurationSave: {
+            name: 'ConfigurationSave',
+            requestType: ConfigurationSaveRequest,
+            requestStream: false,
+            responseType: ConfigurationSaveResponse,
+            responseStream: false,
+            options: {},
+        },
+        /** Read the settings from a YAML file */
+        configurationOpen: {
+            name: 'ConfigurationOpen',
+            requestType: ConfigurationOpenRequest,
+            requestStream: false,
+            responseType: ConfigurationOpenResponse,
+            responseStream: false,
+            options: {},
+        },
+        configurationGet: {
+            name: 'ConfigurationGet',
+            requestType: ConfigurationGetRequest,
+            requestStream: false,
+            responseType: ConfigurationGetResponse,
+            responseStream: false,
+            options: {},
+        },
+        /** Enumerate all the keys/values pairs available in the configuration */
+        settingsEnumerate: {
+            name: 'SettingsEnumerate',
+            requestType: SettingsEnumerateRequest,
+            requestStream: false,
+            responseType: SettingsEnumerateResponse,
+            responseStream: false,
+            options: {},
+        },
+        /** Get a single configuration value */
+        settingsGetValue: {
+            name: 'SettingsGetValue',
+            requestType: SettingsGetValueRequest,
+            requestStream: false,
+            responseType: SettingsGetValueResponse,
+            responseStream: false,
+            options: {},
+        },
+        /** Set a single configuration value */
+        settingsSetValue: {
+            name: 'SettingsSetValue',
+            requestType: SettingsSetValueRequest,
+            requestStream: false,
+            responseType: SettingsSetValueResponse,
             responseStream: false,
             options: {},
         },
@@ -2974,11 +3630,6 @@ export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
         request: PlatformSearchRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<PlatformSearchResponse>>;
-    /** List all installed platforms. */
-    platformList(
-        request: PlatformListRequest,
-        context: CallContext & CallContextExt
-    ): Promise<DeepPartial<PlatformListResponse>>;
     /**
      * Download the archive file of an Arduino library in the libraries index to
      * the staging directory.
@@ -3060,6 +3711,45 @@ export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
         request: GetDebugConfigRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<GetDebugConfigResponse>>;
+    /** Check for updates to the Arduino CLI. */
+    checkForArduinoCLIUpdates(
+        request: CheckForArduinoCLIUpdatesRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<CheckForArduinoCLIUpdatesResponse>>;
+    /** Clean the download cache directory (where archives are downloaded). */
+    cleanDownloadCacheDirectory(
+        request: CleanDownloadCacheDirectoryRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<CleanDownloadCacheDirectoryResponse>>;
+    /** Writes the settings currently stored in memory in a YAML file */
+    configurationSave(
+        request: ConfigurationSaveRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<ConfigurationSaveResponse>>;
+    /** Read the settings from a YAML file */
+    configurationOpen(
+        request: ConfigurationOpenRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<ConfigurationOpenResponse>>;
+    configurationGet(
+        request: ConfigurationGetRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<ConfigurationGetResponse>>;
+    /** Enumerate all the keys/values pairs available in the configuration */
+    settingsEnumerate(
+        request: SettingsEnumerateRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<SettingsEnumerateResponse>>;
+    /** Get a single configuration value */
+    settingsGetValue(
+        request: SettingsGetValueRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<SettingsGetValueResponse>>;
+    /** Set a single configuration value */
+    settingsSetValue(
+        request: SettingsSetValueRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<SettingsSetValueResponse>>;
 }
 
 export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
@@ -3209,11 +3899,6 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
         request: DeepPartial<PlatformSearchRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<PlatformSearchResponse>;
-    /** List all installed platforms. */
-    platformList(
-        request: DeepPartial<PlatformListRequest>,
-        options?: CallOptions & CallOptionsExt
-    ): Promise<PlatformListResponse>;
     /**
      * Download the archive file of an Arduino library in the libraries index to
      * the staging directory.
@@ -3295,7 +3980,65 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
         request: DeepPartial<GetDebugConfigRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<GetDebugConfigResponse>;
+    /** Check for updates to the Arduino CLI. */
+    checkForArduinoCLIUpdates(
+        request: DeepPartial<CheckForArduinoCLIUpdatesRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<CheckForArduinoCLIUpdatesResponse>;
+    /** Clean the download cache directory (where archives are downloaded). */
+    cleanDownloadCacheDirectory(
+        request: DeepPartial<CleanDownloadCacheDirectoryRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<CleanDownloadCacheDirectoryResponse>;
+    /** Writes the settings currently stored in memory in a YAML file */
+    configurationSave(
+        request: DeepPartial<ConfigurationSaveRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<ConfigurationSaveResponse>;
+    /** Read the settings from a YAML file */
+    configurationOpen(
+        request: DeepPartial<ConfigurationOpenRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<ConfigurationOpenResponse>;
+    configurationGet(
+        request: DeepPartial<ConfigurationGetRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<ConfigurationGetResponse>;
+    /** Enumerate all the keys/values pairs available in the configuration */
+    settingsEnumerate(
+        request: DeepPartial<SettingsEnumerateRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<SettingsEnumerateResponse>;
+    /** Get a single configuration value */
+    settingsGetValue(
+        request: DeepPartial<SettingsGetValueRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<SettingsGetValueResponse>;
+    /** Set a single configuration value */
+    settingsSetValue(
+        request: DeepPartial<SettingsSetValueRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<SettingsSetValueResponse>;
 }
+
+declare const self: any | undefined;
+declare const window: any | undefined;
+declare const global: any | undefined;
+const tsProtoGlobalThis: any = (() => {
+    if (typeof globalThis !== 'undefined') {
+        return globalThis;
+    }
+    if (typeof self !== 'undefined') {
+        return self;
+    }
+    if (typeof window !== 'undefined') {
+        return window;
+    }
+    if (typeof global !== 'undefined') {
+        return global;
+    }
+    throw 'Unable to locate global object';
+})();
 
 type Builtin =
     | Date
@@ -3319,6 +4062,20 @@ type DeepPartial<T> = T extends Builtin
     : T extends {}
     ? { [K in keyof T]?: DeepPartial<T[K]> }
     : Partial<T>;
+
+function longToNumber(long: Long): number {
+    if (long.gt(Number.MAX_SAFE_INTEGER)) {
+        throw new tsProtoGlobalThis.Error(
+            'Value is larger than Number.MAX_SAFE_INTEGER'
+        );
+    }
+    return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+    _m0.util.Long = Long as any;
+    _m0.configure();
+}
 
 function isSet(value: any): boolean {
     return value !== null && value !== undefined;
