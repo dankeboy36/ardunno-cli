@@ -1,7 +1,6 @@
 /* eslint-disable */
 import Long from 'long';
 import _m0 from 'protobufjs/minimal';
-import { BoolValue } from '../../../../../google/protobuf/wrappers';
 import { InstalledPlatformReference, Instance, TaskProgress } from './common';
 import { Library } from './lib';
 
@@ -75,7 +74,7 @@ export interface CompileRequest {
      * When set to `true` the compiled binary will be copied to the export
      * directory.
      */
-    exportBinaries: boolean | undefined;
+    exportBinaries?: boolean | undefined;
     /** A list of paths to single libraries root directory. */
     library: string[];
     /**
@@ -100,6 +99,11 @@ export interface CompileRequest {
      * the variables placeholders exactly as defined in the platform.
      */
     doNotExpandBuildProperties: boolean;
+    /**
+     * Search for precompiled cores in the given paths and use them if found.
+     * This search is performed after the standard build_cache directory.
+     */
+    buildCacheExtraPaths: string[];
 }
 
 export interface CompileRequest_SourceOverrideEntry {
@@ -108,10 +112,17 @@ export interface CompileRequest_SourceOverrideEntry {
 }
 
 export interface CompileResponse {
-    /** The output of the compilation process (stream) */
-    outStream: Uint8Array;
-    /** The error output of the compilation process (stream) */
-    errStream: Uint8Array;
+    message?:
+        | { $case: 'outStream'; outStream: Uint8Array }
+        | { $case: 'errStream'; errStream: Uint8Array }
+        | { $case: 'progress'; progress: TaskProgress }
+        | { $case: 'result'; result: BuilderResult }
+        | undefined;
+}
+
+export interface InstanceNeedsReinitializationError {}
+
+export interface BuilderResult {
     /** The compiler build path */
     buildPath: string;
     /** The libraries used in the build */
@@ -122,16 +133,59 @@ export interface CompileResponse {
     boardPlatform: InstalledPlatformReference | undefined;
     /** The platform used for the build (if referenced from the board platform) */
     buildPlatform: InstalledPlatformReference | undefined;
-    /** Completions reports of the compilation process (stream) */
-    progress: TaskProgress | undefined;
     /** Build properties used for compiling */
     buildProperties: string[];
+    /** Compiler errors and warnings */
+    diagnostics: CompileDiagnostic[];
 }
 
 export interface ExecutableSectionSize {
     name: string;
     size: number;
     maxSize: number;
+}
+
+export interface CompileDiagnostic {
+    /** Severity of the diagnostic */
+    severity: string;
+    /** The explanation of the diagnostic (it may be multiple preformatted lines) */
+    message: string;
+    /** The file containing the diagnostic */
+    file: string;
+    /** The line of the diagnostic if available (starts from 1) */
+    line: number;
+    /** The column of the diagnostic if available (starts from 1) */
+    column: number;
+    /**
+     * The context where this diagnostic is found (it may be multiple files that
+     * represents a chain of includes, or a text describing where the diagnostic
+     * is found)
+     */
+    context: CompileDiagnosticContext[];
+    /** Annotations or suggestions to the diagnostic made by the compiler */
+    notes: CompileDiagnosticNote[];
+}
+
+export interface CompileDiagnosticContext {
+    /** The message describing the context reference */
+    message: string;
+    /** The file of the context reference */
+    file: string;
+    /** The line of the context reference */
+    line: number;
+    /** The column of the context reference */
+    column: number;
+}
+
+export interface CompileDiagnosticNote {
+    /** The message describing the compiler note */
+    message: string;
+    /** The file of the compiler note */
+    file: string;
+    /** The line of the compiler note */
+    line: number;
+    /** The column of the compiler note */
+    column: number;
 }
 
 function createBaseCompileRequest(): CompileRequest {
@@ -161,6 +215,7 @@ function createBaseCompileRequest(): CompileRequest {
         encryptKey: '',
         skipLibrariesDiscovery: false,
         doNotExpandBuildProperties: false,
+        buildCacheExtraPaths: [],
     };
 }
 
@@ -230,10 +285,7 @@ export const CompileRequest = {
             ).ldelim();
         });
         if (message.exportBinaries !== undefined) {
-            BoolValue.encode(
-                { value: message.exportBinaries! },
-                writer.uint32(186).fork()
-            ).ldelim();
+            writer.uint32(184).bool(message.exportBinaries);
         }
         for (const v of message.library) {
             writer.uint32(194).string(v!);
@@ -252,6 +304,9 @@ export const CompileRequest = {
         }
         if (message.doNotExpandBuildProperties === true) {
             writer.uint32(232).bool(message.doNotExpandBuildProperties);
+        }
+        for (const v of message.buildCacheExtraPaths) {
+            writer.uint32(242).string(v!);
         }
         return writer;
     },
@@ -397,14 +452,11 @@ export const CompileRequest = {
                     }
                     continue;
                 case 23:
-                    if (tag !== 186) {
+                    if (tag !== 184) {
                         break;
                     }
 
-                    message.exportBinaries = BoolValue.decode(
-                        reader,
-                        reader.uint32()
-                    ).value;
+                    message.exportBinaries = reader.bool();
                     continue;
                 case 24:
                     if (tag !== 194) {
@@ -447,6 +499,13 @@ export const CompileRequest = {
                     }
 
                     message.doNotExpandBuildProperties = reader.bool();
+                    continue;
+                case 30:
+                    if (tag !== 242) {
+                        break;
+                    }
+
+                    message.buildCacheExtraPaths.push(reader.string());
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -523,6 +582,9 @@ export const CompileRequest = {
             doNotExpandBuildProperties: isSet(object.doNotExpandBuildProperties)
                 ? Boolean(object.doNotExpandBuildProperties)
                 : false,
+            buildCacheExtraPaths: Array.isArray(object?.buildCacheExtraPaths)
+                ? object.buildCacheExtraPaths.map((e: any) => String(e))
+                : [],
         };
     },
 
@@ -586,6 +648,13 @@ export const CompileRequest = {
         message.doNotExpandBuildProperties !== undefined &&
             (obj.doNotExpandBuildProperties =
                 message.doNotExpandBuildProperties);
+        if (message.buildCacheExtraPaths) {
+            obj.buildCacheExtraPaths = message.buildCacheExtraPaths.map(
+                (e) => e
+            );
+        } else {
+            obj.buildCacheExtraPaths = [];
+        }
         return obj;
     },
 
@@ -632,6 +701,8 @@ export const CompileRequest = {
         message.skipLibrariesDiscovery = object.skipLibrariesDiscovery ?? false;
         message.doNotExpandBuildProperties =
             object.doNotExpandBuildProperties ?? false;
+        message.buildCacheExtraPaths =
+            object.buildCacheExtraPaths?.map((e) => e) || [];
         return message;
     },
 };
@@ -719,17 +790,7 @@ export const CompileRequest_SourceOverrideEntry = {
 };
 
 function createBaseCompileResponse(): CompileResponse {
-    return {
-        outStream: new Uint8Array(0),
-        errStream: new Uint8Array(0),
-        buildPath: '',
-        usedLibraries: [],
-        executableSectionsSize: [],
-        boardPlatform: undefined,
-        buildPlatform: undefined,
-        progress: undefined,
-        buildProperties: [],
-    };
+    return { message: undefined };
 }
 
 export const CompileResponse = {
@@ -737,41 +798,25 @@ export const CompileResponse = {
         message: CompileResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.outStream.length !== 0) {
-            writer.uint32(10).bytes(message.outStream);
-        }
-        if (message.errStream.length !== 0) {
-            writer.uint32(18).bytes(message.errStream);
-        }
-        if (message.buildPath !== '') {
-            writer.uint32(26).string(message.buildPath);
-        }
-        for (const v of message.usedLibraries) {
-            Library.encode(v!, writer.uint32(34).fork()).ldelim();
-        }
-        for (const v of message.executableSectionsSize) {
-            ExecutableSectionSize.encode(v!, writer.uint32(42).fork()).ldelim();
-        }
-        if (message.boardPlatform !== undefined) {
-            InstalledPlatformReference.encode(
-                message.boardPlatform,
-                writer.uint32(50).fork()
-            ).ldelim();
-        }
-        if (message.buildPlatform !== undefined) {
-            InstalledPlatformReference.encode(
-                message.buildPlatform,
-                writer.uint32(58).fork()
-            ).ldelim();
-        }
-        if (message.progress !== undefined) {
-            TaskProgress.encode(
-                message.progress,
-                writer.uint32(66).fork()
-            ).ldelim();
-        }
-        for (const v of message.buildProperties) {
-            writer.uint32(74).string(v!);
+        switch (message.message?.$case) {
+            case 'outStream':
+                writer.uint32(10).bytes(message.message.outStream);
+                break;
+            case 'errStream':
+                writer.uint32(18).bytes(message.message.errStream);
+                break;
+            case 'progress':
+                TaskProgress.encode(
+                    message.message.progress,
+                    writer.uint32(26).fork()
+                ).ldelim();
+                break;
+            case 'result':
+                BuilderResult.encode(
+                    message.message.result,
+                    writer.uint32(34).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -789,76 +834,40 @@ export const CompileResponse = {
                         break;
                     }
 
-                    message.outStream = reader.bytes();
+                    message.message = {
+                        $case: 'outStream',
+                        outStream: reader.bytes(),
+                    };
                     continue;
                 case 2:
                     if (tag !== 18) {
                         break;
                     }
 
-                    message.errStream = reader.bytes();
+                    message.message = {
+                        $case: 'errStream',
+                        errStream: reader.bytes(),
+                    };
                     continue;
                 case 3:
                     if (tag !== 26) {
                         break;
                     }
 
-                    message.buildPath = reader.string();
+                    message.message = {
+                        $case: 'progress',
+                        progress: TaskProgress.decode(reader, reader.uint32()),
+                    };
                     continue;
                 case 4:
                     if (tag !== 34) {
                         break;
                     }
 
-                    message.usedLibraries.push(
-                        Library.decode(reader, reader.uint32())
-                    );
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-
-                    message.executableSectionsSize.push(
-                        ExecutableSectionSize.decode(reader, reader.uint32())
-                    );
-                    continue;
-                case 6:
-                    if (tag !== 50) {
-                        break;
-                    }
-
-                    message.boardPlatform = InstalledPlatformReference.decode(
-                        reader,
-                        reader.uint32()
-                    );
-                    continue;
-                case 7:
-                    if (tag !== 58) {
-                        break;
-                    }
-
-                    message.buildPlatform = InstalledPlatformReference.decode(
-                        reader,
-                        reader.uint32()
-                    );
-                    continue;
-                case 8:
-                    if (tag !== 66) {
-                        break;
-                    }
-
-                    message.progress = TaskProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
-                    continue;
-                case 9:
-                    if (tag !== 74) {
-                        break;
-                    }
-
-                    message.buildProperties.push(reader.string());
+                    message.message = {
+                        $case: 'result',
+                        result: BuilderResult.decode(reader, reader.uint32()),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -871,12 +880,285 @@ export const CompileResponse = {
 
     fromJSON(object: any): CompileResponse {
         return {
-            outStream: isSet(object.outStream)
-                ? bytesFromBase64(object.outStream)
-                : new Uint8Array(0),
-            errStream: isSet(object.errStream)
-                ? bytesFromBase64(object.errStream)
-                : new Uint8Array(0),
+            message: isSet(object.outStream)
+                ? {
+                      $case: 'outStream',
+                      outStream: bytesFromBase64(object.outStream),
+                  }
+                : isSet(object.errStream)
+                ? {
+                      $case: 'errStream',
+                      errStream: bytesFromBase64(object.errStream),
+                  }
+                : isSet(object.progress)
+                ? {
+                      $case: 'progress',
+                      progress: TaskProgress.fromJSON(object.progress),
+                  }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: BuilderResult.fromJSON(object.result),
+                  }
+                : undefined,
+        };
+    },
+
+    toJSON(message: CompileResponse): unknown {
+        const obj: any = {};
+        message.message?.$case === 'outStream' &&
+            (obj.outStream =
+                message.message?.outStream !== undefined
+                    ? base64FromBytes(message.message?.outStream)
+                    : undefined);
+        message.message?.$case === 'errStream' &&
+            (obj.errStream =
+                message.message?.errStream !== undefined
+                    ? base64FromBytes(message.message?.errStream)
+                    : undefined);
+        message.message?.$case === 'progress' &&
+            (obj.progress = message.message?.progress
+                ? TaskProgress.toJSON(message.message?.progress)
+                : undefined);
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? BuilderResult.toJSON(message.message?.result)
+                : undefined);
+        return obj;
+    },
+
+    create(base?: DeepPartial<CompileResponse>): CompileResponse {
+        return CompileResponse.fromPartial(base ?? {});
+    },
+
+    fromPartial(object: DeepPartial<CompileResponse>): CompileResponse {
+        const message = createBaseCompileResponse();
+        if (
+            object.message?.$case === 'outStream' &&
+            object.message?.outStream !== undefined &&
+            object.message?.outStream !== null
+        ) {
+            message.message = {
+                $case: 'outStream',
+                outStream: object.message.outStream,
+            };
+        }
+        if (
+            object.message?.$case === 'errStream' &&
+            object.message?.errStream !== undefined &&
+            object.message?.errStream !== null
+        ) {
+            message.message = {
+                $case: 'errStream',
+                errStream: object.message.errStream,
+            };
+        }
+        if (
+            object.message?.$case === 'progress' &&
+            object.message?.progress !== undefined &&
+            object.message?.progress !== null
+        ) {
+            message.message = {
+                $case: 'progress',
+                progress: TaskProgress.fromPartial(object.message.progress),
+            };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: BuilderResult.fromPartial(object.message.result),
+            };
+        }
+        return message;
+    },
+};
+
+function createBaseInstanceNeedsReinitializationError(): InstanceNeedsReinitializationError {
+    return {};
+}
+
+export const InstanceNeedsReinitializationError = {
+    encode(
+        _: InstanceNeedsReinitializationError,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): InstanceNeedsReinitializationError {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseInstanceNeedsReinitializationError();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(_: any): InstanceNeedsReinitializationError {
+        return {};
+    },
+
+    toJSON(_: InstanceNeedsReinitializationError): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<InstanceNeedsReinitializationError>
+    ): InstanceNeedsReinitializationError {
+        return InstanceNeedsReinitializationError.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        _: DeepPartial<InstanceNeedsReinitializationError>
+    ): InstanceNeedsReinitializationError {
+        const message = createBaseInstanceNeedsReinitializationError();
+        return message;
+    },
+};
+
+function createBaseBuilderResult(): BuilderResult {
+    return {
+        buildPath: '',
+        usedLibraries: [],
+        executableSectionsSize: [],
+        boardPlatform: undefined,
+        buildPlatform: undefined,
+        buildProperties: [],
+        diagnostics: [],
+    };
+}
+
+export const BuilderResult = {
+    encode(
+        message: BuilderResult,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.buildPath !== '') {
+            writer.uint32(10).string(message.buildPath);
+        }
+        for (const v of message.usedLibraries) {
+            Library.encode(v!, writer.uint32(18).fork()).ldelim();
+        }
+        for (const v of message.executableSectionsSize) {
+            ExecutableSectionSize.encode(v!, writer.uint32(26).fork()).ldelim();
+        }
+        if (message.boardPlatform !== undefined) {
+            InstalledPlatformReference.encode(
+                message.boardPlatform,
+                writer.uint32(34).fork()
+            ).ldelim();
+        }
+        if (message.buildPlatform !== undefined) {
+            InstalledPlatformReference.encode(
+                message.buildPlatform,
+                writer.uint32(42).fork()
+            ).ldelim();
+        }
+        for (const v of message.buildProperties) {
+            writer.uint32(58).string(v!);
+        }
+        for (const v of message.diagnostics) {
+            CompileDiagnostic.encode(v!, writer.uint32(66).fork()).ldelim();
+        }
+        return writer;
+    },
+
+    decode(input: _m0.Reader | Uint8Array, length?: number): BuilderResult {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseBuilderResult();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.buildPath = reader.string();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.usedLibraries.push(
+                        Library.decode(reader, reader.uint32())
+                    );
+                    continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
+                    message.executableSectionsSize.push(
+                        ExecutableSectionSize.decode(reader, reader.uint32())
+                    );
+                    continue;
+                case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
+                    message.boardPlatform = InstalledPlatformReference.decode(
+                        reader,
+                        reader.uint32()
+                    );
+                    continue;
+                case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
+                    message.buildPlatform = InstalledPlatformReference.decode(
+                        reader,
+                        reader.uint32()
+                    );
+                    continue;
+                case 7:
+                    if (tag !== 58) {
+                        break;
+                    }
+
+                    message.buildProperties.push(reader.string());
+                    continue;
+                case 8:
+                    if (tag !== 66) {
+                        break;
+                    }
+
+                    message.diagnostics.push(
+                        CompileDiagnostic.decode(reader, reader.uint32())
+                    );
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): BuilderResult {
+        return {
             buildPath: isSet(object.buildPath) ? String(object.buildPath) : '',
             usedLibraries: Array.isArray(object?.usedLibraries)
                 ? object.usedLibraries.map((e: any) => Library.fromJSON(e))
@@ -894,29 +1176,19 @@ export const CompileResponse = {
             buildPlatform: isSet(object.buildPlatform)
                 ? InstalledPlatformReference.fromJSON(object.buildPlatform)
                 : undefined,
-            progress: isSet(object.progress)
-                ? TaskProgress.fromJSON(object.progress)
-                : undefined,
             buildProperties: Array.isArray(object?.buildProperties)
                 ? object.buildProperties.map((e: any) => String(e))
+                : [],
+            diagnostics: Array.isArray(object?.diagnostics)
+                ? object.diagnostics.map((e: any) =>
+                      CompileDiagnostic.fromJSON(e)
+                  )
                 : [],
         };
     },
 
-    toJSON(message: CompileResponse): unknown {
+    toJSON(message: BuilderResult): unknown {
         const obj: any = {};
-        message.outStream !== undefined &&
-            (obj.outStream = base64FromBytes(
-                message.outStream !== undefined
-                    ? message.outStream
-                    : new Uint8Array(0)
-            ));
-        message.errStream !== undefined &&
-            (obj.errStream = base64FromBytes(
-                message.errStream !== undefined
-                    ? message.errStream
-                    : new Uint8Array(0)
-            ));
         message.buildPath !== undefined && (obj.buildPath = message.buildPath);
         if (message.usedLibraries) {
             obj.usedLibraries = message.usedLibraries.map((e) =>
@@ -940,26 +1212,27 @@ export const CompileResponse = {
             (obj.buildPlatform = message.buildPlatform
                 ? InstalledPlatformReference.toJSON(message.buildPlatform)
                 : undefined);
-        message.progress !== undefined &&
-            (obj.progress = message.progress
-                ? TaskProgress.toJSON(message.progress)
-                : undefined);
         if (message.buildProperties) {
             obj.buildProperties = message.buildProperties.map((e) => e);
         } else {
             obj.buildProperties = [];
         }
+        if (message.diagnostics) {
+            obj.diagnostics = message.diagnostics.map((e) =>
+                e ? CompileDiagnostic.toJSON(e) : undefined
+            );
+        } else {
+            obj.diagnostics = [];
+        }
         return obj;
     },
 
-    create(base?: DeepPartial<CompileResponse>): CompileResponse {
-        return CompileResponse.fromPartial(base ?? {});
+    create(base?: DeepPartial<BuilderResult>): BuilderResult {
+        return BuilderResult.fromPartial(base ?? {});
     },
 
-    fromPartial(object: DeepPartial<CompileResponse>): CompileResponse {
-        const message = createBaseCompileResponse();
-        message.outStream = object.outStream ?? new Uint8Array(0);
-        message.errStream = object.errStream ?? new Uint8Array(0);
+    fromPartial(object: DeepPartial<BuilderResult>): BuilderResult {
+        const message = createBaseBuilderResult();
         message.buildPath = object.buildPath ?? '';
         message.usedLibraries =
             object.usedLibraries?.map((e) => Library.fromPartial(e)) || [];
@@ -975,11 +1248,10 @@ export const CompileResponse = {
             object.buildPlatform !== undefined && object.buildPlatform !== null
                 ? InstalledPlatformReference.fromPartial(object.buildPlatform)
                 : undefined;
-        message.progress =
-            object.progress !== undefined && object.progress !== null
-                ? TaskProgress.fromPartial(object.progress)
-                : undefined;
         message.buildProperties = object.buildProperties?.map((e) => e) || [];
+        message.diagnostics =
+            object.diagnostics?.map((e) => CompileDiagnostic.fromPartial(e)) ||
+            [];
         return message;
     },
 };
@@ -1074,6 +1346,403 @@ export const ExecutableSectionSize = {
         message.name = object.name ?? '';
         message.size = object.size ?? 0;
         message.maxSize = object.maxSize ?? 0;
+        return message;
+    },
+};
+
+function createBaseCompileDiagnostic(): CompileDiagnostic {
+    return {
+        severity: '',
+        message: '',
+        file: '',
+        line: 0,
+        column: 0,
+        context: [],
+        notes: [],
+    };
+}
+
+export const CompileDiagnostic = {
+    encode(
+        message: CompileDiagnostic,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.severity !== '') {
+            writer.uint32(10).string(message.severity);
+        }
+        if (message.message !== '') {
+            writer.uint32(18).string(message.message);
+        }
+        if (message.file !== '') {
+            writer.uint32(26).string(message.file);
+        }
+        if (message.line !== 0) {
+            writer.uint32(32).int64(message.line);
+        }
+        if (message.column !== 0) {
+            writer.uint32(40).int64(message.column);
+        }
+        for (const v of message.context) {
+            CompileDiagnosticContext.encode(
+                v!,
+                writer.uint32(50).fork()
+            ).ldelim();
+        }
+        for (const v of message.notes) {
+            CompileDiagnosticNote.encode(v!, writer.uint32(58).fork()).ldelim();
+        }
+        return writer;
+    },
+
+    decode(input: _m0.Reader | Uint8Array, length?: number): CompileDiagnostic {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseCompileDiagnostic();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.severity = reader.string();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.message = reader.string();
+                    continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
+                    message.file = reader.string();
+                    continue;
+                case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
+                    message.line = longToNumber(reader.int64() as Long);
+                    continue;
+                case 5:
+                    if (tag !== 40) {
+                        break;
+                    }
+
+                    message.column = longToNumber(reader.int64() as Long);
+                    continue;
+                case 6:
+                    if (tag !== 50) {
+                        break;
+                    }
+
+                    message.context.push(
+                        CompileDiagnosticContext.decode(reader, reader.uint32())
+                    );
+                    continue;
+                case 7:
+                    if (tag !== 58) {
+                        break;
+                    }
+
+                    message.notes.push(
+                        CompileDiagnosticNote.decode(reader, reader.uint32())
+                    );
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): CompileDiagnostic {
+        return {
+            severity: isSet(object.severity) ? String(object.severity) : '',
+            message: isSet(object.message) ? String(object.message) : '',
+            file: isSet(object.file) ? String(object.file) : '',
+            line: isSet(object.line) ? Number(object.line) : 0,
+            column: isSet(object.column) ? Number(object.column) : 0,
+            context: Array.isArray(object?.context)
+                ? object.context.map((e: any) =>
+                      CompileDiagnosticContext.fromJSON(e)
+                  )
+                : [],
+            notes: Array.isArray(object?.notes)
+                ? object.notes.map((e: any) =>
+                      CompileDiagnosticNote.fromJSON(e)
+                  )
+                : [],
+        };
+    },
+
+    toJSON(message: CompileDiagnostic): unknown {
+        const obj: any = {};
+        message.severity !== undefined && (obj.severity = message.severity);
+        message.message !== undefined && (obj.message = message.message);
+        message.file !== undefined && (obj.file = message.file);
+        message.line !== undefined && (obj.line = Math.round(message.line));
+        message.column !== undefined &&
+            (obj.column = Math.round(message.column));
+        if (message.context) {
+            obj.context = message.context.map((e) =>
+                e ? CompileDiagnosticContext.toJSON(e) : undefined
+            );
+        } else {
+            obj.context = [];
+        }
+        if (message.notes) {
+            obj.notes = message.notes.map((e) =>
+                e ? CompileDiagnosticNote.toJSON(e) : undefined
+            );
+        } else {
+            obj.notes = [];
+        }
+        return obj;
+    },
+
+    create(base?: DeepPartial<CompileDiagnostic>): CompileDiagnostic {
+        return CompileDiagnostic.fromPartial(base ?? {});
+    },
+
+    fromPartial(object: DeepPartial<CompileDiagnostic>): CompileDiagnostic {
+        const message = createBaseCompileDiagnostic();
+        message.severity = object.severity ?? '';
+        message.message = object.message ?? '';
+        message.file = object.file ?? '';
+        message.line = object.line ?? 0;
+        message.column = object.column ?? 0;
+        message.context =
+            object.context?.map((e) =>
+                CompileDiagnosticContext.fromPartial(e)
+            ) || [];
+        message.notes =
+            object.notes?.map((e) => CompileDiagnosticNote.fromPartial(e)) ||
+            [];
+        return message;
+    },
+};
+
+function createBaseCompileDiagnosticContext(): CompileDiagnosticContext {
+    return { message: '', file: '', line: 0, column: 0 };
+}
+
+export const CompileDiagnosticContext = {
+    encode(
+        message: CompileDiagnosticContext,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.message !== '') {
+            writer.uint32(10).string(message.message);
+        }
+        if (message.file !== '') {
+            writer.uint32(18).string(message.file);
+        }
+        if (message.line !== 0) {
+            writer.uint32(24).int64(message.line);
+        }
+        if (message.column !== 0) {
+            writer.uint32(32).int64(message.column);
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): CompileDiagnosticContext {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseCompileDiagnosticContext();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.message = reader.string();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.file = reader.string();
+                    continue;
+                case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
+                    message.line = longToNumber(reader.int64() as Long);
+                    continue;
+                case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
+                    message.column = longToNumber(reader.int64() as Long);
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): CompileDiagnosticContext {
+        return {
+            message: isSet(object.message) ? String(object.message) : '',
+            file: isSet(object.file) ? String(object.file) : '',
+            line: isSet(object.line) ? Number(object.line) : 0,
+            column: isSet(object.column) ? Number(object.column) : 0,
+        };
+    },
+
+    toJSON(message: CompileDiagnosticContext): unknown {
+        const obj: any = {};
+        message.message !== undefined && (obj.message = message.message);
+        message.file !== undefined && (obj.file = message.file);
+        message.line !== undefined && (obj.line = Math.round(message.line));
+        message.column !== undefined &&
+            (obj.column = Math.round(message.column));
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<CompileDiagnosticContext>
+    ): CompileDiagnosticContext {
+        return CompileDiagnosticContext.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<CompileDiagnosticContext>
+    ): CompileDiagnosticContext {
+        const message = createBaseCompileDiagnosticContext();
+        message.message = object.message ?? '';
+        message.file = object.file ?? '';
+        message.line = object.line ?? 0;
+        message.column = object.column ?? 0;
+        return message;
+    },
+};
+
+function createBaseCompileDiagnosticNote(): CompileDiagnosticNote {
+    return { message: '', file: '', line: 0, column: 0 };
+}
+
+export const CompileDiagnosticNote = {
+    encode(
+        message: CompileDiagnosticNote,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.message !== '') {
+            writer.uint32(10).string(message.message);
+        }
+        if (message.file !== '') {
+            writer.uint32(18).string(message.file);
+        }
+        if (message.line !== 0) {
+            writer.uint32(24).int64(message.line);
+        }
+        if (message.column !== 0) {
+            writer.uint32(32).int64(message.column);
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): CompileDiagnosticNote {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseCompileDiagnosticNote();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.message = reader.string();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.file = reader.string();
+                    continue;
+                case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
+                    message.line = longToNumber(reader.int64() as Long);
+                    continue;
+                case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
+                    message.column = longToNumber(reader.int64() as Long);
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): CompileDiagnosticNote {
+        return {
+            message: isSet(object.message) ? String(object.message) : '',
+            file: isSet(object.file) ? String(object.file) : '',
+            line: isSet(object.line) ? Number(object.line) : 0,
+            column: isSet(object.column) ? Number(object.column) : 0,
+        };
+    },
+
+    toJSON(message: CompileDiagnosticNote): unknown {
+        const obj: any = {};
+        message.message !== undefined && (obj.message = message.message);
+        message.file !== undefined && (obj.file = message.file);
+        message.line !== undefined && (obj.line = Math.round(message.line));
+        message.column !== undefined &&
+            (obj.column = Math.round(message.column));
+        return obj;
+    },
+
+    create(base?: DeepPartial<CompileDiagnosticNote>): CompileDiagnosticNote {
+        return CompileDiagnosticNote.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<CompileDiagnosticNote>
+    ): CompileDiagnosticNote {
+        const message = createBaseCompileDiagnosticNote();
+        message.message = object.message ?? '';
+        message.file = object.file ?? '';
+        message.line = object.line ?? 0;
+        message.column = object.column ?? 0;
         return message;
     },
 };

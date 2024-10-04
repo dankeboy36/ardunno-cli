@@ -20,6 +20,14 @@ export interface ArduinoCLIConfigurationSchema {
      */
     build_cache?: {
         /**
+         * the path to the build cache, default is `$TMP/arduino`.
+         */
+        path?: string;
+        /**
+         * a list of paths to look for precompiled artifacts if not found on `build_cache.path` setting.
+         */
+        extra_paths?: string[];
+        /**
          * interval, in number of compilations, at which the cache is purged, defaults to `10`. When `0` the cache is never purged.
          */
         compilations_before_purge?: number;

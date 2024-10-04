@@ -185,9 +185,17 @@ export interface LibraryDownloadRequest {
 }
 
 export interface LibraryDownloadResponse {
-    /** Progress of the library download. */
-    progress: DownloadProgress | undefined;
+    message?:
+        | { $case: 'progress'; progress: DownloadProgress }
+        | {
+              $case: 'result';
+              result: LibraryDownloadResponse_Result;
+          }
+        | undefined;
 }
+
+/** Empty message, reserved for future expansion. */
+export interface LibraryDownloadResponse_Result {}
 
 export interface LibraryInstallRequest {
     /** Arduino Core Service instance from the `Init` response. */
@@ -211,11 +219,15 @@ export interface LibraryInstallRequest {
 }
 
 export interface LibraryInstallResponse {
-    /** Progress of the library download. */
-    progress: DownloadProgress | undefined;
-    /** Description of the current stage of the installation. */
-    taskProgress: TaskProgress | undefined;
+    message?:
+        | { $case: 'progress'; progress: DownloadProgress }
+        | { $case: 'taskProgress'; taskProgress: TaskProgress }
+        | { $case: 'result'; result: LibraryInstallResponse_Result }
+        | undefined;
 }
+
+/** Empty message, reserved for future expansion. */
+export interface LibraryInstallResponse_Result {}
 
 export interface LibraryUpgradeRequest {
     /** Arduino Core Service instance from the `Init` response. */
@@ -230,11 +242,15 @@ export interface LibraryUpgradeRequest {
 }
 
 export interface LibraryUpgradeResponse {
-    /** Progress of the library download. */
-    progress: DownloadProgress | undefined;
-    /** Description of the current stage of the installation. */
-    taskProgress: TaskProgress | undefined;
+    message?:
+        | { $case: 'progress'; progress: DownloadProgress }
+        | { $case: 'taskProgress'; taskProgress: TaskProgress }
+        | { $case: 'result'; result: LibraryUpgradeResponse_Result }
+        | undefined;
 }
+
+/** Empty message, reserved for future expansion. */
+export interface LibraryUpgradeResponse_Result {}
 
 export interface LibraryUninstallRequest {
     /** Arduino Core Service instance from the `Init` response. */
@@ -246,9 +262,17 @@ export interface LibraryUninstallRequest {
 }
 
 export interface LibraryUninstallResponse {
-    /** Description of the current stage of the uninstallation. */
-    taskProgress: TaskProgress | undefined;
+    message?:
+        | { $case: 'taskProgress'; taskProgress: TaskProgress }
+        | {
+              $case: 'result';
+              result: LibraryUninstallResponse_Result;
+          }
+        | undefined;
 }
+
+/** Empty message, reserved for future expansion. */
+export interface LibraryUninstallResponse_Result {}
 
 export interface LibraryUpgradeAllRequest {
     /** Arduino Core Service instance from the `Init` response. */
@@ -256,11 +280,15 @@ export interface LibraryUpgradeAllRequest {
 }
 
 export interface LibraryUpgradeAllResponse {
-    /** Progress of the downloads of files needed for the upgrades. */
-    progress: DownloadProgress | undefined;
-    /** Description of the current stage of the upgrade. */
-    taskProgress: TaskProgress | undefined;
+    message?:
+        | { $case: 'progress'; progress: DownloadProgress }
+        | { $case: 'taskProgress'; taskProgress: TaskProgress }
+        | { $case: 'result'; result: LibraryUpgradeAllResponse_Result }
+        | undefined;
 }
+
+/** Empty message, reserved for future expansion. */
+export interface LibraryUpgradeAllResponse_Result {}
 
 export interface LibraryResolveDependenciesRequest {
     /** Arduino Core Service instance from the `Init` response. */
@@ -272,6 +300,11 @@ export interface LibraryResolveDependenciesRequest {
      * specified, dependencies of the newest version will be listed.
      */
     version: string;
+    /**
+     * If true the computed solution will try to keep exising libraries
+     * at their current version.
+     */
+    doNotUpdateInstalledLibraries: boolean;
 }
 
 export interface LibraryResolveDependenciesResponse {
@@ -291,12 +324,6 @@ export interface LibraryDependencyStatus {
 export interface LibrarySearchRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
-    /**
-     * Deprecated. Use search_args instead.
-     *
-     * @deprecated
-     */
-    query: string;
     /**
      * Set to true to not populate the releases field in the response (may save a
      * lot of bandwidth/CPU).
@@ -525,9 +552,17 @@ export interface ZipLibraryInstallRequest {
 }
 
 export interface ZipLibraryInstallResponse {
-    /** Description of the current stage of the installation. */
-    taskProgress: TaskProgress | undefined;
+    message?:
+        | { $case: 'taskProgress'; taskProgress: TaskProgress }
+        | {
+              $case: 'result';
+              result: ZipLibraryInstallResponse_Result;
+          }
+        | undefined;
 }
+
+/** Empty message, reserved for future expansion. */
+export interface ZipLibraryInstallResponse_Result {}
 
 export interface GitLibraryInstallRequest {
     /** Arduino Core Service instance from the `Init` response. */
@@ -542,9 +577,17 @@ export interface GitLibraryInstallRequest {
 }
 
 export interface GitLibraryInstallResponse {
-    /** Description of the current stage of the installation. */
-    taskProgress: TaskProgress | undefined;
+    message?:
+        | { $case: 'taskProgress'; taskProgress: TaskProgress }
+        | {
+              $case: 'result';
+              result: GitLibraryInstallResponse_Result;
+          }
+        | undefined;
 }
+
+/** Empty message, reserved for future expansion. */
+export interface GitLibraryInstallResponse_Result {}
 
 function createBaseLibraryDownloadRequest(): LibraryDownloadRequest {
     return { instance: undefined, name: '', version: '' };
@@ -651,7 +694,7 @@ export const LibraryDownloadRequest = {
 };
 
 function createBaseLibraryDownloadResponse(): LibraryDownloadResponse {
-    return { progress: undefined };
+    return { message: undefined };
 }
 
 export const LibraryDownloadResponse = {
@@ -659,11 +702,19 @@ export const LibraryDownloadResponse = {
         message: LibraryDownloadResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.progress !== undefined) {
-            DownloadProgress.encode(
-                message.progress,
-                writer.uint32(10).fork()
-            ).ldelim();
+        switch (message.message?.$case) {
+            case 'progress':
+                DownloadProgress.encode(
+                    message.message.progress,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'result':
+                LibraryDownloadResponse_Result.encode(
+                    message.message.result,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -684,10 +735,26 @@ export const LibraryDownloadResponse = {
                         break;
                     }
 
-                    message.progress = DownloadProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'progress',
+                        progress: DownloadProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'result',
+                        result: LibraryDownloadResponse_Result.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -700,17 +767,31 @@ export const LibraryDownloadResponse = {
 
     fromJSON(object: any): LibraryDownloadResponse {
         return {
-            progress: isSet(object.progress)
-                ? DownloadProgress.fromJSON(object.progress)
+            message: isSet(object.progress)
+                ? {
+                      $case: 'progress',
+                      progress: DownloadProgress.fromJSON(object.progress),
+                  }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: LibraryDownloadResponse_Result.fromJSON(
+                          object.result
+                      ),
+                  }
                 : undefined,
         };
     },
 
     toJSON(message: LibraryDownloadResponse): unknown {
         const obj: any = {};
-        message.progress !== undefined &&
-            (obj.progress = message.progress
-                ? DownloadProgress.toJSON(message.progress)
+        message.message?.$case === 'progress' &&
+            (obj.progress = message.message?.progress
+                ? DownloadProgress.toJSON(message.message?.progress)
+                : undefined);
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? LibraryDownloadResponse_Result.toJSON(message.message?.result)
                 : undefined);
         return obj;
     },
@@ -725,10 +806,83 @@ export const LibraryDownloadResponse = {
         object: DeepPartial<LibraryDownloadResponse>
     ): LibraryDownloadResponse {
         const message = createBaseLibraryDownloadResponse();
-        message.progress =
-            object.progress !== undefined && object.progress !== null
-                ? DownloadProgress.fromPartial(object.progress)
-                : undefined;
+        if (
+            object.message?.$case === 'progress' &&
+            object.message?.progress !== undefined &&
+            object.message?.progress !== null
+        ) {
+            message.message = {
+                $case: 'progress',
+                progress: DownloadProgress.fromPartial(object.message.progress),
+            };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: LibraryDownloadResponse_Result.fromPartial(
+                    object.message.result
+                ),
+            };
+        }
+        return message;
+    },
+};
+
+function createBaseLibraryDownloadResponse_Result(): LibraryDownloadResponse_Result {
+    return {};
+}
+
+export const LibraryDownloadResponse_Result = {
+    encode(
+        _: LibraryDownloadResponse_Result,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryDownloadResponse_Result {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseLibraryDownloadResponse_Result();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(_: any): LibraryDownloadResponse_Result {
+        return {};
+    },
+
+    toJSON(_: LibraryDownloadResponse_Result): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<LibraryDownloadResponse_Result>
+    ): LibraryDownloadResponse_Result {
+        return LibraryDownloadResponse_Result.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        _: DeepPartial<LibraryDownloadResponse_Result>
+    ): LibraryDownloadResponse_Result {
+        const message = createBaseLibraryDownloadResponse_Result();
         return message;
     },
 };
@@ -892,7 +1046,7 @@ export const LibraryInstallRequest = {
 };
 
 function createBaseLibraryInstallResponse(): LibraryInstallResponse {
-    return { progress: undefined, taskProgress: undefined };
+    return { message: undefined };
 }
 
 export const LibraryInstallResponse = {
@@ -900,17 +1054,25 @@ export const LibraryInstallResponse = {
         message: LibraryInstallResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.progress !== undefined) {
-            DownloadProgress.encode(
-                message.progress,
-                writer.uint32(10).fork()
-            ).ldelim();
-        }
-        if (message.taskProgress !== undefined) {
-            TaskProgress.encode(
-                message.taskProgress,
-                writer.uint32(18).fork()
-            ).ldelim();
+        switch (message.message?.$case) {
+            case 'progress':
+                DownloadProgress.encode(
+                    message.message.progress,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'taskProgress':
+                TaskProgress.encode(
+                    message.message.taskProgress,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
+            case 'result':
+                LibraryInstallResponse_Result.encode(
+                    message.message.result,
+                    writer.uint32(26).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -931,20 +1093,39 @@ export const LibraryInstallResponse = {
                         break;
                     }
 
-                    message.progress = DownloadProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'progress',
+                        progress: DownloadProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
                 case 2:
                     if (tag !== 18) {
                         break;
                     }
 
-                    message.taskProgress = TaskProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'taskProgress',
+                        taskProgress: TaskProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
+                    continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'result',
+                        result: LibraryInstallResponse_Result.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -957,24 +1138,40 @@ export const LibraryInstallResponse = {
 
     fromJSON(object: any): LibraryInstallResponse {
         return {
-            progress: isSet(object.progress)
-                ? DownloadProgress.fromJSON(object.progress)
-                : undefined,
-            taskProgress: isSet(object.taskProgress)
-                ? TaskProgress.fromJSON(object.taskProgress)
+            message: isSet(object.progress)
+                ? {
+                      $case: 'progress',
+                      progress: DownloadProgress.fromJSON(object.progress),
+                  }
+                : isSet(object.taskProgress)
+                ? {
+                      $case: 'taskProgress',
+                      taskProgress: TaskProgress.fromJSON(object.taskProgress),
+                  }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: LibraryInstallResponse_Result.fromJSON(
+                          object.result
+                      ),
+                  }
                 : undefined,
         };
     },
 
     toJSON(message: LibraryInstallResponse): unknown {
         const obj: any = {};
-        message.progress !== undefined &&
-            (obj.progress = message.progress
-                ? DownloadProgress.toJSON(message.progress)
+        message.message?.$case === 'progress' &&
+            (obj.progress = message.message?.progress
+                ? DownloadProgress.toJSON(message.message?.progress)
                 : undefined);
-        message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress
-                ? TaskProgress.toJSON(message.taskProgress)
+        message.message?.$case === 'taskProgress' &&
+            (obj.taskProgress = message.message?.taskProgress
+                ? TaskProgress.toJSON(message.message?.taskProgress)
+                : undefined);
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? LibraryInstallResponse_Result.toJSON(message.message?.result)
                 : undefined);
         return obj;
     },
@@ -987,14 +1184,95 @@ export const LibraryInstallResponse = {
         object: DeepPartial<LibraryInstallResponse>
     ): LibraryInstallResponse {
         const message = createBaseLibraryInstallResponse();
-        message.progress =
-            object.progress !== undefined && object.progress !== null
-                ? DownloadProgress.fromPartial(object.progress)
-                : undefined;
-        message.taskProgress =
-            object.taskProgress !== undefined && object.taskProgress !== null
-                ? TaskProgress.fromPartial(object.taskProgress)
-                : undefined;
+        if (
+            object.message?.$case === 'progress' &&
+            object.message?.progress !== undefined &&
+            object.message?.progress !== null
+        ) {
+            message.message = {
+                $case: 'progress',
+                progress: DownloadProgress.fromPartial(object.message.progress),
+            };
+        }
+        if (
+            object.message?.$case === 'taskProgress' &&
+            object.message?.taskProgress !== undefined &&
+            object.message?.taskProgress !== null
+        ) {
+            message.message = {
+                $case: 'taskProgress',
+                taskProgress: TaskProgress.fromPartial(
+                    object.message.taskProgress
+                ),
+            };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: LibraryInstallResponse_Result.fromPartial(
+                    object.message.result
+                ),
+            };
+        }
+        return message;
+    },
+};
+
+function createBaseLibraryInstallResponse_Result(): LibraryInstallResponse_Result {
+    return {};
+}
+
+export const LibraryInstallResponse_Result = {
+    encode(
+        _: LibraryInstallResponse_Result,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryInstallResponse_Result {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseLibraryInstallResponse_Result();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(_: any): LibraryInstallResponse_Result {
+        return {};
+    },
+
+    toJSON(_: LibraryInstallResponse_Result): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<LibraryInstallResponse_Result>
+    ): LibraryInstallResponse_Result {
+        return LibraryInstallResponse_Result.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        _: DeepPartial<LibraryInstallResponse_Result>
+    ): LibraryInstallResponse_Result {
+        const message = createBaseLibraryInstallResponse_Result();
         return message;
     },
 };
@@ -1104,7 +1382,7 @@ export const LibraryUpgradeRequest = {
 };
 
 function createBaseLibraryUpgradeResponse(): LibraryUpgradeResponse {
-    return { progress: undefined, taskProgress: undefined };
+    return { message: undefined };
 }
 
 export const LibraryUpgradeResponse = {
@@ -1112,17 +1390,25 @@ export const LibraryUpgradeResponse = {
         message: LibraryUpgradeResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.progress !== undefined) {
-            DownloadProgress.encode(
-                message.progress,
-                writer.uint32(10).fork()
-            ).ldelim();
-        }
-        if (message.taskProgress !== undefined) {
-            TaskProgress.encode(
-                message.taskProgress,
-                writer.uint32(18).fork()
-            ).ldelim();
+        switch (message.message?.$case) {
+            case 'progress':
+                DownloadProgress.encode(
+                    message.message.progress,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'taskProgress':
+                TaskProgress.encode(
+                    message.message.taskProgress,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
+            case 'result':
+                LibraryUpgradeResponse_Result.encode(
+                    message.message.result,
+                    writer.uint32(26).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -1143,20 +1429,39 @@ export const LibraryUpgradeResponse = {
                         break;
                     }
 
-                    message.progress = DownloadProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'progress',
+                        progress: DownloadProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
                 case 2:
                     if (tag !== 18) {
                         break;
                     }
 
-                    message.taskProgress = TaskProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'taskProgress',
+                        taskProgress: TaskProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
+                    continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'result',
+                        result: LibraryUpgradeResponse_Result.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -1169,24 +1474,40 @@ export const LibraryUpgradeResponse = {
 
     fromJSON(object: any): LibraryUpgradeResponse {
         return {
-            progress: isSet(object.progress)
-                ? DownloadProgress.fromJSON(object.progress)
-                : undefined,
-            taskProgress: isSet(object.taskProgress)
-                ? TaskProgress.fromJSON(object.taskProgress)
+            message: isSet(object.progress)
+                ? {
+                      $case: 'progress',
+                      progress: DownloadProgress.fromJSON(object.progress),
+                  }
+                : isSet(object.taskProgress)
+                ? {
+                      $case: 'taskProgress',
+                      taskProgress: TaskProgress.fromJSON(object.taskProgress),
+                  }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: LibraryUpgradeResponse_Result.fromJSON(
+                          object.result
+                      ),
+                  }
                 : undefined,
         };
     },
 
     toJSON(message: LibraryUpgradeResponse): unknown {
         const obj: any = {};
-        message.progress !== undefined &&
-            (obj.progress = message.progress
-                ? DownloadProgress.toJSON(message.progress)
+        message.message?.$case === 'progress' &&
+            (obj.progress = message.message?.progress
+                ? DownloadProgress.toJSON(message.message?.progress)
                 : undefined);
-        message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress
-                ? TaskProgress.toJSON(message.taskProgress)
+        message.message?.$case === 'taskProgress' &&
+            (obj.taskProgress = message.message?.taskProgress
+                ? TaskProgress.toJSON(message.message?.taskProgress)
+                : undefined);
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? LibraryUpgradeResponse_Result.toJSON(message.message?.result)
                 : undefined);
         return obj;
     },
@@ -1199,14 +1520,95 @@ export const LibraryUpgradeResponse = {
         object: DeepPartial<LibraryUpgradeResponse>
     ): LibraryUpgradeResponse {
         const message = createBaseLibraryUpgradeResponse();
-        message.progress =
-            object.progress !== undefined && object.progress !== null
-                ? DownloadProgress.fromPartial(object.progress)
-                : undefined;
-        message.taskProgress =
-            object.taskProgress !== undefined && object.taskProgress !== null
-                ? TaskProgress.fromPartial(object.taskProgress)
-                : undefined;
+        if (
+            object.message?.$case === 'progress' &&
+            object.message?.progress !== undefined &&
+            object.message?.progress !== null
+        ) {
+            message.message = {
+                $case: 'progress',
+                progress: DownloadProgress.fromPartial(object.message.progress),
+            };
+        }
+        if (
+            object.message?.$case === 'taskProgress' &&
+            object.message?.taskProgress !== undefined &&
+            object.message?.taskProgress !== null
+        ) {
+            message.message = {
+                $case: 'taskProgress',
+                taskProgress: TaskProgress.fromPartial(
+                    object.message.taskProgress
+                ),
+            };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: LibraryUpgradeResponse_Result.fromPartial(
+                    object.message.result
+                ),
+            };
+        }
+        return message;
+    },
+};
+
+function createBaseLibraryUpgradeResponse_Result(): LibraryUpgradeResponse_Result {
+    return {};
+}
+
+export const LibraryUpgradeResponse_Result = {
+    encode(
+        _: LibraryUpgradeResponse_Result,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryUpgradeResponse_Result {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseLibraryUpgradeResponse_Result();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(_: any): LibraryUpgradeResponse_Result {
+        return {};
+    },
+
+    toJSON(_: LibraryUpgradeResponse_Result): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<LibraryUpgradeResponse_Result>
+    ): LibraryUpgradeResponse_Result {
+        return LibraryUpgradeResponse_Result.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        _: DeepPartial<LibraryUpgradeResponse_Result>
+    ): LibraryUpgradeResponse_Result {
+        const message = createBaseLibraryUpgradeResponse_Result();
         return message;
     },
 };
@@ -1318,7 +1720,7 @@ export const LibraryUninstallRequest = {
 };
 
 function createBaseLibraryUninstallResponse(): LibraryUninstallResponse {
-    return { taskProgress: undefined };
+    return { message: undefined };
 }
 
 export const LibraryUninstallResponse = {
@@ -1326,11 +1728,19 @@ export const LibraryUninstallResponse = {
         message: LibraryUninstallResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.taskProgress !== undefined) {
-            TaskProgress.encode(
-                message.taskProgress,
-                writer.uint32(10).fork()
-            ).ldelim();
+        switch (message.message?.$case) {
+            case 'taskProgress':
+                TaskProgress.encode(
+                    message.message.taskProgress,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'result':
+                LibraryUninstallResponse_Result.encode(
+                    message.message.result,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -1351,10 +1761,26 @@ export const LibraryUninstallResponse = {
                         break;
                     }
 
-                    message.taskProgress = TaskProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'taskProgress',
+                        taskProgress: TaskProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'result',
+                        result: LibraryUninstallResponse_Result.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -1367,17 +1793,33 @@ export const LibraryUninstallResponse = {
 
     fromJSON(object: any): LibraryUninstallResponse {
         return {
-            taskProgress: isSet(object.taskProgress)
-                ? TaskProgress.fromJSON(object.taskProgress)
+            message: isSet(object.taskProgress)
+                ? {
+                      $case: 'taskProgress',
+                      taskProgress: TaskProgress.fromJSON(object.taskProgress),
+                  }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: LibraryUninstallResponse_Result.fromJSON(
+                          object.result
+                      ),
+                  }
                 : undefined,
         };
     },
 
     toJSON(message: LibraryUninstallResponse): unknown {
         const obj: any = {};
-        message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress
-                ? TaskProgress.toJSON(message.taskProgress)
+        message.message?.$case === 'taskProgress' &&
+            (obj.taskProgress = message.message?.taskProgress
+                ? TaskProgress.toJSON(message.message?.taskProgress)
+                : undefined);
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? LibraryUninstallResponse_Result.toJSON(
+                      message.message?.result
+                  )
                 : undefined);
         return obj;
     },
@@ -1392,10 +1834,85 @@ export const LibraryUninstallResponse = {
         object: DeepPartial<LibraryUninstallResponse>
     ): LibraryUninstallResponse {
         const message = createBaseLibraryUninstallResponse();
-        message.taskProgress =
-            object.taskProgress !== undefined && object.taskProgress !== null
-                ? TaskProgress.fromPartial(object.taskProgress)
-                : undefined;
+        if (
+            object.message?.$case === 'taskProgress' &&
+            object.message?.taskProgress !== undefined &&
+            object.message?.taskProgress !== null
+        ) {
+            message.message = {
+                $case: 'taskProgress',
+                taskProgress: TaskProgress.fromPartial(
+                    object.message.taskProgress
+                ),
+            };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: LibraryUninstallResponse_Result.fromPartial(
+                    object.message.result
+                ),
+            };
+        }
+        return message;
+    },
+};
+
+function createBaseLibraryUninstallResponse_Result(): LibraryUninstallResponse_Result {
+    return {};
+}
+
+export const LibraryUninstallResponse_Result = {
+    encode(
+        _: LibraryUninstallResponse_Result,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryUninstallResponse_Result {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseLibraryUninstallResponse_Result();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(_: any): LibraryUninstallResponse_Result {
+        return {};
+    },
+
+    toJSON(_: LibraryUninstallResponse_Result): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<LibraryUninstallResponse_Result>
+    ): LibraryUninstallResponse_Result {
+        return LibraryUninstallResponse_Result.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        _: DeepPartial<LibraryUninstallResponse_Result>
+    ): LibraryUninstallResponse_Result {
+        const message = createBaseLibraryUninstallResponse_Result();
         return message;
     },
 };
@@ -1481,7 +1998,7 @@ export const LibraryUpgradeAllRequest = {
 };
 
 function createBaseLibraryUpgradeAllResponse(): LibraryUpgradeAllResponse {
-    return { progress: undefined, taskProgress: undefined };
+    return { message: undefined };
 }
 
 export const LibraryUpgradeAllResponse = {
@@ -1489,17 +2006,25 @@ export const LibraryUpgradeAllResponse = {
         message: LibraryUpgradeAllResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.progress !== undefined) {
-            DownloadProgress.encode(
-                message.progress,
-                writer.uint32(10).fork()
-            ).ldelim();
-        }
-        if (message.taskProgress !== undefined) {
-            TaskProgress.encode(
-                message.taskProgress,
-                writer.uint32(18).fork()
-            ).ldelim();
+        switch (message.message?.$case) {
+            case 'progress':
+                DownloadProgress.encode(
+                    message.message.progress,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'taskProgress':
+                TaskProgress.encode(
+                    message.message.taskProgress,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
+            case 'result':
+                LibraryUpgradeAllResponse_Result.encode(
+                    message.message.result,
+                    writer.uint32(26).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -1520,20 +2045,39 @@ export const LibraryUpgradeAllResponse = {
                         break;
                     }
 
-                    message.progress = DownloadProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'progress',
+                        progress: DownloadProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
                 case 2:
                     if (tag !== 18) {
                         break;
                     }
 
-                    message.taskProgress = TaskProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'taskProgress',
+                        taskProgress: TaskProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
+                    continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'result',
+                        result: LibraryUpgradeAllResponse_Result.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -1546,24 +2090,42 @@ export const LibraryUpgradeAllResponse = {
 
     fromJSON(object: any): LibraryUpgradeAllResponse {
         return {
-            progress: isSet(object.progress)
-                ? DownloadProgress.fromJSON(object.progress)
-                : undefined,
-            taskProgress: isSet(object.taskProgress)
-                ? TaskProgress.fromJSON(object.taskProgress)
+            message: isSet(object.progress)
+                ? {
+                      $case: 'progress',
+                      progress: DownloadProgress.fromJSON(object.progress),
+                  }
+                : isSet(object.taskProgress)
+                ? {
+                      $case: 'taskProgress',
+                      taskProgress: TaskProgress.fromJSON(object.taskProgress),
+                  }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: LibraryUpgradeAllResponse_Result.fromJSON(
+                          object.result
+                      ),
+                  }
                 : undefined,
         };
     },
 
     toJSON(message: LibraryUpgradeAllResponse): unknown {
         const obj: any = {};
-        message.progress !== undefined &&
-            (obj.progress = message.progress
-                ? DownloadProgress.toJSON(message.progress)
+        message.message?.$case === 'progress' &&
+            (obj.progress = message.message?.progress
+                ? DownloadProgress.toJSON(message.message?.progress)
                 : undefined);
-        message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress
-                ? TaskProgress.toJSON(message.taskProgress)
+        message.message?.$case === 'taskProgress' &&
+            (obj.taskProgress = message.message?.taskProgress
+                ? TaskProgress.toJSON(message.message?.taskProgress)
+                : undefined);
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? LibraryUpgradeAllResponse_Result.toJSON(
+                      message.message?.result
+                  )
                 : undefined);
         return obj;
     },
@@ -1578,20 +2140,106 @@ export const LibraryUpgradeAllResponse = {
         object: DeepPartial<LibraryUpgradeAllResponse>
     ): LibraryUpgradeAllResponse {
         const message = createBaseLibraryUpgradeAllResponse();
-        message.progress =
-            object.progress !== undefined && object.progress !== null
-                ? DownloadProgress.fromPartial(object.progress)
-                : undefined;
-        message.taskProgress =
-            object.taskProgress !== undefined && object.taskProgress !== null
-                ? TaskProgress.fromPartial(object.taskProgress)
-                : undefined;
+        if (
+            object.message?.$case === 'progress' &&
+            object.message?.progress !== undefined &&
+            object.message?.progress !== null
+        ) {
+            message.message = {
+                $case: 'progress',
+                progress: DownloadProgress.fromPartial(object.message.progress),
+            };
+        }
+        if (
+            object.message?.$case === 'taskProgress' &&
+            object.message?.taskProgress !== undefined &&
+            object.message?.taskProgress !== null
+        ) {
+            message.message = {
+                $case: 'taskProgress',
+                taskProgress: TaskProgress.fromPartial(
+                    object.message.taskProgress
+                ),
+            };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: LibraryUpgradeAllResponse_Result.fromPartial(
+                    object.message.result
+                ),
+            };
+        }
+        return message;
+    },
+};
+
+function createBaseLibraryUpgradeAllResponse_Result(): LibraryUpgradeAllResponse_Result {
+    return {};
+}
+
+export const LibraryUpgradeAllResponse_Result = {
+    encode(
+        _: LibraryUpgradeAllResponse_Result,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): LibraryUpgradeAllResponse_Result {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseLibraryUpgradeAllResponse_Result();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(_: any): LibraryUpgradeAllResponse_Result {
+        return {};
+    },
+
+    toJSON(_: LibraryUpgradeAllResponse_Result): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<LibraryUpgradeAllResponse_Result>
+    ): LibraryUpgradeAllResponse_Result {
+        return LibraryUpgradeAllResponse_Result.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        _: DeepPartial<LibraryUpgradeAllResponse_Result>
+    ): LibraryUpgradeAllResponse_Result {
+        const message = createBaseLibraryUpgradeAllResponse_Result();
         return message;
     },
 };
 
 function createBaseLibraryResolveDependenciesRequest(): LibraryResolveDependenciesRequest {
-    return { instance: undefined, name: '', version: '' };
+    return {
+        instance: undefined,
+        name: '',
+        version: '',
+        doNotUpdateInstalledLibraries: false,
+    };
 }
 
 export const LibraryResolveDependenciesRequest = {
@@ -1610,6 +2258,9 @@ export const LibraryResolveDependenciesRequest = {
         }
         if (message.version !== '') {
             writer.uint32(26).string(message.version);
+        }
+        if (message.doNotUpdateInstalledLibraries === true) {
+            writer.uint32(32).bool(message.doNotUpdateInstalledLibraries);
         }
         return writer;
     },
@@ -1646,6 +2297,13 @@ export const LibraryResolveDependenciesRequest = {
 
                     message.version = reader.string();
                     continue;
+                case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
+                    message.doNotUpdateInstalledLibraries = reader.bool();
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -1662,6 +2320,11 @@ export const LibraryResolveDependenciesRequest = {
                 : undefined,
             name: isSet(object.name) ? String(object.name) : '',
             version: isSet(object.version) ? String(object.version) : '',
+            doNotUpdateInstalledLibraries: isSet(
+                object.doNotUpdateInstalledLibraries
+            )
+                ? Boolean(object.doNotUpdateInstalledLibraries)
+                : false,
         };
     },
 
@@ -1673,6 +2336,9 @@ export const LibraryResolveDependenciesRequest = {
                 : undefined);
         message.name !== undefined && (obj.name = message.name);
         message.version !== undefined && (obj.version = message.version);
+        message.doNotUpdateInstalledLibraries !== undefined &&
+            (obj.doNotUpdateInstalledLibraries =
+                message.doNotUpdateInstalledLibraries);
         return obj;
     },
 
@@ -1692,6 +2358,8 @@ export const LibraryResolveDependenciesRequest = {
                 : undefined;
         message.name = object.name ?? '';
         message.version = object.version ?? '';
+        message.doNotUpdateInstalledLibraries =
+            object.doNotUpdateInstalledLibraries ?? false;
         return message;
     },
 };
@@ -1885,12 +2553,7 @@ export const LibraryDependencyStatus = {
 };
 
 function createBaseLibrarySearchRequest(): LibrarySearchRequest {
-    return {
-        instance: undefined,
-        query: '',
-        omitReleasesDetails: false,
-        searchArgs: '',
-    };
+    return { instance: undefined, omitReleasesDetails: false, searchArgs: '' };
 }
 
 export const LibrarySearchRequest = {
@@ -1904,14 +2567,11 @@ export const LibrarySearchRequest = {
                 writer.uint32(10).fork()
             ).ldelim();
         }
-        if (message.query !== '') {
-            writer.uint32(18).string(message.query);
-        }
         if (message.omitReleasesDetails === true) {
-            writer.uint32(24).bool(message.omitReleasesDetails);
+            writer.uint32(16).bool(message.omitReleasesDetails);
         }
         if (message.searchArgs !== '') {
-            writer.uint32(34).string(message.searchArgs);
+            writer.uint32(26).string(message.searchArgs);
         }
         return writer;
     },
@@ -1935,21 +2595,14 @@ export const LibrarySearchRequest = {
                     message.instance = Instance.decode(reader, reader.uint32());
                     continue;
                 case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-
-                    message.query = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 24) {
+                    if (tag !== 16) {
                         break;
                     }
 
                     message.omitReleasesDetails = reader.bool();
                     continue;
-                case 4:
-                    if (tag !== 34) {
+                case 3:
+                    if (tag !== 26) {
                         break;
                     }
 
@@ -1969,7 +2622,6 @@ export const LibrarySearchRequest = {
             instance: isSet(object.instance)
                 ? Instance.fromJSON(object.instance)
                 : undefined,
-            query: isSet(object.query) ? String(object.query) : '',
             omitReleasesDetails: isSet(object.omitReleasesDetails)
                 ? Boolean(object.omitReleasesDetails)
                 : false,
@@ -1985,7 +2637,6 @@ export const LibrarySearchRequest = {
             (obj.instance = message.instance
                 ? Instance.toJSON(message.instance)
                 : undefined);
-        message.query !== undefined && (obj.query = message.query);
         message.omitReleasesDetails !== undefined &&
             (obj.omitReleasesDetails = message.omitReleasesDetails);
         message.searchArgs !== undefined &&
@@ -2005,7 +2656,6 @@ export const LibrarySearchRequest = {
             object.instance !== undefined && object.instance !== null
                 ? Instance.fromPartial(object.instance)
                 : undefined;
-        message.query = object.query ?? '';
         message.omitReleasesDetails = object.omitReleasesDetails ?? false;
         message.searchArgs = object.searchArgs ?? '';
         return message;
@@ -3941,7 +4591,7 @@ export const ZipLibraryInstallRequest = {
 };
 
 function createBaseZipLibraryInstallResponse(): ZipLibraryInstallResponse {
-    return { taskProgress: undefined };
+    return { message: undefined };
 }
 
 export const ZipLibraryInstallResponse = {
@@ -3949,11 +4599,19 @@ export const ZipLibraryInstallResponse = {
         message: ZipLibraryInstallResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.taskProgress !== undefined) {
-            TaskProgress.encode(
-                message.taskProgress,
-                writer.uint32(10).fork()
-            ).ldelim();
+        switch (message.message?.$case) {
+            case 'taskProgress':
+                TaskProgress.encode(
+                    message.message.taskProgress,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'result':
+                ZipLibraryInstallResponse_Result.encode(
+                    message.message.result,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -3974,10 +4632,26 @@ export const ZipLibraryInstallResponse = {
                         break;
                     }
 
-                    message.taskProgress = TaskProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'taskProgress',
+                        taskProgress: TaskProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'result',
+                        result: ZipLibraryInstallResponse_Result.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -3990,17 +4664,33 @@ export const ZipLibraryInstallResponse = {
 
     fromJSON(object: any): ZipLibraryInstallResponse {
         return {
-            taskProgress: isSet(object.taskProgress)
-                ? TaskProgress.fromJSON(object.taskProgress)
+            message: isSet(object.taskProgress)
+                ? {
+                      $case: 'taskProgress',
+                      taskProgress: TaskProgress.fromJSON(object.taskProgress),
+                  }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: ZipLibraryInstallResponse_Result.fromJSON(
+                          object.result
+                      ),
+                  }
                 : undefined,
         };
     },
 
     toJSON(message: ZipLibraryInstallResponse): unknown {
         const obj: any = {};
-        message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress
-                ? TaskProgress.toJSON(message.taskProgress)
+        message.message?.$case === 'taskProgress' &&
+            (obj.taskProgress = message.message?.taskProgress
+                ? TaskProgress.toJSON(message.message?.taskProgress)
+                : undefined);
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? ZipLibraryInstallResponse_Result.toJSON(
+                      message.message?.result
+                  )
                 : undefined);
         return obj;
     },
@@ -4015,10 +4705,85 @@ export const ZipLibraryInstallResponse = {
         object: DeepPartial<ZipLibraryInstallResponse>
     ): ZipLibraryInstallResponse {
         const message = createBaseZipLibraryInstallResponse();
-        message.taskProgress =
-            object.taskProgress !== undefined && object.taskProgress !== null
-                ? TaskProgress.fromPartial(object.taskProgress)
-                : undefined;
+        if (
+            object.message?.$case === 'taskProgress' &&
+            object.message?.taskProgress !== undefined &&
+            object.message?.taskProgress !== null
+        ) {
+            message.message = {
+                $case: 'taskProgress',
+                taskProgress: TaskProgress.fromPartial(
+                    object.message.taskProgress
+                ),
+            };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: ZipLibraryInstallResponse_Result.fromPartial(
+                    object.message.result
+                ),
+            };
+        }
+        return message;
+    },
+};
+
+function createBaseZipLibraryInstallResponse_Result(): ZipLibraryInstallResponse_Result {
+    return {};
+}
+
+export const ZipLibraryInstallResponse_Result = {
+    encode(
+        _: ZipLibraryInstallResponse_Result,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): ZipLibraryInstallResponse_Result {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseZipLibraryInstallResponse_Result();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(_: any): ZipLibraryInstallResponse_Result {
+        return {};
+    },
+
+    toJSON(_: ZipLibraryInstallResponse_Result): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<ZipLibraryInstallResponse_Result>
+    ): ZipLibraryInstallResponse_Result {
+        return ZipLibraryInstallResponse_Result.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        _: DeepPartial<ZipLibraryInstallResponse_Result>
+    ): ZipLibraryInstallResponse_Result {
+        const message = createBaseZipLibraryInstallResponse_Result();
         return message;
     },
 };
@@ -4132,7 +4897,7 @@ export const GitLibraryInstallRequest = {
 };
 
 function createBaseGitLibraryInstallResponse(): GitLibraryInstallResponse {
-    return { taskProgress: undefined };
+    return { message: undefined };
 }
 
 export const GitLibraryInstallResponse = {
@@ -4140,11 +4905,19 @@ export const GitLibraryInstallResponse = {
         message: GitLibraryInstallResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.taskProgress !== undefined) {
-            TaskProgress.encode(
-                message.taskProgress,
-                writer.uint32(10).fork()
-            ).ldelim();
+        switch (message.message?.$case) {
+            case 'taskProgress':
+                TaskProgress.encode(
+                    message.message.taskProgress,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'result':
+                GitLibraryInstallResponse_Result.encode(
+                    message.message.result,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -4165,10 +4938,26 @@ export const GitLibraryInstallResponse = {
                         break;
                     }
 
-                    message.taskProgress = TaskProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'taskProgress',
+                        taskProgress: TaskProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'result',
+                        result: GitLibraryInstallResponse_Result.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -4181,17 +4970,33 @@ export const GitLibraryInstallResponse = {
 
     fromJSON(object: any): GitLibraryInstallResponse {
         return {
-            taskProgress: isSet(object.taskProgress)
-                ? TaskProgress.fromJSON(object.taskProgress)
+            message: isSet(object.taskProgress)
+                ? {
+                      $case: 'taskProgress',
+                      taskProgress: TaskProgress.fromJSON(object.taskProgress),
+                  }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: GitLibraryInstallResponse_Result.fromJSON(
+                          object.result
+                      ),
+                  }
                 : undefined,
         };
     },
 
     toJSON(message: GitLibraryInstallResponse): unknown {
         const obj: any = {};
-        message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress
-                ? TaskProgress.toJSON(message.taskProgress)
+        message.message?.$case === 'taskProgress' &&
+            (obj.taskProgress = message.message?.taskProgress
+                ? TaskProgress.toJSON(message.message?.taskProgress)
+                : undefined);
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? GitLibraryInstallResponse_Result.toJSON(
+                      message.message?.result
+                  )
                 : undefined);
         return obj;
     },
@@ -4206,10 +5011,85 @@ export const GitLibraryInstallResponse = {
         object: DeepPartial<GitLibraryInstallResponse>
     ): GitLibraryInstallResponse {
         const message = createBaseGitLibraryInstallResponse();
-        message.taskProgress =
-            object.taskProgress !== undefined && object.taskProgress !== null
-                ? TaskProgress.fromPartial(object.taskProgress)
-                : undefined;
+        if (
+            object.message?.$case === 'taskProgress' &&
+            object.message?.taskProgress !== undefined &&
+            object.message?.taskProgress !== null
+        ) {
+            message.message = {
+                $case: 'taskProgress',
+                taskProgress: TaskProgress.fromPartial(
+                    object.message.taskProgress
+                ),
+            };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: GitLibraryInstallResponse_Result.fromPartial(
+                    object.message.result
+                ),
+            };
+        }
+        return message;
+    },
+};
+
+function createBaseGitLibraryInstallResponse_Result(): GitLibraryInstallResponse_Result {
+    return {};
+}
+
+export const GitLibraryInstallResponse_Result = {
+    encode(
+        _: GitLibraryInstallResponse_Result,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): GitLibraryInstallResponse_Result {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseGitLibraryInstallResponse_Result();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(_: any): GitLibraryInstallResponse_Result {
+        return {};
+    },
+
+    toJSON(_: GitLibraryInstallResponse_Result): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<GitLibraryInstallResponse_Result>
+    ): GitLibraryInstallResponse_Result {
+        return GitLibraryInstallResponse_Result.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        _: DeepPartial<GitLibraryInstallResponse_Result>
+    ): GitLibraryInstallResponse_Result {
+        const message = createBaseGitLibraryInstallResponse_Result();
         return message;
     },
 };

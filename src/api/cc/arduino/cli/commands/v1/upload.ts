@@ -141,10 +141,10 @@ export interface UploadUsingProgrammerRequest_UserFieldsEntry {
 }
 
 export interface UploadUsingProgrammerResponse {
-    /** The output of the upload process. */
-    outStream: Uint8Array;
-    /** The error output of the upload process. */
-    errStream: Uint8Array;
+    message?:
+        | { $case: 'outStream'; outStream: Uint8Array }
+        | { $case: 'errStream'; errStream: Uint8Array }
+        | undefined;
 }
 
 export interface BurnBootloaderRequest {
@@ -184,10 +184,10 @@ export interface BurnBootloaderRequest_UserFieldsEntry {
 }
 
 export interface BurnBootloaderResponse {
-    /** The output of the burn bootloader process. */
-    outStream: Uint8Array;
-    /** The error output of the burn bootloader process. */
-    errStream: Uint8Array;
+    message?:
+        | { $case: 'outStream'; outStream: Uint8Array }
+        | { $case: 'errStream'; errStream: Uint8Array }
+        | undefined;
 }
 
 export interface ListProgrammersAvailableForUploadRequest {
@@ -1206,7 +1206,7 @@ export const UploadUsingProgrammerRequest_UserFieldsEntry = {
 };
 
 function createBaseUploadUsingProgrammerResponse(): UploadUsingProgrammerResponse {
-    return { outStream: new Uint8Array(0), errStream: new Uint8Array(0) };
+    return { message: undefined };
 }
 
 export const UploadUsingProgrammerResponse = {
@@ -1214,11 +1214,13 @@ export const UploadUsingProgrammerResponse = {
         message: UploadUsingProgrammerResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.outStream.length !== 0) {
-            writer.uint32(10).bytes(message.outStream);
-        }
-        if (message.errStream.length !== 0) {
-            writer.uint32(18).bytes(message.errStream);
+        switch (message.message?.$case) {
+            case 'outStream':
+                writer.uint32(10).bytes(message.message.outStream);
+                break;
+            case 'errStream':
+                writer.uint32(18).bytes(message.message.errStream);
+                break;
         }
         return writer;
     },
@@ -1239,14 +1241,20 @@ export const UploadUsingProgrammerResponse = {
                         break;
                     }
 
-                    message.outStream = reader.bytes();
+                    message.message = {
+                        $case: 'outStream',
+                        outStream: reader.bytes(),
+                    };
                     continue;
                 case 2:
                     if (tag !== 18) {
                         break;
                     }
 
-                    message.errStream = reader.bytes();
+                    message.message = {
+                        $case: 'errStream',
+                        errStream: reader.bytes(),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -1259,29 +1267,32 @@ export const UploadUsingProgrammerResponse = {
 
     fromJSON(object: any): UploadUsingProgrammerResponse {
         return {
-            outStream: isSet(object.outStream)
-                ? bytesFromBase64(object.outStream)
-                : new Uint8Array(0),
-            errStream: isSet(object.errStream)
-                ? bytesFromBase64(object.errStream)
-                : new Uint8Array(0),
+            message: isSet(object.outStream)
+                ? {
+                      $case: 'outStream',
+                      outStream: bytesFromBase64(object.outStream),
+                  }
+                : isSet(object.errStream)
+                ? {
+                      $case: 'errStream',
+                      errStream: bytesFromBase64(object.errStream),
+                  }
+                : undefined,
         };
     },
 
     toJSON(message: UploadUsingProgrammerResponse): unknown {
         const obj: any = {};
-        message.outStream !== undefined &&
-            (obj.outStream = base64FromBytes(
-                message.outStream !== undefined
-                    ? message.outStream
-                    : new Uint8Array(0)
-            ));
-        message.errStream !== undefined &&
-            (obj.errStream = base64FromBytes(
-                message.errStream !== undefined
-                    ? message.errStream
-                    : new Uint8Array(0)
-            ));
+        message.message?.$case === 'outStream' &&
+            (obj.outStream =
+                message.message?.outStream !== undefined
+                    ? base64FromBytes(message.message?.outStream)
+                    : undefined);
+        message.message?.$case === 'errStream' &&
+            (obj.errStream =
+                message.message?.errStream !== undefined
+                    ? base64FromBytes(message.message?.errStream)
+                    : undefined);
         return obj;
     },
 
@@ -1295,8 +1306,26 @@ export const UploadUsingProgrammerResponse = {
         object: DeepPartial<UploadUsingProgrammerResponse>
     ): UploadUsingProgrammerResponse {
         const message = createBaseUploadUsingProgrammerResponse();
-        message.outStream = object.outStream ?? new Uint8Array(0);
-        message.errStream = object.errStream ?? new Uint8Array(0);
+        if (
+            object.message?.$case === 'outStream' &&
+            object.message?.outStream !== undefined &&
+            object.message?.outStream !== null
+        ) {
+            message.message = {
+                $case: 'outStream',
+                outStream: object.message.outStream,
+            };
+        }
+        if (
+            object.message?.$case === 'errStream' &&
+            object.message?.errStream !== undefined &&
+            object.message?.errStream !== null
+        ) {
+            message.message = {
+                $case: 'errStream',
+                errStream: object.message.errStream,
+            };
+        }
         return message;
     },
 };
@@ -1598,7 +1627,7 @@ export const BurnBootloaderRequest_UserFieldsEntry = {
 };
 
 function createBaseBurnBootloaderResponse(): BurnBootloaderResponse {
-    return { outStream: new Uint8Array(0), errStream: new Uint8Array(0) };
+    return { message: undefined };
 }
 
 export const BurnBootloaderResponse = {
@@ -1606,11 +1635,13 @@ export const BurnBootloaderResponse = {
         message: BurnBootloaderResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.outStream.length !== 0) {
-            writer.uint32(10).bytes(message.outStream);
-        }
-        if (message.errStream.length !== 0) {
-            writer.uint32(18).bytes(message.errStream);
+        switch (message.message?.$case) {
+            case 'outStream':
+                writer.uint32(10).bytes(message.message.outStream);
+                break;
+            case 'errStream':
+                writer.uint32(18).bytes(message.message.errStream);
+                break;
         }
         return writer;
     },
@@ -1631,14 +1662,20 @@ export const BurnBootloaderResponse = {
                         break;
                     }
 
-                    message.outStream = reader.bytes();
+                    message.message = {
+                        $case: 'outStream',
+                        outStream: reader.bytes(),
+                    };
                     continue;
                 case 2:
                     if (tag !== 18) {
                         break;
                     }
 
-                    message.errStream = reader.bytes();
+                    message.message = {
+                        $case: 'errStream',
+                        errStream: reader.bytes(),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -1651,29 +1688,32 @@ export const BurnBootloaderResponse = {
 
     fromJSON(object: any): BurnBootloaderResponse {
         return {
-            outStream: isSet(object.outStream)
-                ? bytesFromBase64(object.outStream)
-                : new Uint8Array(0),
-            errStream: isSet(object.errStream)
-                ? bytesFromBase64(object.errStream)
-                : new Uint8Array(0),
+            message: isSet(object.outStream)
+                ? {
+                      $case: 'outStream',
+                      outStream: bytesFromBase64(object.outStream),
+                  }
+                : isSet(object.errStream)
+                ? {
+                      $case: 'errStream',
+                      errStream: bytesFromBase64(object.errStream),
+                  }
+                : undefined,
         };
     },
 
     toJSON(message: BurnBootloaderResponse): unknown {
         const obj: any = {};
-        message.outStream !== undefined &&
-            (obj.outStream = base64FromBytes(
-                message.outStream !== undefined
-                    ? message.outStream
-                    : new Uint8Array(0)
-            ));
-        message.errStream !== undefined &&
-            (obj.errStream = base64FromBytes(
-                message.errStream !== undefined
-                    ? message.errStream
-                    : new Uint8Array(0)
-            ));
+        message.message?.$case === 'outStream' &&
+            (obj.outStream =
+                message.message?.outStream !== undefined
+                    ? base64FromBytes(message.message?.outStream)
+                    : undefined);
+        message.message?.$case === 'errStream' &&
+            (obj.errStream =
+                message.message?.errStream !== undefined
+                    ? base64FromBytes(message.message?.errStream)
+                    : undefined);
         return obj;
     },
 
@@ -1685,8 +1725,26 @@ export const BurnBootloaderResponse = {
         object: DeepPartial<BurnBootloaderResponse>
     ): BurnBootloaderResponse {
         const message = createBaseBurnBootloaderResponse();
-        message.outStream = object.outStream ?? new Uint8Array(0);
-        message.errStream = object.errStream ?? new Uint8Array(0);
+        if (
+            object.message?.$case === 'outStream' &&
+            object.message?.outStream !== undefined &&
+            object.message?.outStream !== null
+        ) {
+            message.message = {
+                $case: 'outStream',
+                outStream: object.message.outStream,
+            };
+        }
+        if (
+            object.message?.$case === 'errStream' &&
+            object.message?.errStream !== undefined &&
+            object.message?.errStream !== null
+        ) {
+            message.message = {
+                $case: 'errStream',
+                errStream: object.message.errStream,
+            };
+        }
         return message;
     },
 };

@@ -162,6 +162,8 @@ export interface BoardListRequest {
 export interface BoardListResponse {
     /** List of ports and the boards detected on those ports. */
     ports: DetectedPort[];
+    /** Warning messages or errors coming from the discoveries. */
+    warnings: string[];
 }
 
 export interface DetectedPort {
@@ -1758,7 +1760,7 @@ export const BoardListRequest = {
 };
 
 function createBaseBoardListResponse(): BoardListResponse {
-    return { ports: [] };
+    return { ports: [], warnings: [] };
 }
 
 export const BoardListResponse = {
@@ -1768,6 +1770,9 @@ export const BoardListResponse = {
     ): _m0.Writer {
         for (const v of message.ports) {
             DetectedPort.encode(v!, writer.uint32(10).fork()).ldelim();
+        }
+        for (const v of message.warnings) {
+            writer.uint32(18).string(v!);
         }
         return writer;
     },
@@ -1789,6 +1794,13 @@ export const BoardListResponse = {
                         DetectedPort.decode(reader, reader.uint32())
                     );
                     continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.warnings.push(reader.string());
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -1803,6 +1815,9 @@ export const BoardListResponse = {
             ports: Array.isArray(object?.ports)
                 ? object.ports.map((e: any) => DetectedPort.fromJSON(e))
                 : [],
+            warnings: Array.isArray(object?.warnings)
+                ? object.warnings.map((e: any) => String(e))
+                : [],
         };
     },
 
@@ -1815,6 +1830,11 @@ export const BoardListResponse = {
         } else {
             obj.ports = [];
         }
+        if (message.warnings) {
+            obj.warnings = message.warnings.map((e) => e);
+        } else {
+            obj.warnings = [];
+        }
         return obj;
     },
 
@@ -1826,6 +1846,7 @@ export const BoardListResponse = {
         const message = createBaseBoardListResponse();
         message.ports =
             object.ports?.map((e) => DetectedPort.fromPartial(e)) || [];
+        message.warnings = object.warnings?.map((e) => e) || [];
         return message;
     },
 };

@@ -1,6 +1,12 @@
 /* eslint-disable */
 import _m0 from 'protobufjs/minimal';
-import { DownloadProgress, Instance, Platform, TaskProgress } from './common';
+import {
+    DownloadProgress,
+    Instance,
+    Platform,
+    PlatformSummary,
+    TaskProgress,
+} from './common';
 
 export interface PlatformInstallRequest {
     /** Arduino Core Service instance from the `Init` response. */
@@ -29,11 +35,15 @@ export interface PlatformInstallRequest {
 }
 
 export interface PlatformInstallResponse {
-    /** Progress of the downloads of the platform and tool files. */
-    progress: DownloadProgress | undefined;
-    /** Description of the current stage of the installation. */
-    taskProgress: TaskProgress | undefined;
+    message?:
+        | { $case: 'progress'; progress: DownloadProgress }
+        | { $case: 'taskProgress'; taskProgress: TaskProgress }
+        | { $case: 'result'; result: PlatformInstallResponse_Result }
+        | undefined;
 }
+
+/** Empty message, reserved for future expansion. */
+export interface PlatformInstallResponse_Result {}
 
 export interface PlatformLoadingError {}
 
@@ -48,9 +58,17 @@ export interface PlatformDownloadRequest {
 }
 
 export interface PlatformDownloadResponse {
-    /** Progress of the downloads of platform and tool files. */
-    progress: DownloadProgress | undefined;
+    message?:
+        | { $case: 'progress'; progress: DownloadProgress }
+        | {
+              $case: 'result';
+              result: PlatformDownloadResponse_Result;
+          }
+        | undefined;
 }
+
+/** Empty message, reserved for future expansion. */
+export interface PlatformDownloadResponse_Result {}
 
 export interface PlatformUninstallRequest {
     /** Arduino Core Service instance from the `Init` response. */
@@ -67,9 +85,17 @@ export interface PlatformUninstallRequest {
 }
 
 export interface PlatformUninstallResponse {
-    /** Description of the current stage of the uninstall. */
-    taskProgress: TaskProgress | undefined;
+    message?:
+        | { $case: 'taskProgress'; taskProgress: TaskProgress }
+        | {
+              $case: 'result';
+              result: PlatformUninstallResponse_Result;
+          }
+        | undefined;
 }
+
+/** Empty message, reserved for future expansion. */
+export interface PlatformUninstallResponse_Result {}
 
 /**
  * AlreadyAtLatestVersionError is returned when an upgrade is not possible
@@ -97,10 +123,14 @@ export interface PlatformUpgradeRequest {
 }
 
 export interface PlatformUpgradeResponse {
-    /** Progress of the downloads of the platform and tool files. */
-    progress: DownloadProgress | undefined;
-    /** Description of the current stage of the upgrade. */
-    taskProgress: TaskProgress | undefined;
+    message?:
+        | { $case: 'progress'; progress: DownloadProgress }
+        | { $case: 'taskProgress'; taskProgress: TaskProgress }
+        | { $case: 'result'; result: PlatformUpgradeResponse_Result }
+        | undefined;
+}
+
+export interface PlatformUpgradeResponse_Result {
     /** The upgraded platform. */
     platform: Platform | undefined;
 }
@@ -111,36 +141,15 @@ export interface PlatformSearchRequest {
     /** Keywords for the search. */
     searchArgs: string;
     /**
-     * Whether to show all available versions. `false` causes only the newest
-     * versions of the cores to be listed in the search results.
+     * Whether to show manually installed platforms. `false` causes to skip
+     * manually installed platforms.
      */
-    allVersions: boolean;
+    manuallyInstalled: boolean;
 }
 
 export interface PlatformSearchResponse {
     /** Results of the search. */
-    searchOutput: Platform[];
-}
-
-export interface PlatformListRequest {
-    /** Arduino Core Service instance from the `Init` response. */
-    instance: Instance | undefined;
-    /**
-     * Set to true to only list platforms which have a newer version available
-     * than the one currently installed.
-     */
-    updatableOnly: boolean;
-    /**
-     * Set to true to list platforms installed manually in the user' sketchbook
-     * hardware folder, installed with the PlatformManager through the CLI or
-     * IDE and that are available to install
-     */
-    all: boolean;
-}
-
-export interface PlatformListResponse {
-    /** The installed platforms. */
-    installedPlatforms: Platform[];
+    searchOutput: PlatformSummary[];
 }
 
 function createBasePlatformInstallRequest(): PlatformInstallRequest {
@@ -323,7 +332,7 @@ export const PlatformInstallRequest = {
 };
 
 function createBasePlatformInstallResponse(): PlatformInstallResponse {
-    return { progress: undefined, taskProgress: undefined };
+    return { message: undefined };
 }
 
 export const PlatformInstallResponse = {
@@ -331,17 +340,25 @@ export const PlatformInstallResponse = {
         message: PlatformInstallResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.progress !== undefined) {
-            DownloadProgress.encode(
-                message.progress,
-                writer.uint32(10).fork()
-            ).ldelim();
-        }
-        if (message.taskProgress !== undefined) {
-            TaskProgress.encode(
-                message.taskProgress,
-                writer.uint32(18).fork()
-            ).ldelim();
+        switch (message.message?.$case) {
+            case 'progress':
+                DownloadProgress.encode(
+                    message.message.progress,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'taskProgress':
+                TaskProgress.encode(
+                    message.message.taskProgress,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
+            case 'result':
+                PlatformInstallResponse_Result.encode(
+                    message.message.result,
+                    writer.uint32(26).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -362,20 +379,39 @@ export const PlatformInstallResponse = {
                         break;
                     }
 
-                    message.progress = DownloadProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'progress',
+                        progress: DownloadProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
                 case 2:
                     if (tag !== 18) {
                         break;
                     }
 
-                    message.taskProgress = TaskProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'taskProgress',
+                        taskProgress: TaskProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
+                    continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'result',
+                        result: PlatformInstallResponse_Result.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -388,24 +424,40 @@ export const PlatformInstallResponse = {
 
     fromJSON(object: any): PlatformInstallResponse {
         return {
-            progress: isSet(object.progress)
-                ? DownloadProgress.fromJSON(object.progress)
-                : undefined,
-            taskProgress: isSet(object.taskProgress)
-                ? TaskProgress.fromJSON(object.taskProgress)
+            message: isSet(object.progress)
+                ? {
+                      $case: 'progress',
+                      progress: DownloadProgress.fromJSON(object.progress),
+                  }
+                : isSet(object.taskProgress)
+                ? {
+                      $case: 'taskProgress',
+                      taskProgress: TaskProgress.fromJSON(object.taskProgress),
+                  }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: PlatformInstallResponse_Result.fromJSON(
+                          object.result
+                      ),
+                  }
                 : undefined,
         };
     },
 
     toJSON(message: PlatformInstallResponse): unknown {
         const obj: any = {};
-        message.progress !== undefined &&
-            (obj.progress = message.progress
-                ? DownloadProgress.toJSON(message.progress)
+        message.message?.$case === 'progress' &&
+            (obj.progress = message.message?.progress
+                ? DownloadProgress.toJSON(message.message?.progress)
                 : undefined);
-        message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress
-                ? TaskProgress.toJSON(message.taskProgress)
+        message.message?.$case === 'taskProgress' &&
+            (obj.taskProgress = message.message?.taskProgress
+                ? TaskProgress.toJSON(message.message?.taskProgress)
+                : undefined);
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? PlatformInstallResponse_Result.toJSON(message.message?.result)
                 : undefined);
         return obj;
     },
@@ -420,14 +472,95 @@ export const PlatformInstallResponse = {
         object: DeepPartial<PlatformInstallResponse>
     ): PlatformInstallResponse {
         const message = createBasePlatformInstallResponse();
-        message.progress =
-            object.progress !== undefined && object.progress !== null
-                ? DownloadProgress.fromPartial(object.progress)
-                : undefined;
-        message.taskProgress =
-            object.taskProgress !== undefined && object.taskProgress !== null
-                ? TaskProgress.fromPartial(object.taskProgress)
-                : undefined;
+        if (
+            object.message?.$case === 'progress' &&
+            object.message?.progress !== undefined &&
+            object.message?.progress !== null
+        ) {
+            message.message = {
+                $case: 'progress',
+                progress: DownloadProgress.fromPartial(object.message.progress),
+            };
+        }
+        if (
+            object.message?.$case === 'taskProgress' &&
+            object.message?.taskProgress !== undefined &&
+            object.message?.taskProgress !== null
+        ) {
+            message.message = {
+                $case: 'taskProgress',
+                taskProgress: TaskProgress.fromPartial(
+                    object.message.taskProgress
+                ),
+            };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: PlatformInstallResponse_Result.fromPartial(
+                    object.message.result
+                ),
+            };
+        }
+        return message;
+    },
+};
+
+function createBasePlatformInstallResponse_Result(): PlatformInstallResponse_Result {
+    return {};
+}
+
+export const PlatformInstallResponse_Result = {
+    encode(
+        _: PlatformInstallResponse_Result,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformInstallResponse_Result {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBasePlatformInstallResponse_Result();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(_: any): PlatformInstallResponse_Result {
+        return {};
+    },
+
+    toJSON(_: PlatformInstallResponse_Result): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<PlatformInstallResponse_Result>
+    ): PlatformInstallResponse_Result {
+        return PlatformInstallResponse_Result.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        _: DeepPartial<PlatformInstallResponse_Result>
+    ): PlatformInstallResponse_Result {
+        const message = createBasePlatformInstallResponse_Result();
         return message;
     },
 };
@@ -614,7 +747,7 @@ export const PlatformDownloadRequest = {
 };
 
 function createBasePlatformDownloadResponse(): PlatformDownloadResponse {
-    return { progress: undefined };
+    return { message: undefined };
 }
 
 export const PlatformDownloadResponse = {
@@ -622,11 +755,19 @@ export const PlatformDownloadResponse = {
         message: PlatformDownloadResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.progress !== undefined) {
-            DownloadProgress.encode(
-                message.progress,
-                writer.uint32(10).fork()
-            ).ldelim();
+        switch (message.message?.$case) {
+            case 'progress':
+                DownloadProgress.encode(
+                    message.message.progress,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'result':
+                PlatformDownloadResponse_Result.encode(
+                    message.message.result,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -647,10 +788,26 @@ export const PlatformDownloadResponse = {
                         break;
                     }
 
-                    message.progress = DownloadProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'progress',
+                        progress: DownloadProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'result',
+                        result: PlatformDownloadResponse_Result.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -663,17 +820,33 @@ export const PlatformDownloadResponse = {
 
     fromJSON(object: any): PlatformDownloadResponse {
         return {
-            progress: isSet(object.progress)
-                ? DownloadProgress.fromJSON(object.progress)
+            message: isSet(object.progress)
+                ? {
+                      $case: 'progress',
+                      progress: DownloadProgress.fromJSON(object.progress),
+                  }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: PlatformDownloadResponse_Result.fromJSON(
+                          object.result
+                      ),
+                  }
                 : undefined,
         };
     },
 
     toJSON(message: PlatformDownloadResponse): unknown {
         const obj: any = {};
-        message.progress !== undefined &&
-            (obj.progress = message.progress
-                ? DownloadProgress.toJSON(message.progress)
+        message.message?.$case === 'progress' &&
+            (obj.progress = message.message?.progress
+                ? DownloadProgress.toJSON(message.message?.progress)
+                : undefined);
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? PlatformDownloadResponse_Result.toJSON(
+                      message.message?.result
+                  )
                 : undefined);
         return obj;
     },
@@ -688,10 +861,83 @@ export const PlatformDownloadResponse = {
         object: DeepPartial<PlatformDownloadResponse>
     ): PlatformDownloadResponse {
         const message = createBasePlatformDownloadResponse();
-        message.progress =
-            object.progress !== undefined && object.progress !== null
-                ? DownloadProgress.fromPartial(object.progress)
-                : undefined;
+        if (
+            object.message?.$case === 'progress' &&
+            object.message?.progress !== undefined &&
+            object.message?.progress !== null
+        ) {
+            message.message = {
+                $case: 'progress',
+                progress: DownloadProgress.fromPartial(object.message.progress),
+            };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: PlatformDownloadResponse_Result.fromPartial(
+                    object.message.result
+                ),
+            };
+        }
+        return message;
+    },
+};
+
+function createBasePlatformDownloadResponse_Result(): PlatformDownloadResponse_Result {
+    return {};
+}
+
+export const PlatformDownloadResponse_Result = {
+    encode(
+        _: PlatformDownloadResponse_Result,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformDownloadResponse_Result {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBasePlatformDownloadResponse_Result();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(_: any): PlatformDownloadResponse_Result {
+        return {};
+    },
+
+    toJSON(_: PlatformDownloadResponse_Result): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<PlatformDownloadResponse_Result>
+    ): PlatformDownloadResponse_Result {
+        return PlatformDownloadResponse_Result.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        _: DeepPartial<PlatformDownloadResponse_Result>
+    ): PlatformDownloadResponse_Result {
+        const message = createBasePlatformDownloadResponse_Result();
         return message;
     },
 };
@@ -830,7 +1076,7 @@ export const PlatformUninstallRequest = {
 };
 
 function createBasePlatformUninstallResponse(): PlatformUninstallResponse {
-    return { taskProgress: undefined };
+    return { message: undefined };
 }
 
 export const PlatformUninstallResponse = {
@@ -838,11 +1084,19 @@ export const PlatformUninstallResponse = {
         message: PlatformUninstallResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.taskProgress !== undefined) {
-            TaskProgress.encode(
-                message.taskProgress,
-                writer.uint32(10).fork()
-            ).ldelim();
+        switch (message.message?.$case) {
+            case 'taskProgress':
+                TaskProgress.encode(
+                    message.message.taskProgress,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'result':
+                PlatformUninstallResponse_Result.encode(
+                    message.message.result,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -863,10 +1117,26 @@ export const PlatformUninstallResponse = {
                         break;
                     }
 
-                    message.taskProgress = TaskProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'taskProgress',
+                        taskProgress: TaskProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'result',
+                        result: PlatformUninstallResponse_Result.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -879,17 +1149,33 @@ export const PlatformUninstallResponse = {
 
     fromJSON(object: any): PlatformUninstallResponse {
         return {
-            taskProgress: isSet(object.taskProgress)
-                ? TaskProgress.fromJSON(object.taskProgress)
+            message: isSet(object.taskProgress)
+                ? {
+                      $case: 'taskProgress',
+                      taskProgress: TaskProgress.fromJSON(object.taskProgress),
+                  }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: PlatformUninstallResponse_Result.fromJSON(
+                          object.result
+                      ),
+                  }
                 : undefined,
         };
     },
 
     toJSON(message: PlatformUninstallResponse): unknown {
         const obj: any = {};
-        message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress
-                ? TaskProgress.toJSON(message.taskProgress)
+        message.message?.$case === 'taskProgress' &&
+            (obj.taskProgress = message.message?.taskProgress
+                ? TaskProgress.toJSON(message.message?.taskProgress)
+                : undefined);
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? PlatformUninstallResponse_Result.toJSON(
+                      message.message?.result
+                  )
                 : undefined);
         return obj;
     },
@@ -904,10 +1190,85 @@ export const PlatformUninstallResponse = {
         object: DeepPartial<PlatformUninstallResponse>
     ): PlatformUninstallResponse {
         const message = createBasePlatformUninstallResponse();
-        message.taskProgress =
-            object.taskProgress !== undefined && object.taskProgress !== null
-                ? TaskProgress.fromPartial(object.taskProgress)
-                : undefined;
+        if (
+            object.message?.$case === 'taskProgress' &&
+            object.message?.taskProgress !== undefined &&
+            object.message?.taskProgress !== null
+        ) {
+            message.message = {
+                $case: 'taskProgress',
+                taskProgress: TaskProgress.fromPartial(
+                    object.message.taskProgress
+                ),
+            };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: PlatformUninstallResponse_Result.fromPartial(
+                    object.message.result
+                ),
+            };
+        }
+        return message;
+    },
+};
+
+function createBasePlatformUninstallResponse_Result(): PlatformUninstallResponse_Result {
+    return {};
+}
+
+export const PlatformUninstallResponse_Result = {
+    encode(
+        _: PlatformUninstallResponse_Result,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformUninstallResponse_Result {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBasePlatformUninstallResponse_Result();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(_: any): PlatformUninstallResponse_Result {
+        return {};
+    },
+
+    toJSON(_: PlatformUninstallResponse_Result): unknown {
+        const obj: any = {};
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<PlatformUninstallResponse_Result>
+    ): PlatformUninstallResponse_Result {
+        return PlatformUninstallResponse_Result.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        _: DeepPartial<PlatformUninstallResponse_Result>
+    ): PlatformUninstallResponse_Result {
+        const message = createBasePlatformUninstallResponse_Result();
         return message;
     },
 };
@@ -1116,11 +1477,7 @@ export const PlatformUpgradeRequest = {
 };
 
 function createBasePlatformUpgradeResponse(): PlatformUpgradeResponse {
-    return {
-        progress: undefined,
-        taskProgress: undefined,
-        platform: undefined,
-    };
+    return { message: undefined };
 }
 
 export const PlatformUpgradeResponse = {
@@ -1128,23 +1485,25 @@ export const PlatformUpgradeResponse = {
         message: PlatformUpgradeResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.progress !== undefined) {
-            DownloadProgress.encode(
-                message.progress,
-                writer.uint32(10).fork()
-            ).ldelim();
-        }
-        if (message.taskProgress !== undefined) {
-            TaskProgress.encode(
-                message.taskProgress,
-                writer.uint32(18).fork()
-            ).ldelim();
-        }
-        if (message.platform !== undefined) {
-            Platform.encode(
-                message.platform,
-                writer.uint32(26).fork()
-            ).ldelim();
+        switch (message.message?.$case) {
+            case 'progress':
+                DownloadProgress.encode(
+                    message.message.progress,
+                    writer.uint32(10).fork()
+                ).ldelim();
+                break;
+            case 'taskProgress':
+                TaskProgress.encode(
+                    message.message.taskProgress,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
+            case 'result':
+                PlatformUpgradeResponse_Result.encode(
+                    message.message.result,
+                    writer.uint32(26).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -1165,27 +1524,39 @@ export const PlatformUpgradeResponse = {
                         break;
                     }
 
-                    message.progress = DownloadProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'progress',
+                        progress: DownloadProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
                 case 2:
                     if (tag !== 18) {
                         break;
                     }
 
-                    message.taskProgress = TaskProgress.decode(
-                        reader,
-                        reader.uint32()
-                    );
+                    message.message = {
+                        $case: 'taskProgress',
+                        taskProgress: TaskProgress.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
                 case 3:
                     if (tag !== 26) {
                         break;
                     }
 
-                    message.platform = Platform.decode(reader, reader.uint32());
+                    message.message = {
+                        $case: 'result',
+                        result: PlatformUpgradeResponse_Result.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -1198,31 +1569,40 @@ export const PlatformUpgradeResponse = {
 
     fromJSON(object: any): PlatformUpgradeResponse {
         return {
-            progress: isSet(object.progress)
-                ? DownloadProgress.fromJSON(object.progress)
-                : undefined,
-            taskProgress: isSet(object.taskProgress)
-                ? TaskProgress.fromJSON(object.taskProgress)
-                : undefined,
-            platform: isSet(object.platform)
-                ? Platform.fromJSON(object.platform)
+            message: isSet(object.progress)
+                ? {
+                      $case: 'progress',
+                      progress: DownloadProgress.fromJSON(object.progress),
+                  }
+                : isSet(object.taskProgress)
+                ? {
+                      $case: 'taskProgress',
+                      taskProgress: TaskProgress.fromJSON(object.taskProgress),
+                  }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: PlatformUpgradeResponse_Result.fromJSON(
+                          object.result
+                      ),
+                  }
                 : undefined,
         };
     },
 
     toJSON(message: PlatformUpgradeResponse): unknown {
         const obj: any = {};
-        message.progress !== undefined &&
-            (obj.progress = message.progress
-                ? DownloadProgress.toJSON(message.progress)
+        message.message?.$case === 'progress' &&
+            (obj.progress = message.message?.progress
+                ? DownloadProgress.toJSON(message.message?.progress)
                 : undefined);
-        message.taskProgress !== undefined &&
-            (obj.taskProgress = message.taskProgress
-                ? TaskProgress.toJSON(message.taskProgress)
+        message.message?.$case === 'taskProgress' &&
+            (obj.taskProgress = message.message?.taskProgress
+                ? TaskProgress.toJSON(message.message?.taskProgress)
                 : undefined);
-        message.platform !== undefined &&
-            (obj.platform = message.platform
-                ? Platform.toJSON(message.platform)
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? PlatformUpgradeResponse_Result.toJSON(message.message?.result)
                 : undefined);
         return obj;
     },
@@ -1237,14 +1617,116 @@ export const PlatformUpgradeResponse = {
         object: DeepPartial<PlatformUpgradeResponse>
     ): PlatformUpgradeResponse {
         const message = createBasePlatformUpgradeResponse();
-        message.progress =
-            object.progress !== undefined && object.progress !== null
-                ? DownloadProgress.fromPartial(object.progress)
-                : undefined;
-        message.taskProgress =
-            object.taskProgress !== undefined && object.taskProgress !== null
-                ? TaskProgress.fromPartial(object.taskProgress)
-                : undefined;
+        if (
+            object.message?.$case === 'progress' &&
+            object.message?.progress !== undefined &&
+            object.message?.progress !== null
+        ) {
+            message.message = {
+                $case: 'progress',
+                progress: DownloadProgress.fromPartial(object.message.progress),
+            };
+        }
+        if (
+            object.message?.$case === 'taskProgress' &&
+            object.message?.taskProgress !== undefined &&
+            object.message?.taskProgress !== null
+        ) {
+            message.message = {
+                $case: 'taskProgress',
+                taskProgress: TaskProgress.fromPartial(
+                    object.message.taskProgress
+                ),
+            };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: PlatformUpgradeResponse_Result.fromPartial(
+                    object.message.result
+                ),
+            };
+        }
+        return message;
+    },
+};
+
+function createBasePlatformUpgradeResponse_Result(): PlatformUpgradeResponse_Result {
+    return { platform: undefined };
+}
+
+export const PlatformUpgradeResponse_Result = {
+    encode(
+        message: PlatformUpgradeResponse_Result,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.platform !== undefined) {
+            Platform.encode(
+                message.platform,
+                writer.uint32(10).fork()
+            ).ldelim();
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): PlatformUpgradeResponse_Result {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBasePlatformUpgradeResponse_Result();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.platform = Platform.decode(reader, reader.uint32());
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): PlatformUpgradeResponse_Result {
+        return {
+            platform: isSet(object.platform)
+                ? Platform.fromJSON(object.platform)
+                : undefined,
+        };
+    },
+
+    toJSON(message: PlatformUpgradeResponse_Result): unknown {
+        const obj: any = {};
+        message.platform !== undefined &&
+            (obj.platform = message.platform
+                ? Platform.toJSON(message.platform)
+                : undefined);
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<PlatformUpgradeResponse_Result>
+    ): PlatformUpgradeResponse_Result {
+        return PlatformUpgradeResponse_Result.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<PlatformUpgradeResponse_Result>
+    ): PlatformUpgradeResponse_Result {
+        const message = createBasePlatformUpgradeResponse_Result();
         message.platform =
             object.platform !== undefined && object.platform !== null
                 ? Platform.fromPartial(object.platform)
@@ -1254,7 +1736,7 @@ export const PlatformUpgradeResponse = {
 };
 
 function createBasePlatformSearchRequest(): PlatformSearchRequest {
-    return { instance: undefined, searchArgs: '', allVersions: false };
+    return { instance: undefined, searchArgs: '', manuallyInstalled: false };
 }
 
 export const PlatformSearchRequest = {
@@ -1271,8 +1753,8 @@ export const PlatformSearchRequest = {
         if (message.searchArgs !== '') {
             writer.uint32(18).string(message.searchArgs);
         }
-        if (message.allVersions === true) {
-            writer.uint32(24).bool(message.allVersions);
+        if (message.manuallyInstalled === true) {
+            writer.uint32(24).bool(message.manuallyInstalled);
         }
         return writer;
     },
@@ -1307,7 +1789,7 @@ export const PlatformSearchRequest = {
                         break;
                     }
 
-                    message.allVersions = reader.bool();
+                    message.manuallyInstalled = reader.bool();
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -1326,8 +1808,8 @@ export const PlatformSearchRequest = {
             searchArgs: isSet(object.searchArgs)
                 ? String(object.searchArgs)
                 : '',
-            allVersions: isSet(object.allVersions)
-                ? Boolean(object.allVersions)
+            manuallyInstalled: isSet(object.manuallyInstalled)
+                ? Boolean(object.manuallyInstalled)
                 : false,
         };
     },
@@ -1340,8 +1822,8 @@ export const PlatformSearchRequest = {
                 : undefined);
         message.searchArgs !== undefined &&
             (obj.searchArgs = message.searchArgs);
-        message.allVersions !== undefined &&
-            (obj.allVersions = message.allVersions);
+        message.manuallyInstalled !== undefined &&
+            (obj.manuallyInstalled = message.manuallyInstalled);
         return obj;
     },
 
@@ -1358,7 +1840,7 @@ export const PlatformSearchRequest = {
                 ? Instance.fromPartial(object.instance)
                 : undefined;
         message.searchArgs = object.searchArgs ?? '';
-        message.allVersions = object.allVersions ?? false;
+        message.manuallyInstalled = object.manuallyInstalled ?? false;
         return message;
     },
 };
@@ -1373,7 +1855,7 @@ export const PlatformSearchResponse = {
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
         for (const v of message.searchOutput) {
-            Platform.encode(v!, writer.uint32(10).fork()).ldelim();
+            PlatformSummary.encode(v!, writer.uint32(10).fork()).ldelim();
         }
         return writer;
     },
@@ -1395,7 +1877,7 @@ export const PlatformSearchResponse = {
                     }
 
                     message.searchOutput.push(
-                        Platform.decode(reader, reader.uint32())
+                        PlatformSummary.decode(reader, reader.uint32())
                     );
                     continue;
             }
@@ -1410,7 +1892,9 @@ export const PlatformSearchResponse = {
     fromJSON(object: any): PlatformSearchResponse {
         return {
             searchOutput: Array.isArray(object?.searchOutput)
-                ? object.searchOutput.map((e: any) => Platform.fromJSON(e))
+                ? object.searchOutput.map((e: any) =>
+                      PlatformSummary.fromJSON(e)
+                  )
                 : [],
         };
     },
@@ -1419,7 +1903,7 @@ export const PlatformSearchResponse = {
         const obj: any = {};
         if (message.searchOutput) {
             obj.searchOutput = message.searchOutput.map((e) =>
-                e ? Platform.toJSON(e) : undefined
+                e ? PlatformSummary.toJSON(e) : undefined
             );
         } else {
             obj.searchOutput = [];
@@ -1436,192 +1920,7 @@ export const PlatformSearchResponse = {
     ): PlatformSearchResponse {
         const message = createBasePlatformSearchResponse();
         message.searchOutput =
-            object.searchOutput?.map((e) => Platform.fromPartial(e)) || [];
-        return message;
-    },
-};
-
-function createBasePlatformListRequest(): PlatformListRequest {
-    return { instance: undefined, updatableOnly: false, all: false };
-}
-
-export const PlatformListRequest = {
-    encode(
-        message: PlatformListRequest,
-        writer: _m0.Writer = _m0.Writer.create()
-    ): _m0.Writer {
-        if (message.instance !== undefined) {
-            Instance.encode(
-                message.instance,
-                writer.uint32(10).fork()
-            ).ldelim();
-        }
-        if (message.updatableOnly === true) {
-            writer.uint32(16).bool(message.updatableOnly);
-        }
-        if (message.all === true) {
-            writer.uint32(24).bool(message.all);
-        }
-        return writer;
-    },
-
-    decode(
-        input: _m0.Reader | Uint8Array,
-        length?: number
-    ): PlatformListRequest {
-        const reader =
-            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasePlatformListRequest();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-
-                    message.instance = Instance.decode(reader, reader.uint32());
-                    continue;
-                case 2:
-                    if (tag !== 16) {
-                        break;
-                    }
-
-                    message.updatableOnly = reader.bool();
-                    continue;
-                case 3:
-                    if (tag !== 24) {
-                        break;
-                    }
-
-                    message.all = reader.bool();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
-
-    fromJSON(object: any): PlatformListRequest {
-        return {
-            instance: isSet(object.instance)
-                ? Instance.fromJSON(object.instance)
-                : undefined,
-            updatableOnly: isSet(object.updatableOnly)
-                ? Boolean(object.updatableOnly)
-                : false,
-            all: isSet(object.all) ? Boolean(object.all) : false,
-        };
-    },
-
-    toJSON(message: PlatformListRequest): unknown {
-        const obj: any = {};
-        message.instance !== undefined &&
-            (obj.instance = message.instance
-                ? Instance.toJSON(message.instance)
-                : undefined);
-        message.updatableOnly !== undefined &&
-            (obj.updatableOnly = message.updatableOnly);
-        message.all !== undefined && (obj.all = message.all);
-        return obj;
-    },
-
-    create(base?: DeepPartial<PlatformListRequest>): PlatformListRequest {
-        return PlatformListRequest.fromPartial(base ?? {});
-    },
-
-    fromPartial(object: DeepPartial<PlatformListRequest>): PlatformListRequest {
-        const message = createBasePlatformListRequest();
-        message.instance =
-            object.instance !== undefined && object.instance !== null
-                ? Instance.fromPartial(object.instance)
-                : undefined;
-        message.updatableOnly = object.updatableOnly ?? false;
-        message.all = object.all ?? false;
-        return message;
-    },
-};
-
-function createBasePlatformListResponse(): PlatformListResponse {
-    return { installedPlatforms: [] };
-}
-
-export const PlatformListResponse = {
-    encode(
-        message: PlatformListResponse,
-        writer: _m0.Writer = _m0.Writer.create()
-    ): _m0.Writer {
-        for (const v of message.installedPlatforms) {
-            Platform.encode(v!, writer.uint32(10).fork()).ldelim();
-        }
-        return writer;
-    },
-
-    decode(
-        input: _m0.Reader | Uint8Array,
-        length?: number
-    ): PlatformListResponse {
-        const reader =
-            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasePlatformListResponse();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-
-                    message.installedPlatforms.push(
-                        Platform.decode(reader, reader.uint32())
-                    );
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
-
-    fromJSON(object: any): PlatformListResponse {
-        return {
-            installedPlatforms: Array.isArray(object?.installedPlatforms)
-                ? object.installedPlatforms.map((e: any) =>
-                      Platform.fromJSON(e)
-                  )
-                : [],
-        };
-    },
-
-    toJSON(message: PlatformListResponse): unknown {
-        const obj: any = {};
-        if (message.installedPlatforms) {
-            obj.installedPlatforms = message.installedPlatforms.map((e) =>
-                e ? Platform.toJSON(e) : undefined
-            );
-        } else {
-            obj.installedPlatforms = [];
-        }
-        return obj;
-    },
-
-    create(base?: DeepPartial<PlatformListResponse>): PlatformListResponse {
-        return PlatformListResponse.fromPartial(base ?? {});
-    },
-
-    fromPartial(
-        object: DeepPartial<PlatformListResponse>
-    ): PlatformListResponse {
-        const message = createBasePlatformListResponse();
-        message.installedPlatforms =
-            object.installedPlatforms?.map((e) => Platform.fromPartial(e)) ||
+            object.searchOutput?.map((e) => PlatformSummary.fromPartial(e)) ||
             [];
         return message;
     },

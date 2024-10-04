@@ -29,8 +29,13 @@ export interface DebugRequest {
  * error.
  */
 export interface DebugResponse {
-    /** Incoming data from the debugger tool. */
-    data: Uint8Array;
+    message?:
+        | { $case: 'data'; data: Uint8Array }
+        | { $case: 'result'; result: DebugResponse_Result }
+        | undefined;
+}
+
+export interface DebugResponse_Result {
     /** Incoming error output from the debugger tool. */
     error: string;
 }
@@ -257,7 +262,7 @@ export const DebugRequest = {
 };
 
 function createBaseDebugResponse(): DebugResponse {
-    return { data: new Uint8Array(0), error: '' };
+    return { message: undefined };
 }
 
 export const DebugResponse = {
@@ -265,11 +270,16 @@ export const DebugResponse = {
         message: DebugResponse,
         writer: _m0.Writer = _m0.Writer.create()
     ): _m0.Writer {
-        if (message.data.length !== 0) {
-            writer.uint32(10).bytes(message.data);
-        }
-        if (message.error !== '') {
-            writer.uint32(18).string(message.error);
+        switch (message.message?.$case) {
+            case 'data':
+                writer.uint32(10).bytes(message.message.data);
+                break;
+            case 'result':
+                DebugResponse_Result.encode(
+                    message.message.result,
+                    writer.uint32(18).fork()
+                ).ldelim();
+                break;
         }
         return writer;
     },
@@ -287,10 +297,112 @@ export const DebugResponse = {
                         break;
                     }
 
-                    message.data = reader.bytes();
+                    message.message = { $case: 'data', data: reader.bytes() };
                     continue;
                 case 2:
                     if (tag !== 18) {
+                        break;
+                    }
+
+                    message.message = {
+                        $case: 'result',
+                        result: DebugResponse_Result.decode(
+                            reader,
+                            reader.uint32()
+                        ),
+                    };
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): DebugResponse {
+        return {
+            message: isSet(object.data)
+                ? { $case: 'data', data: bytesFromBase64(object.data) }
+                : isSet(object.result)
+                ? {
+                      $case: 'result',
+                      result: DebugResponse_Result.fromJSON(object.result),
+                  }
+                : undefined,
+        };
+    },
+
+    toJSON(message: DebugResponse): unknown {
+        const obj: any = {};
+        message.message?.$case === 'data' &&
+            (obj.data =
+                message.message?.data !== undefined
+                    ? base64FromBytes(message.message?.data)
+                    : undefined);
+        message.message?.$case === 'result' &&
+            (obj.result = message.message?.result
+                ? DebugResponse_Result.toJSON(message.message?.result)
+                : undefined);
+        return obj;
+    },
+
+    create(base?: DeepPartial<DebugResponse>): DebugResponse {
+        return DebugResponse.fromPartial(base ?? {});
+    },
+
+    fromPartial(object: DeepPartial<DebugResponse>): DebugResponse {
+        const message = createBaseDebugResponse();
+        if (
+            object.message?.$case === 'data' &&
+            object.message?.data !== undefined &&
+            object.message?.data !== null
+        ) {
+            message.message = { $case: 'data', data: object.message.data };
+        }
+        if (
+            object.message?.$case === 'result' &&
+            object.message?.result !== undefined &&
+            object.message?.result !== null
+        ) {
+            message.message = {
+                $case: 'result',
+                result: DebugResponse_Result.fromPartial(object.message.result),
+            };
+        }
+        return message;
+    },
+};
+
+function createBaseDebugResponse_Result(): DebugResponse_Result {
+    return { error: '' };
+}
+
+export const DebugResponse_Result = {
+    encode(
+        message: DebugResponse_Result,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.error !== '') {
+            writer.uint32(10).string(message.error);
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): DebugResponse_Result {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseDebugResponse_Result();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
                         break;
                     }
 
@@ -305,32 +417,24 @@ export const DebugResponse = {
         return message;
     },
 
-    fromJSON(object: any): DebugResponse {
-        return {
-            data: isSet(object.data)
-                ? bytesFromBase64(object.data)
-                : new Uint8Array(0),
-            error: isSet(object.error) ? String(object.error) : '',
-        };
+    fromJSON(object: any): DebugResponse_Result {
+        return { error: isSet(object.error) ? String(object.error) : '' };
     },
 
-    toJSON(message: DebugResponse): unknown {
+    toJSON(message: DebugResponse_Result): unknown {
         const obj: any = {};
-        message.data !== undefined &&
-            (obj.data = base64FromBytes(
-                message.data !== undefined ? message.data : new Uint8Array(0)
-            ));
         message.error !== undefined && (obj.error = message.error);
         return obj;
     },
 
-    create(base?: DeepPartial<DebugResponse>): DebugResponse {
-        return DebugResponse.fromPartial(base ?? {});
+    create(base?: DeepPartial<DebugResponse_Result>): DebugResponse_Result {
+        return DebugResponse_Result.fromPartial(base ?? {});
     },
 
-    fromPartial(object: DeepPartial<DebugResponse>): DebugResponse {
-        const message = createBaseDebugResponse();
-        message.data = object.data ?? new Uint8Array(0);
+    fromPartial(
+        object: DeepPartial<DebugResponse_Result>
+    ): DebugResponse_Result {
+        const message = createBaseDebugResponse_Result();
         message.error = object.error ?? '';
         return message;
     },
