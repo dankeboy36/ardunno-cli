@@ -45,18 +45,18 @@ export interface BoardDetailsResponse {
     toolsDependencies: ToolsDependencies[];
     /** The board's custom configuration options. */
     configOptions: ConfigOption[];
-    /** List of programmers supported by the board */
+    /** List of programmers supported by the board. */
     programmers: Programmer[];
     /** Identifying information for the board (e.g., USB VID/PID). */
     identificationProperties: BoardIdentificationProperties[];
-    /** Board build properties used for compiling */
+    /** Board build properties used for compiling. */
     buildProperties: string[];
-    /** Default programmer for the board */
+    /** Default programmer for the board. */
     defaultProgrammerId: string;
 }
 
 export interface BoardIdentificationProperties {
-    /** A set of properties that must all be matched to identify the board */
+    /** A set of properties that must all be matched to identify the board. */
     properties: { [key: string]: string };
 }
 
@@ -150,7 +150,7 @@ export interface ConfigValue {
 export interface BoardListRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
-    /** Search for boards for the given time (in milliseconds) */
+    /** Search for boards for the given time (in milliseconds). */
     timeout: number;
     /**
      * The fully qualified board name of the board you want information about
@@ -169,7 +169,7 @@ export interface BoardListResponse {
 export interface DetectedPort {
     /** The possible boards attached to the port. */
     matchingBoards: BoardListItem[];
-    /** The port details */
+    /** The port details. */
     port: Port | undefined;
 }
 
@@ -178,7 +178,7 @@ export interface BoardListAllRequest {
     instance: Instance | undefined;
     /** The search query to filter the board list by. */
     searchArgs: string[];
-    /** Set to true to get also the boards marked as "hidden" in the platform */
+    /** Set to true to get also the boards marked as "hidden" in the platform. */
     includeHiddenBoards: boolean;
 }
 
@@ -193,11 +193,11 @@ export interface BoardListWatchRequest {
 }
 
 export interface BoardListWatchResponse {
-    /** Event type as received from the serial discovery tool */
+    /** Event type as received from the serial discovery tool. */
     eventType: string;
-    /** Information about the port */
+    /** Information about the port. */
     port: DetectedPort | undefined;
-    /** Eventual errors when detecting connected boards */
+    /** Eventual errors when detecting connected boards. */
     error: string;
 }
 
@@ -206,9 +206,9 @@ export interface BoardListItem {
     name: string;
     /** The fully qualified board name. Used to identify the board to a machine. */
     fqbn: string;
-    /** If the board is marked as "hidden" in the platform */
+    /** If the board is marked as "hidden" in the platform. */
     isHidden: boolean;
-    /** Platform this board belongs to */
+    /** Platform this board belongs to. */
     platform: Platform | undefined;
 }
 
@@ -219,7 +219,7 @@ export interface BoardSearchRequest {
     searchArgs: string;
     /**
      * Set to true to get also the boards marked as "hidden" in installed
-     * platforms
+     * platforms.
      */
     includeHiddenBoards: boolean;
 }

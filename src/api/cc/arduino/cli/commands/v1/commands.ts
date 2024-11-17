@@ -98,24 +98,25 @@ import {
     UploadUsingProgrammerResponse,
 } from './upload';
 
+/** Represent the reason why an instance initialization failed. */
 export enum FailedInstanceInitReason {
-    /** FAILED_INSTANCE_INIT_REASON_UNSPECIFIED - FAILED_INSTANCE_INIT_REASON_UNSPECIFIED the error reason is not specialized */
+    /** FAILED_INSTANCE_INIT_REASON_UNSPECIFIED - FAILED_INSTANCE_INIT_REASON_UNSPECIFIED the error reason is not specialized. */
     FAILED_INSTANCE_INIT_REASON_UNSPECIFIED = 0,
-    /** FAILED_INSTANCE_INIT_REASON_INVALID_INDEX_URL - INVALID_INDEX_URL a package index url is malformed */
+    /** FAILED_INSTANCE_INIT_REASON_INVALID_INDEX_URL - INVALID_INDEX_URL a package index url is malformed. */
     FAILED_INSTANCE_INIT_REASON_INVALID_INDEX_URL = 1,
     /**
      * FAILED_INSTANCE_INIT_REASON_INDEX_LOAD_ERROR - FAILED_INSTANCE_INIT_REASON_INDEX_LOAD_ERROR failure encountered while
-     * loading an index
+     * loading an index.
      */
     FAILED_INSTANCE_INIT_REASON_INDEX_LOAD_ERROR = 2,
     /**
      * FAILED_INSTANCE_INIT_REASON_TOOL_LOAD_ERROR - FAILED_INSTANCE_INIT_REASON_TOOL_LOAD_ERROR failure encountered while
-     * loading a tool
+     * loading a tool.
      */
     FAILED_INSTANCE_INIT_REASON_TOOL_LOAD_ERROR = 3,
     /**
      * FAILED_INSTANCE_INIT_REASON_INDEX_DOWNLOAD_ERROR - FAILED_INSTANCE_INIT_REASON_INDEX_DOWNLOAD_ERROR failure encountered while
-     * downloading an index
+     * downloading an index.
      */
     FAILED_INSTANCE_INIT_REASON_INDEX_DOWNLOAD_ERROR = 4,
     UNRECOGNIZED = -1,
@@ -177,9 +178,9 @@ export interface CreateResponse {
 export interface InitRequest {
     /** An Arduino Core instance. */
     instance: Instance | undefined;
-    /** Profile to use */
+    /** Profile to use. */
     profile: string;
-    /** The path where the sketch is stored */
+    /** The path where the sketch is stored. */
     sketchPath: string;
 }
 
@@ -202,9 +203,9 @@ export interface InitResponse_Progress {
 }
 
 export interface FailedInstanceInitError {
-    /** specific cause of the error */
+    /** specific cause of the error. */
     reason: FailedInstanceInitReason;
-    /** explanation of the error */
+    /** explanation of the error. */
     message: string;
 }
 
@@ -274,6 +275,7 @@ export interface IndexUpdateReport {
     status: IndexUpdateReport_Status;
 }
 
+/** The status represents the result of the index update. */
 export enum IndexUpdateReport_Status {
     /** STATUS_UNSPECIFIED - The status of the index update is unspecified. */
     STATUS_UNSPECIFIED = 0,
@@ -342,7 +344,7 @@ export interface VersionResponse {
 }
 
 export interface NewSketchRequest {
-    /** New sketch name */
+    /** New sketch name. */
     sketchName: string;
     /**
      * Optional: create a Sketch in this directory
@@ -351,73 +353,73 @@ export interface NewSketchRequest {
      * empty.
      */
     sketchDir: string;
-    /** Specificies if an existing .ino sketch should be overwritten */
+    /** Specificies if an existing .ino sketch should be overwritten. */
     overwrite: boolean;
 }
 
 export interface NewSketchResponse {
-    /** Absolute path to a main sketch file */
+    /** Absolute path to a main sketch file. */
     mainFile: string;
 }
 
 export interface LoadSketchRequest {
-    /** Absolute path to single sketch file or a sketch folder */
+    /** Absolute path to single sketch file or a sketch folder. */
     sketchPath: string;
 }
 
 export interface LoadSketchResponse {
-    /** The loaded sketch */
+    /** The loaded sketch. */
     sketch: Sketch | undefined;
 }
 
 export interface ArchiveSketchRequest {
-    /** Absolute path to Sketch file or folder containing Sketch file */
+    /** Absolute path to Sketch file or folder containing Sketch file. */
     sketchPath: string;
     /**
      * Absolute path to archive that will be created or folder that will contain
-     * it
+     * it.
      */
     archivePath: string;
-    /** Specifies if build directory should be included in the archive */
+    /** Specifies if build directory should be included in the archive. */
     includeBuildDir: boolean;
-    /** Allows to override an already existing archive */
+    /** Allows to override an already existing archive. */
     overwrite: boolean;
 }
 
 export interface ArchiveSketchResponse {}
 
 export interface SetSketchDefaultsRequest {
-    /** Absolute path to Sketch file or folder containing Sketch file */
+    /** Absolute path to Sketch file or folder containing Sketch file. */
     sketchPath: string;
-    /** The desired value for default_fqbn in project file (sketch.yaml) */
+    /** The desired value for default_fqbn in project file (sketch.yaml). */
     defaultFqbn: string;
-    /** The desired value for default_port in project file (sketch.yaml) */
+    /** The desired value for default_port in project file (sketch.yaml). */
     defaultPortAddress: string;
-    /** The desired value for default_protocol in project file (sketch.yaml) */
+    /** The desired value for default_protocol in project file (sketch.yaml). */
     defaultPortProtocol: string;
-    /** The desired value for default_programmer in project file (sketch.yaml) */
+    /** The desired value for default_programmer in project file (sketch.yaml). */
     defaultProgrammer: string;
 }
 
 export interface SetSketchDefaultsResponse {
     /**
      * The value of default_fqnn that has been written in project file
-     * (sketch.yaml)
+     * (sketch.yaml).
      */
     defaultFqbn: string;
     /**
      * The value of default_port that has been written in project file
-     * (sketch.yaml)
+     * (sketch.yaml).
      */
     defaultPortAddress: string;
     /**
      * The value of default_protocol that has been written in project file
-     * (sketch.yaml)
+     * (sketch.yaml).
      */
     defaultPortProtocol: string;
     /**
      * The value of default_programmer that has been written in project file
-     * (sketch.yaml)
+     * (sketch.yaml).
      */
     defaultProgrammer: string;
 }
@@ -3012,13 +3014,13 @@ export const CleanDownloadCacheDirectoryResponse = {
     },
 };
 
-/** The main Arduino Platform service API */
+/** The main Arduino Platform service API. */
 export type ArduinoCoreServiceDefinition = typeof ArduinoCoreServiceDefinition;
 export const ArduinoCoreServiceDefinition = {
     name: 'ArduinoCoreService',
     fullName: 'cc.arduino.cli.commands.v1.ArduinoCoreService',
     methods: {
-        /** Create a new Arduino Core instance */
+        /** Create a new Arduino Core instance. */
         create: {
             name: 'Create',
             requestType: CreateRequest,
@@ -3029,7 +3031,7 @@ export const ArduinoCoreServiceDefinition = {
         },
         /**
          * Initializes an existing Arduino Core instance by loading platforms and
-         * libraries
+         * libraries.
          */
         init: {
             name: 'Init',
@@ -3039,7 +3041,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: true,
             options: {},
         },
-        /** Destroy an instance of the Arduino Core Service */
+        /** Destroy an instance of the Arduino Core Service. */
         destroy: {
             name: 'Destroy',
             requestType: DestroyRequest,
@@ -3048,7 +3050,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** Update package index of the Arduino Core Service */
+        /** Update package index of the Arduino Core Service. */
         updateIndex: {
             name: 'UpdateIndex',
             requestType: UpdateIndexRequest,
@@ -3057,7 +3059,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: true,
             options: {},
         },
-        /** Update libraries index */
+        /** Update libraries index. */
         updateLibrariesIndex: {
             name: 'UpdateLibrariesIndex',
             requestType: UpdateLibrariesIndexRequest,
@@ -3075,7 +3077,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** Create a new Sketch */
+        /** Create a new Sketch. */
         newSketch: {
             name: 'NewSketch',
             requestType: NewSketchRequest,
@@ -3084,7 +3086,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** Returns all files composing a Sketch */
+        /** Returns all files composing a Sketch. */
         loadSketch: {
             name: 'LoadSketch',
             requestType: LoadSketchRequest,
@@ -3093,7 +3095,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** Creates a zip file containing all files of specified Sketch */
+        /** Creates a zip file containing all files of specified Sketch. */
         archiveSketch: {
             name: 'ArchiveSketch',
             requestType: ArchiveSketchRequest,
@@ -3115,7 +3117,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** Requests details about a board */
+        /** Requests details about a board. */
         boardDetails: {
             name: 'BoardDetails',
             requestType: BoardDetailsRequest,
@@ -3298,7 +3300,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: true,
             options: {},
         },
-        /** Install a library from a Zip File */
+        /** Install a library from a Zip File. */
         zipLibraryInstall: {
             name: 'ZipLibraryInstall',
             requestType: ZipLibraryInstallRequest,
@@ -3307,7 +3309,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: true,
             options: {},
         },
-        /** Download and install a library from a git url */
+        /** Download and install a library from a git url. */
         gitLibraryInstall: {
             name: 'GitLibraryInstall',
             requestType: GitLibraryInstallRequest,
@@ -3364,7 +3366,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** Open a monitor connection to a board port */
+        /** Open a monitor connection to a board port. */
         monitor: {
             name: 'Monitor',
             requestType: MonitorRequest,
@@ -3373,7 +3375,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: true,
             options: {},
         },
-        /** Returns the parameters that can be set in the MonitorRequest calls */
+        /** Returns the parameters that can be set in the MonitorRequest calls. */
         enumerateMonitorPortSettings: {
             name: 'EnumerateMonitorPortSettings',
             requestType: EnumerateMonitorPortSettingsRequest,
@@ -3427,7 +3429,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** Writes the settings currently stored in memory in a YAML file */
+        /** Writes the settings currently stored in memory in a YAML file. */
         configurationSave: {
             name: 'ConfigurationSave',
             requestType: ConfigurationSaveRequest,
@@ -3436,7 +3438,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** Read the settings from a YAML file */
+        /** Read the settings from a YAML file. */
         configurationOpen: {
             name: 'ConfigurationOpen',
             requestType: ConfigurationOpenRequest,
@@ -3445,6 +3447,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
+        /** Get the current configuration. */
         configurationGet: {
             name: 'ConfigurationGet',
             requestType: ConfigurationGetRequest,
@@ -3453,7 +3456,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** Enumerate all the keys/values pairs available in the configuration */
+        /** Enumerate all the keys/values pairs available in the configuration. */
         settingsEnumerate: {
             name: 'SettingsEnumerate',
             requestType: SettingsEnumerateRequest,
@@ -3462,7 +3465,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** Get a single configuration value */
+        /** Get a single configuration value. */
         settingsGetValue: {
             name: 'SettingsGetValue',
             requestType: SettingsGetValueRequest,
@@ -3471,7 +3474,7 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
-        /** Set a single configuration value */
+        /** Set a single configuration value. */
         settingsSetValue: {
             name: 'SettingsSetValue',
             requestType: SettingsSetValueRequest,
@@ -3484,30 +3487,30 @@ export const ArduinoCoreServiceDefinition = {
 } as const;
 
 export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
-    /** Create a new Arduino Core instance */
+    /** Create a new Arduino Core instance. */
     create(
         request: CreateRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<CreateResponse>>;
     /**
      * Initializes an existing Arduino Core instance by loading platforms and
-     * libraries
+     * libraries.
      */
     init(
         request: InitRequest,
         context: CallContext & CallContextExt
     ): ServerStreamingMethodResult<DeepPartial<InitResponse>>;
-    /** Destroy an instance of the Arduino Core Service */
+    /** Destroy an instance of the Arduino Core Service. */
     destroy(
         request: DestroyRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<DestroyResponse>>;
-    /** Update package index of the Arduino Core Service */
+    /** Update package index of the Arduino Core Service. */
     updateIndex(
         request: UpdateIndexRequest,
         context: CallContext & CallContextExt
     ): ServerStreamingMethodResult<DeepPartial<UpdateIndexResponse>>;
-    /** Update libraries index */
+    /** Update libraries index. */
     updateLibrariesIndex(
         request: UpdateLibrariesIndexRequest,
         context: CallContext & CallContextExt
@@ -3517,17 +3520,17 @@ export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
         request: VersionRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<VersionResponse>>;
-    /** Create a new Sketch */
+    /** Create a new Sketch. */
     newSketch(
         request: NewSketchRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<NewSketchResponse>>;
-    /** Returns all files composing a Sketch */
+    /** Returns all files composing a Sketch. */
     loadSketch(
         request: LoadSketchRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<LoadSketchResponse>>;
-    /** Creates a zip file containing all files of specified Sketch */
+    /** Creates a zip file containing all files of specified Sketch. */
     archiveSketch(
         request: ArchiveSketchRequest,
         context: CallContext & CallContextExt
@@ -3541,7 +3544,7 @@ export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
         request: SetSketchDefaultsRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<SetSketchDefaultsResponse>>;
-    /** Requests details about a board */
+    /** Requests details about a board. */
     boardDetails(
         request: BoardDetailsRequest,
         context: CallContext & CallContextExt
@@ -3648,12 +3651,12 @@ export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
         request: LibraryUpgradeRequest,
         context: CallContext & CallContextExt
     ): ServerStreamingMethodResult<DeepPartial<LibraryUpgradeResponse>>;
-    /** Install a library from a Zip File */
+    /** Install a library from a Zip File. */
     zipLibraryInstall(
         request: ZipLibraryInstallRequest,
         context: CallContext & CallContextExt
     ): ServerStreamingMethodResult<DeepPartial<ZipLibraryInstallResponse>>;
-    /** Download and install a library from a git url */
+    /** Download and install a library from a git url. */
     gitLibraryInstall(
         request: GitLibraryInstallRequest,
         context: CallContext & CallContextExt
@@ -3686,12 +3689,12 @@ export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
         request: LibraryListRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<LibraryListResponse>>;
-    /** Open a monitor connection to a board port */
+    /** Open a monitor connection to a board port. */
     monitor(
         request: AsyncIterable<MonitorRequest>,
         context: CallContext & CallContextExt
     ): ServerStreamingMethodResult<DeepPartial<MonitorResponse>>;
-    /** Returns the parameters that can be set in the MonitorRequest calls */
+    /** Returns the parameters that can be set in the MonitorRequest calls. */
     enumerateMonitorPortSettings(
         request: EnumerateMonitorPortSettingsRequest,
         context: CallContext & CallContextExt
@@ -3721,31 +3724,32 @@ export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
         request: CleanDownloadCacheDirectoryRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<CleanDownloadCacheDirectoryResponse>>;
-    /** Writes the settings currently stored in memory in a YAML file */
+    /** Writes the settings currently stored in memory in a YAML file. */
     configurationSave(
         request: ConfigurationSaveRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<ConfigurationSaveResponse>>;
-    /** Read the settings from a YAML file */
+    /** Read the settings from a YAML file. */
     configurationOpen(
         request: ConfigurationOpenRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<ConfigurationOpenResponse>>;
+    /** Get the current configuration. */
     configurationGet(
         request: ConfigurationGetRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<ConfigurationGetResponse>>;
-    /** Enumerate all the keys/values pairs available in the configuration */
+    /** Enumerate all the keys/values pairs available in the configuration. */
     settingsEnumerate(
         request: SettingsEnumerateRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<SettingsEnumerateResponse>>;
-    /** Get a single configuration value */
+    /** Get a single configuration value. */
     settingsGetValue(
         request: SettingsGetValueRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<SettingsGetValueResponse>>;
-    /** Set a single configuration value */
+    /** Set a single configuration value. */
     settingsSetValue(
         request: SettingsSetValueRequest,
         context: CallContext & CallContextExt
@@ -3753,30 +3757,30 @@ export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
 }
 
 export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
-    /** Create a new Arduino Core instance */
+    /** Create a new Arduino Core instance. */
     create(
         request: DeepPartial<CreateRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<CreateResponse>;
     /**
      * Initializes an existing Arduino Core instance by loading platforms and
-     * libraries
+     * libraries.
      */
     init(
         request: DeepPartial<InitRequest>,
         options?: CallOptions & CallOptionsExt
     ): AsyncIterable<InitResponse>;
-    /** Destroy an instance of the Arduino Core Service */
+    /** Destroy an instance of the Arduino Core Service. */
     destroy(
         request: DeepPartial<DestroyRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<DestroyResponse>;
-    /** Update package index of the Arduino Core Service */
+    /** Update package index of the Arduino Core Service. */
     updateIndex(
         request: DeepPartial<UpdateIndexRequest>,
         options?: CallOptions & CallOptionsExt
     ): AsyncIterable<UpdateIndexResponse>;
-    /** Update libraries index */
+    /** Update libraries index. */
     updateLibrariesIndex(
         request: DeepPartial<UpdateLibrariesIndexRequest>,
         options?: CallOptions & CallOptionsExt
@@ -3786,17 +3790,17 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
         request: DeepPartial<VersionRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<VersionResponse>;
-    /** Create a new Sketch */
+    /** Create a new Sketch. */
     newSketch(
         request: DeepPartial<NewSketchRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<NewSketchResponse>;
-    /** Returns all files composing a Sketch */
+    /** Returns all files composing a Sketch. */
     loadSketch(
         request: DeepPartial<LoadSketchRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<LoadSketchResponse>;
-    /** Creates a zip file containing all files of specified Sketch */
+    /** Creates a zip file containing all files of specified Sketch. */
     archiveSketch(
         request: DeepPartial<ArchiveSketchRequest>,
         options?: CallOptions & CallOptionsExt
@@ -3810,7 +3814,7 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
         request: DeepPartial<SetSketchDefaultsRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<SetSketchDefaultsResponse>;
-    /** Requests details about a board */
+    /** Requests details about a board. */
     boardDetails(
         request: DeepPartial<BoardDetailsRequest>,
         options?: CallOptions & CallOptionsExt
@@ -3917,12 +3921,12 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
         request: DeepPartial<LibraryUpgradeRequest>,
         options?: CallOptions & CallOptionsExt
     ): AsyncIterable<LibraryUpgradeResponse>;
-    /** Install a library from a Zip File */
+    /** Install a library from a Zip File. */
     zipLibraryInstall(
         request: DeepPartial<ZipLibraryInstallRequest>,
         options?: CallOptions & CallOptionsExt
     ): AsyncIterable<ZipLibraryInstallResponse>;
-    /** Download and install a library from a git url */
+    /** Download and install a library from a git url. */
     gitLibraryInstall(
         request: DeepPartial<GitLibraryInstallRequest>,
         options?: CallOptions & CallOptionsExt
@@ -3955,12 +3959,12 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
         request: DeepPartial<LibraryListRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<LibraryListResponse>;
-    /** Open a monitor connection to a board port */
+    /** Open a monitor connection to a board port. */
     monitor(
         request: AsyncIterable<DeepPartial<MonitorRequest>>,
         options?: CallOptions & CallOptionsExt
     ): AsyncIterable<MonitorResponse>;
-    /** Returns the parameters that can be set in the MonitorRequest calls */
+    /** Returns the parameters that can be set in the MonitorRequest calls. */
     enumerateMonitorPortSettings(
         request: DeepPartial<EnumerateMonitorPortSettingsRequest>,
         options?: CallOptions & CallOptionsExt
@@ -3990,31 +3994,32 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
         request: DeepPartial<CleanDownloadCacheDirectoryRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<CleanDownloadCacheDirectoryResponse>;
-    /** Writes the settings currently stored in memory in a YAML file */
+    /** Writes the settings currently stored in memory in a YAML file. */
     configurationSave(
         request: DeepPartial<ConfigurationSaveRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<ConfigurationSaveResponse>;
-    /** Read the settings from a YAML file */
+    /** Read the settings from a YAML file. */
     configurationOpen(
         request: DeepPartial<ConfigurationOpenRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<ConfigurationOpenResponse>;
+    /** Get the current configuration. */
     configurationGet(
         request: DeepPartial<ConfigurationGetRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<ConfigurationGetResponse>;
-    /** Enumerate all the keys/values pairs available in the configuration */
+    /** Enumerate all the keys/values pairs available in the configuration. */
     settingsEnumerate(
         request: DeepPartial<SettingsEnumerateRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<SettingsEnumerateResponse>;
-    /** Get a single configuration value */
+    /** Get a single configuration value. */
     settingsGetValue(
         request: DeepPartial<SettingsGetValueRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<SettingsGetValueResponse>;
-    /** Set a single configuration value */
+    /** Set a single configuration value. */
     settingsSetValue(
         request: DeepPartial<SettingsSetValueRequest>,
         options?: CallOptions & CallOptionsExt

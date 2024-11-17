@@ -56,6 +56,8 @@ export interface UploadRequest {
      * https://arduino.github.io/arduino-cli/latest/platform-specification/#user-provided-fields
      */
     userFields: { [key: string]: string };
+    /** List of custom upload properties. */
+    uploadProperties: string[];
 }
 
 export interface UploadRequest_UserFieldsEntry {
@@ -133,6 +135,8 @@ export interface UploadUsingProgrammerRequest {
      * https://arduino.github.io/arduino-cli/latest/platform-specification/#user-provided-fields
      */
     userFields: { [key: string]: string };
+    /** List of custom upload properties. */
+    uploadProperties: string[];
 }
 
 export interface UploadUsingProgrammerRequest_UserFieldsEntry {
@@ -176,6 +180,8 @@ export interface BurnBootloaderRequest {
      * https://arduino.github.io/arduino-cli/latest/platform-specification/#user-provided-fields
      */
     userFields: { [key: string]: string };
+    /** List of custom upload properties. */
+    uploadProperties: string[];
 }
 
 export interface BurnBootloaderRequest_UserFieldsEntry {
@@ -191,16 +197,21 @@ export interface BurnBootloaderResponse {
 }
 
 export interface ListProgrammersAvailableForUploadRequest {
+    /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
+    /** Fully qualified board name of the target board (e.g., `arduino:avr:uno`). */
     fqbn: string;
 }
 
 export interface ListProgrammersAvailableForUploadResponse {
+    /** List of programmers supported by the board. */
     programmers: Programmer[];
 }
 
 export interface SupportedUserFieldsRequest {
+    /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
+    /** Fully qualified board name of the target board (e.g., `arduino:avr:uno`). */
     fqbn: string;
     /**
      * Protocol that will be used to upload, this information is
@@ -211,15 +222,15 @@ export interface SupportedUserFieldsRequest {
 }
 
 export interface UserField {
-    /** Id of the tool that supports this field */
+    /** Id of the tool that supports this field. */
     toolId: string;
-    /** Name used internally to store and retrieve this field */
+    /** Name used internally to store and retrieve this field. */
     name: string;
-    /** Label is the text shown to the user when they need to input this field */
+    /** Label is the text shown to the user when they need to input this field. */
     label: string;
     /**
      * True if the value of the field must not be shown when typing, for example
-     * when the user inputs a network password
+     * when the user inputs a network password.
      */
     secret: boolean;
 }
@@ -245,6 +256,7 @@ function createBaseUploadRequest(): UploadRequest {
         programmer: '',
         dryRun: false,
         userFields: {},
+        uploadProperties: [],
     };
 }
 
@@ -292,6 +304,9 @@ export const UploadRequest = {
                 writer.uint32(90).fork()
             ).ldelim();
         });
+        for (const v of message.uploadProperties) {
+            writer.uint32(98).string(v!);
+        }
         return writer;
     },
 
@@ -386,6 +401,13 @@ export const UploadRequest = {
                         message.userFields[entry11.key] = entry11.value;
                     }
                     continue;
+                case 12:
+                    if (tag !== 98) {
+                        break;
+                    }
+
+                    message.uploadProperties.push(reader.string());
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -423,6 +445,9 @@ export const UploadRequest = {
                       return acc;
                   }, {})
                 : {},
+            uploadProperties: Array.isArray(object?.uploadProperties)
+                ? object.uploadProperties.map((e: any) => String(e))
+                : [],
         };
     },
 
@@ -450,6 +475,11 @@ export const UploadRequest = {
             Object.entries(message.userFields).forEach(([k, v]) => {
                 obj.userFields[k] = v;
             });
+        }
+        if (message.uploadProperties) {
+            obj.uploadProperties = message.uploadProperties.map((e) => e);
+        } else {
+            obj.uploadProperties = [];
         }
         return obj;
     },
@@ -484,6 +514,7 @@ export const UploadRequest = {
             }
             return acc;
         }, {});
+        message.uploadProperties = object.uploadProperties?.map((e) => e) || [];
         return message;
     },
 };
@@ -868,6 +899,7 @@ function createBaseUploadUsingProgrammerRequest(): UploadUsingProgrammerRequest 
         programmer: '',
         dryRun: false,
         userFields: {},
+        uploadProperties: [],
     };
 }
 
@@ -915,6 +947,9 @@ export const UploadUsingProgrammerRequest = {
                 writer.uint32(90).fork()
             ).ldelim();
         });
+        for (const v of message.uploadProperties) {
+            writer.uint32(98).string(v!);
+        }
         return writer;
     },
 
@@ -1013,6 +1048,13 @@ export const UploadUsingProgrammerRequest = {
                         message.userFields[entry11.key] = entry11.value;
                     }
                     continue;
+                case 12:
+                    if (tag !== 98) {
+                        break;
+                    }
+
+                    message.uploadProperties.push(reader.string());
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -1050,6 +1092,9 @@ export const UploadUsingProgrammerRequest = {
                       return acc;
                   }, {})
                 : {},
+            uploadProperties: Array.isArray(object?.uploadProperties)
+                ? object.uploadProperties.map((e: any) => String(e))
+                : [],
         };
     },
 
@@ -1077,6 +1122,11 @@ export const UploadUsingProgrammerRequest = {
             Object.entries(message.userFields).forEach(([k, v]) => {
                 obj.userFields[k] = v;
             });
+        }
+        if (message.uploadProperties) {
+            obj.uploadProperties = message.uploadProperties.map((e) => e);
+        } else {
+            obj.uploadProperties = [];
         }
         return obj;
     },
@@ -1115,6 +1165,7 @@ export const UploadUsingProgrammerRequest = {
             }
             return acc;
         }, {});
+        message.uploadProperties = object.uploadProperties?.map((e) => e) || [];
         return message;
     },
 };
@@ -1340,6 +1391,7 @@ function createBaseBurnBootloaderRequest(): BurnBootloaderRequest {
         programmer: '',
         dryRun: false,
         userFields: {},
+        uploadProperties: [],
     };
 }
 
@@ -1378,6 +1430,9 @@ export const BurnBootloaderRequest = {
                 writer.uint32(90).fork()
             ).ldelim();
         });
+        for (const v of message.uploadProperties) {
+            writer.uint32(98).string(v!);
+        }
         return writer;
     },
 
@@ -1455,6 +1510,13 @@ export const BurnBootloaderRequest = {
                         message.userFields[entry11.key] = entry11.value;
                     }
                     continue;
+                case 12:
+                    if (tag !== 98) {
+                        break;
+                    }
+
+                    message.uploadProperties.push(reader.string());
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -1485,6 +1547,9 @@ export const BurnBootloaderRequest = {
                       return acc;
                   }, {})
                 : {},
+            uploadProperties: Array.isArray(object?.uploadProperties)
+                ? object.uploadProperties.map((e: any) => String(e))
+                : [],
         };
     },
 
@@ -1507,6 +1572,11 @@ export const BurnBootloaderRequest = {
             Object.entries(message.userFields).forEach(([k, v]) => {
                 obj.userFields[k] = v;
             });
+        }
+        if (message.uploadProperties) {
+            obj.uploadProperties = message.uploadProperties.map((e) => e);
+        } else {
+            obj.uploadProperties = [];
         }
         return obj;
     },
@@ -1540,6 +1610,7 @@ export const BurnBootloaderRequest = {
             }
             return acc;
         }, {});
+        message.uploadProperties = object.uploadProperties?.map((e) => e) || [];
         return message;
     },
 };

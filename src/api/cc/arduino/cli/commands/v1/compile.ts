@@ -19,7 +19,12 @@ export interface CompileRequest {
     showProperties: boolean;
     /** Print preprocessed code to stdout instead of compiling. */
     preprocess: boolean;
-    /** Builds of 'core.a' are saved into this path to be cached and reused. */
+    /**
+     * Builds of core and sketches are saved into this path to be cached and
+     * reused.
+     *
+     * @deprecated
+     */
     buildCachePath: string;
     /**
      * Path to use to store the files used for the compilation. If omitted,
@@ -27,7 +32,7 @@ export interface CompileRequest {
      * path.
      */
     buildPath: string;
-    /** List of custom build properties separated by commas. */
+    /** List of custom build properties. */
     buildProperties: string[];
     /**
      * Used to tell gcc which warning level to use. The level names are: "none",
@@ -55,7 +60,7 @@ export interface CompileRequest {
     exportDir: string;
     /**
      * Optional: cleanup the build folder and do not use any previously cached
-     * build
+     * build.
      */
     clean: boolean;
     /**
@@ -79,12 +84,12 @@ export interface CompileRequest {
     library: string[];
     /**
      * The path where to search for the custom signing key name and the encrypt
-     * key name
+     * key name.
      */
     keysKeychain: string;
-    /** The name of the custom key to use for signing during the compile process */
+    /** The name of the custom key to use for signing during the compile process. */
     signKey: string;
-    /** The name of the custom key to use for encrypting during the compile process */
+    /** The name of the custom key to use for encrypting during the compile process. */
     encryptKey: string;
     /**
      * If set to true the build will skip the library discovery process and will
@@ -123,68 +128,71 @@ export interface CompileResponse {
 export interface InstanceNeedsReinitializationError {}
 
 export interface BuilderResult {
-    /** The compiler build path */
+    /** The compiler build path. */
     buildPath: string;
-    /** The libraries used in the build */
+    /** The libraries used in the build. */
     usedLibraries: Library[];
-    /** The size of the executable split by sections */
+    /** The size of the executable split by sections. */
     executableSectionsSize: ExecutableSectionSize[];
-    /** The platform where the board is defined */
+    /** The platform where the board is defined. */
     boardPlatform: InstalledPlatformReference | undefined;
-    /** The platform used for the build (if referenced from the board platform) */
+    /** The platform used for the build (if referenced from the board platform). */
     buildPlatform: InstalledPlatformReference | undefined;
-    /** Build properties used for compiling */
+    /** Build properties used for compiling. */
     buildProperties: string[];
-    /** Compiler errors and warnings */
+    /** Compiler errors and warnings. */
     diagnostics: CompileDiagnostic[];
 }
 
 export interface ExecutableSectionSize {
+    /** The name of the section. */
     name: string;
+    /** The used size of the section in bytes. */
     size: number;
+    /** The maximum size of the section in bytes. */
     maxSize: number;
 }
 
 export interface CompileDiagnostic {
-    /** Severity of the diagnostic */
+    /** Severity of the diagnostic. */
     severity: string;
-    /** The explanation of the diagnostic (it may be multiple preformatted lines) */
+    /** The explanation of the diagnostic (it may be multiple preformatted lines). */
     message: string;
-    /** The file containing the diagnostic */
+    /** The file containing the diagnostic. */
     file: string;
-    /** The line of the diagnostic if available (starts from 1) */
+    /** The line of the diagnostic if available (starts from 1). */
     line: number;
-    /** The column of the diagnostic if available (starts from 1) */
+    /** The column of the diagnostic if available (starts from 1). */
     column: number;
     /**
      * The context where this diagnostic is found (it may be multiple files that
      * represents a chain of includes, or a text describing where the diagnostic
-     * is found)
+     * is found).
      */
     context: CompileDiagnosticContext[];
-    /** Annotations or suggestions to the diagnostic made by the compiler */
+    /** Annotations or suggestions to the diagnostic made by the compiler. */
     notes: CompileDiagnosticNote[];
 }
 
 export interface CompileDiagnosticContext {
-    /** The message describing the context reference */
+    /** The message describing the context reference. */
     message: string;
-    /** The file of the context reference */
+    /** The file of the context reference. */
     file: string;
-    /** The line of the context reference */
+    /** The line of the context reference. */
     line: number;
-    /** The column of the context reference */
+    /** The column of the context reference. */
     column: number;
 }
 
 export interface CompileDiagnosticNote {
-    /** The message describing the compiler note */
+    /** The message describing the compiler note. */
     message: string;
-    /** The file of the compiler note */
+    /** The file of the compiler note. */
     file: string;
-    /** The line of the compiler note */
+    /** The line of the compiler note. */
     line: number;
-    /** The column of the compiler note */
+    /** The column of the compiler note. */
     column: number;
 }
 

@@ -20,7 +20,7 @@ export interface DebugRequest {
     debugRequest: GetDebugConfigRequest | undefined;
     /** The data to be sent to the target being monitored. */
     data: Uint8Array;
-    /** Set this to true to send and Interrupt signal to the debugger process */
+    /** Set this to true to send and Interrupt signal to the debugger process. */
     sendInterrupt: boolean;
 }
 
@@ -54,10 +54,12 @@ export interface IsDebugSupportedRequest {
     interpreter: string;
     /** The programmer to use for debugging. */
     programmer: string;
+    /** List of custom debug properties. */
+    debugProperties: string[];
 }
 
 export interface IsDebugSupportedResponse {
-    /** True if debugging is supported */
+    /** True if debugging is supported. */
     debuggingSupported: boolean;
     /**
      * This is the same FQBN given in the IsDebugSupportedRequest but cleaned
@@ -94,27 +96,29 @@ export interface GetDebugConfigRequest {
     importDir: string;
     /** The programmer to use for debugging. */
     programmer: string;
+    /** List of custom debug properties. */
+    debugProperties: string[];
 }
 
 export interface GetDebugConfigResponse {
-    /** The executable binary to debug */
+    /** The executable binary to debug. */
     executable: string;
-    /** The toolchain type used for the build (for example "gcc") */
+    /** The toolchain type used for the build (for example "gcc"). */
     toolchain: string;
-    /** The toolchain directory */
+    /** The toolchain directory. */
     toolchainPath: string;
-    /** The toolchain architecture prefix (for example "arm-none-eabi") */
+    /** The toolchain architecture prefix (for example "arm-none-eabi"). */
     toolchainPrefix: string;
     /**
      * The GDB server type used to connect to the programmer/board (for example
-     * "openocd")
+     * "openocd").
      */
     server: string;
-    /** The GDB server directory */
+    /** The GDB server directory. */
     serverPath: string;
-    /** Extra configuration parameters wrt toolchain */
+    /** Extra configuration parameters wrt toolchain. */
     toolchainConfiguration: Any | undefined;
-    /** Extra configuration parameters wrt GDB server */
+    /** Extra configuration parameters wrt GDB server. */
     serverConfiguration: Any | undefined;
     /**
      * Custom debugger configurations (not handled directly by Arduino CLI but
@@ -123,9 +127,9 @@ export interface GetDebugConfigResponse {
      * JSON configuration for it.
      */
     customConfigs: { [key: string]: string };
-    /** the SVD file to use */
+    /** the SVD file to use. */
     svdFile: string;
-    /** The programmer specified in the request */
+    /** The programmer specified in the request. */
     programmer: string;
 }
 
@@ -134,16 +138,16 @@ export interface GetDebugConfigResponse_CustomConfigsEntry {
     value: string;
 }
 
-/** Configurations specific for the 'gcc' toolchain */
+/** Configurations specific for the 'gcc' toolchain. */
 export interface DebugGCCToolchainConfiguration {}
 
-/** Configuration specific for the 'openocd` server */
+/** Configuration specific for the 'openocd` server. */
 export interface DebugOpenOCDServerConfiguration {
-    /** path to openocd */
+    /** Path to openocd. */
     path: string;
-    /** path to openocd scripts */
+    /** Path to openocd scripts. */
     scriptsDir: string;
-    /** list of scripts to execute by openocd */
+    /** List of scripts to execute by openocd. */
     scripts: string[];
 }
 
@@ -447,6 +451,7 @@ function createBaseIsDebugSupportedRequest(): IsDebugSupportedRequest {
         port: undefined,
         interpreter: '',
         programmer: '',
+        debugProperties: [],
     };
 }
 
@@ -472,6 +477,9 @@ export const IsDebugSupportedRequest = {
         }
         if (message.programmer !== '') {
             writer.uint32(42).string(message.programmer);
+        }
+        for (const v of message.debugProperties) {
+            writer.uint32(50).string(v!);
         }
         return writer;
     },
@@ -522,6 +530,13 @@ export const IsDebugSupportedRequest = {
 
                     message.programmer = reader.string();
                     continue;
+                case 6:
+                    if (tag !== 50) {
+                        break;
+                    }
+
+                    message.debugProperties.push(reader.string());
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -544,6 +559,9 @@ export const IsDebugSupportedRequest = {
             programmer: isSet(object.programmer)
                 ? String(object.programmer)
                 : '',
+            debugProperties: Array.isArray(object?.debugProperties)
+                ? object.debugProperties.map((e: any) => String(e))
+                : [],
         };
     },
 
@@ -560,6 +578,11 @@ export const IsDebugSupportedRequest = {
             (obj.interpreter = message.interpreter);
         message.programmer !== undefined &&
             (obj.programmer = message.programmer);
+        if (message.debugProperties) {
+            obj.debugProperties = message.debugProperties.map((e) => e);
+        } else {
+            obj.debugProperties = [];
+        }
         return obj;
     },
 
@@ -584,6 +607,7 @@ export const IsDebugSupportedRequest = {
                 : undefined;
         message.interpreter = object.interpreter ?? '';
         message.programmer = object.programmer ?? '';
+        message.debugProperties = object.debugProperties?.map((e) => e) || [];
         return message;
     },
 };
@@ -682,6 +706,7 @@ function createBaseGetDebugConfigRequest(): GetDebugConfigRequest {
         interpreter: '',
         importDir: '',
         programmer: '',
+        debugProperties: [],
     };
 }
 
@@ -713,6 +738,9 @@ export const GetDebugConfigRequest = {
         }
         if (message.programmer !== '') {
             writer.uint32(74).string(message.programmer);
+        }
+        for (const v of message.debugProperties) {
+            writer.uint32(82).string(v!);
         }
         return writer;
     },
@@ -777,6 +805,13 @@ export const GetDebugConfigRequest = {
 
                     message.programmer = reader.string();
                     continue;
+                case 10:
+                    if (tag !== 82) {
+                        break;
+                    }
+
+                    message.debugProperties.push(reader.string());
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -803,6 +838,9 @@ export const GetDebugConfigRequest = {
             programmer: isSet(object.programmer)
                 ? String(object.programmer)
                 : '',
+            debugProperties: Array.isArray(object?.debugProperties)
+                ? object.debugProperties.map((e: any) => String(e))
+                : [],
         };
     },
 
@@ -822,6 +860,11 @@ export const GetDebugConfigRequest = {
         message.importDir !== undefined && (obj.importDir = message.importDir);
         message.programmer !== undefined &&
             (obj.programmer = message.programmer);
+        if (message.debugProperties) {
+            obj.debugProperties = message.debugProperties.map((e) => e);
+        } else {
+            obj.debugProperties = [];
+        }
         return obj;
     },
 
@@ -846,6 +889,7 @@ export const GetDebugConfigRequest = {
         message.interpreter = object.interpreter ?? '';
         message.importDir = object.importDir ?? '';
         message.programmer = object.programmer ?? '';
+        message.debugProperties = object.debugProperties?.map((e) => e) || [];
         return message;
     },
 };
