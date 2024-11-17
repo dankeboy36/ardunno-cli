@@ -1,14 +1,13 @@
 // @ts-check
+/* eslint-disable @typescript-eslint/no-var-requires */
 
-import { downloadFile } from 'ipull';
-import { promises as fs } from 'node:fs';
-import path from 'node:path';
-import { valid as isValidSemver } from 'semver';
-import { fileURLToPath } from 'node:url';
+const fs = require('node:fs/promises');
+const path = require('node:path');
+const { valid: isValidSemver } = require('semver');
 
 const configSchemaPath = path.join(
-    path.dirname(fileURLToPath(import.meta.url)),
-    '../schemas/arduino-cli-schema.json'
+    __filename,
+    '../../schemas/arduino-cli-schema.json'
 );
 
 async function run(version) {
@@ -41,6 +40,7 @@ async function downloadSchema(version) {
     const directory = await ensureSchemasFolder();
     const url = buildUrl(version);
     console.log('version', version, 'url', url);
+    const { downloadFile } = await import('ipull');
     const downloader = await downloadFile({
         url,
         directory,
