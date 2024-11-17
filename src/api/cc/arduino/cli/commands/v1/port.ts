@@ -1,19 +1,19 @@
 /* eslint-disable */
 import _m0 from 'protobufjs/minimal';
 
-/** Port represents a board port that may be used to upload or to monitor a board */
+/** Port represents a board port that may be used to upload or to monitor a board. */
 export interface Port {
     /** Address of the port (e.g., `/dev/ttyACM0`). */
     address: string;
-    /** The port label to show on the GUI (e.g. "ttyACM0") */
+    /** The port label to show on the GUI (e.g. "ttyACM0"). */
     label: string;
     /** Protocol of the port (e.g., `serial`, `network`, ...). */
     protocol: string;
     /** A human friendly description of the protocol (e.g., "Serial Port (USB)"). */
     protocolLabel: string;
-    /** A set of properties of the port */
+    /** A set of properties of the port. */
     properties: { [key: string]: string };
-    /** The hardware ID (serial number) of the board attached to the port */
+    /** The hardware ID (serial number) of the board attached to the port. */
     hardwareId: string;
 }
 

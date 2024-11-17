@@ -1,6 +1,6 @@
 /* eslint-disable */
 import _m0 from 'protobufjs/minimal';
-import { Instance } from './common';
+import { Instance, MonitorPortConfiguration } from './common';
 import { Port } from './port';
 
 export interface MonitorRequest {
@@ -18,7 +18,7 @@ export interface MonitorRequest {
 export interface MonitorPortOpenRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
-    /** Port to open, must be filled only on the first request */
+    /** Port to open, must be filled only on the first request. */
     port: Port | undefined;
     /**
      * The board FQBN we are trying to connect to. This is optional, and  it's
@@ -26,13 +26,8 @@ export interface MonitorPortOpenRequest {
      * monitor for a given port protocol.
      */
     fqbn: string;
-    /** Port configuration, optional, contains settings of the port to be applied */
+    /** Port configuration, optional, contains settings of the port to be applied. */
     portConfiguration: MonitorPortConfiguration | undefined;
-}
-
-export interface MonitorPortConfiguration {
-    /** The port configuration parameters */
-    settings: MonitorPortSetting[];
 }
 
 export interface MonitorResponse {
@@ -45,11 +40,6 @@ export interface MonitorResponse {
           }
         | { $case: 'success'; success: boolean }
         | undefined;
-}
-
-export interface MonitorPortSetting {
-    settingId: string;
-    value: string;
 }
 
 export interface EnumerateMonitorPortSettingsRequest {
@@ -74,15 +64,15 @@ export interface EnumerateMonitorPortSettingsResponse {
 }
 
 export interface MonitorPortSettingDescriptor {
-    /** The setting identifier */
+    /** The setting identifier. */
     settingId: string;
-    /** A human-readable label of the setting (to be displayed on the GUI) */
+    /** A human-readable label of the setting (to be displayed on the GUI). */
     label: string;
-    /** The setting type (at the moment only "enum" is avaiable) */
+    /** The setting type (at the moment only "enum" is avaiable). */
     type: string;
-    /** The values allowed on "enum" types */
+    /** The values allowed on "enum" types. */
     enumValues: string[];
-    /** The selected or default value */
+    /** The selected or default value. */
     value: string;
 }
 
@@ -416,89 +406,6 @@ export const MonitorPortOpenRequest = {
     },
 };
 
-function createBaseMonitorPortConfiguration(): MonitorPortConfiguration {
-    return { settings: [] };
-}
-
-export const MonitorPortConfiguration = {
-    encode(
-        message: MonitorPortConfiguration,
-        writer: _m0.Writer = _m0.Writer.create()
-    ): _m0.Writer {
-        for (const v of message.settings) {
-            MonitorPortSetting.encode(v!, writer.uint32(10).fork()).ldelim();
-        }
-        return writer;
-    },
-
-    decode(
-        input: _m0.Reader | Uint8Array,
-        length?: number
-    ): MonitorPortConfiguration {
-        const reader =
-            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseMonitorPortConfiguration();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-
-                    message.settings.push(
-                        MonitorPortSetting.decode(reader, reader.uint32())
-                    );
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
-
-    fromJSON(object: any): MonitorPortConfiguration {
-        return {
-            settings: Array.isArray(object?.settings)
-                ? object.settings.map((e: any) =>
-                      MonitorPortSetting.fromJSON(e)
-                  )
-                : [],
-        };
-    },
-
-    toJSON(message: MonitorPortConfiguration): unknown {
-        const obj: any = {};
-        if (message.settings) {
-            obj.settings = message.settings.map((e) =>
-                e ? MonitorPortSetting.toJSON(e) : undefined
-            );
-        } else {
-            obj.settings = [];
-        }
-        return obj;
-    },
-
-    create(
-        base?: DeepPartial<MonitorPortConfiguration>
-    ): MonitorPortConfiguration {
-        return MonitorPortConfiguration.fromPartial(base ?? {});
-    },
-
-    fromPartial(
-        object: DeepPartial<MonitorPortConfiguration>
-    ): MonitorPortConfiguration {
-        const message = createBaseMonitorPortConfiguration();
-        message.settings =
-            object.settings?.map((e) => MonitorPortSetting.fromPartial(e)) ||
-            [];
-        return message;
-    },
-};
-
 function createBaseMonitorResponse(): MonitorResponse {
     return { message: undefined };
 }
@@ -672,84 +579,6 @@ export const MonitorResponse = {
                 success: object.message.success,
             };
         }
-        return message;
-    },
-};
-
-function createBaseMonitorPortSetting(): MonitorPortSetting {
-    return { settingId: '', value: '' };
-}
-
-export const MonitorPortSetting = {
-    encode(
-        message: MonitorPortSetting,
-        writer: _m0.Writer = _m0.Writer.create()
-    ): _m0.Writer {
-        if (message.settingId !== '') {
-            writer.uint32(10).string(message.settingId);
-        }
-        if (message.value !== '') {
-            writer.uint32(18).string(message.value);
-        }
-        return writer;
-    },
-
-    decode(
-        input: _m0.Reader | Uint8Array,
-        length?: number
-    ): MonitorPortSetting {
-        const reader =
-            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseMonitorPortSetting();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-
-                    message.settingId = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-
-                    message.value = reader.string();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
-
-    fromJSON(object: any): MonitorPortSetting {
-        return {
-            settingId: isSet(object.settingId) ? String(object.settingId) : '',
-            value: isSet(object.value) ? String(object.value) : '',
-        };
-    },
-
-    toJSON(message: MonitorPortSetting): unknown {
-        const obj: any = {};
-        message.settingId !== undefined && (obj.settingId = message.settingId);
-        message.value !== undefined && (obj.value = message.value);
-        return obj;
-    },
-
-    create(base?: DeepPartial<MonitorPortSetting>): MonitorPortSetting {
-        return MonitorPortSetting.fromPartial(base ?? {});
-    },
-
-    fromPartial(object: DeepPartial<MonitorPortSetting>): MonitorPortSetting {
-        const message = createBaseMonitorPortSetting();
-        message.settingId = object.settingId ?? '';
-        message.value = object.value ?? '';
         return message;
     },
 };

@@ -79,6 +79,8 @@ export {
     Board,
     HelpResources,
     Sketch,
+    MonitorPortConfiguration,
+    MonitorPortSetting,
     SketchProfile,
 } from './cc/arduino/cli/commands/v1/common';
 export {
@@ -176,9 +178,7 @@ export {
 export {
     MonitorRequest,
     MonitorPortOpenRequest,
-    MonitorPortConfiguration,
     MonitorResponse,
-    MonitorPortSetting,
     EnumerateMonitorPortSettingsRequest,
     EnumerateMonitorPortSettingsResponse,
     MonitorPortSettingDescriptor,

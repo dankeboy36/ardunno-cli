@@ -3,6 +3,7 @@ import Long from 'long';
 import _m0 from 'protobufjs/minimal';
 import { DownloadProgress, Instance, TaskProgress } from './common';
 
+/** Represent a library installation location. */
 export enum LibraryInstallLocation {
     /**
      * LIBRARY_INSTALL_LOCATION_USER - In the `libraries` subdirectory of the user directory (sketchbook). This is
@@ -45,6 +46,7 @@ export function libraryInstallLocationToJSON(
     }
 }
 
+/** Represent the result of the library search. */
 export enum LibrarySearchStatus {
     /** LIBRARY_SEARCH_STATUS_FAILED - No search results were found. */
     LIBRARY_SEARCH_STATUS_FAILED = 0,
@@ -80,6 +82,7 @@ export function librarySearchStatusToJSON(object: LibrarySearchStatus): string {
     }
 }
 
+/** Represent the library layout. */
 export enum LibraryLayout {
     /** LIBRARY_LAYOUT_FLAT - Library is in the 1.0 Arduino library format. */
     LIBRARY_LAYOUT_FLAT = 0,
@@ -115,6 +118,7 @@ export function libraryLayoutToJSON(object: LibraryLayout): string {
     }
 }
 
+/** Represent the location of the library. */
 export enum LibraryLocation {
     /** LIBRARY_LOCATION_BUILTIN - In the configured 'builtin.libraries' directory. */
     LIBRARY_LOCATION_BUILTIN = 0,
@@ -214,7 +218,7 @@ export interface LibraryInstallRequest {
      * one of its dependencies is already installed, defaults to false.
      */
     noOverwrite: boolean;
-    /** Install the library and dependencies in the specified location */
+    /** Install the library and dependencies in the specified location. */
     installLocation: LibraryInstallLocation;
 }
 
@@ -431,7 +435,7 @@ export interface LibraryListRequest {
      * the installed version available in the libraries index.
      */
     updatable: boolean;
-    /** If set filters out the libraries not matching name */
+    /** If set filters out the libraries not matching name. */
     name: string;
     /**
      * By setting this field all duplicate libraries are filtered out leaving
@@ -512,14 +516,14 @@ export interface Library {
     location: LibraryLocation;
     /** The library format type. */
     layout: LibraryLayout;
-    /** The example sketches provided by the library */
+    /** The example sketches provided by the library. */
     examples: string[];
     /**
      * Value of the `includes` field in library.properties or, if missing, the
      * list of include files available on the library source root directory.
      */
     providesIncludes: string[];
-    /** Map of FQBNs that specifies if library is compatible with this library */
+    /** Map of FQBNs that specifies if library is compatible with this library. */
     compatibleWith: { [key: string]: boolean };
     /**
      * This value is set to true if the library is in development and should not
@@ -542,7 +546,7 @@ export interface Library_CompatibleWithEntry {
 export interface ZipLibraryInstallRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
-    /** Path to the archived library */
+    /** Path to the archived library. */
     path: string;
     /**
      * Set to true to overwrite an already installed library with the same name.
@@ -567,7 +571,7 @@ export interface ZipLibraryInstallResponse_Result {}
 export interface GitLibraryInstallRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
-    /** URL to the repository containing the library */
+    /** URL to the repository containing the library. */
     url: string;
     /**
      * Set to true to overwrite an already installed library with the same name.

@@ -19,7 +19,7 @@ export interface PlatformInstallRequest {
     version: string;
     /**
      * Set to true to not run (eventual) post install scripts for trusted
-     * platforms
+     * platforms.
      */
     skipPostInstall: boolean;
     /**
@@ -29,7 +29,7 @@ export interface PlatformInstallRequest {
     noOverwrite: boolean;
     /**
      * Set to true to not run (eventual) pre uninstall scripts for trusted
-     * platforms when performing platform upgrades
+     * platforms when performing platform upgrades.
      */
     skipPreUninstall: boolean;
 }
@@ -50,6 +50,7 @@ export interface PlatformLoadingError {}
 export interface PlatformDownloadRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
+    /** Vendor name of the platform (e.g., `arduino`). */
     platformPackage: string;
     /** Architecture name of the platform (e.g., `avr`). */
     architecture: string;
@@ -79,7 +80,7 @@ export interface PlatformUninstallRequest {
     architecture: string;
     /**
      * Set to true to not run (eventual) pre uninstall scripts for trusted
-     * platforms
+     * platforms.
      */
     skipPreUninstall: boolean;
 }
@@ -112,12 +113,12 @@ export interface PlatformUpgradeRequest {
     architecture: string;
     /**
      * Set to true to not run (eventual) post install scripts for trusted
-     * platforms
+     * platforms.
      */
     skipPostInstall: boolean;
     /**
      * Set to true to not run (eventual) pre uninstall scripts for trusted
-     * platforms when performing platform upgrades
+     * platforms when performing platform upgrades.
      */
     skipPreUninstall: boolean;
 }

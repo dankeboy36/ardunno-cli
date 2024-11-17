@@ -33,11 +33,11 @@ export interface DownloadProgressUpdate {
 }
 
 export interface DownloadProgressEnd {
-    /** True if the download is successful */
+    /** True if the download is successful. */
     success: boolean;
     /**
      * Info or error message, depending on the value of 'success'. Some examples:
-     * "File xxx already downloaded" or "Connection timeout"
+     * "File xxx already downloaded" or "Connection timeout".
      */
     message: string;
 }
@@ -49,16 +49,16 @@ export interface TaskProgress {
     message: string;
     /** Whether the task is complete. */
     completed: boolean;
-    /** Amount in percent of the task completion (optional) */
+    /** Amount in percent of the task completion (optional). */
     percent: number;
 }
 
 export interface Programmer {
-    /** Platform name */
+    /** Platform name. */
     platform: string;
-    /** Programmer ID */
+    /** Programmer ID. */
     id: string;
-    /** Programmer name */
+    /** Programmer name. */
     name: string;
 }
 
@@ -73,9 +73,9 @@ export interface MissingProgrammerError {}
  * platform release.
  */
 export interface Platform {
-    /** Generic information about a platform */
+    /** Generic information about a platform. */
     metadata: PlatformMetadata | undefined;
-    /** Information about a specific release of a platform */
+    /** Information about a specific release of a platform. */
     release: PlatformRelease | undefined;
 }
 
@@ -84,11 +84,11 @@ export interface Platform {
  * a platform and all its available releases.
  */
 export interface PlatformSummary {
-    /** Generic information about a platform */
+    /** Generic information about a platform. */
     metadata: PlatformMetadata | undefined;
-    /** Maps version to the corresponding PlatformRelease */
+    /** Maps version to the corresponding PlatformRelease. */
     releases: { [key: string]: PlatformRelease };
-    /** The installed version of the platform, or empty string if none installed */
+    /** The installed version of the platform, or empty string if none installed. */
     installedVersion: string;
     /**
      * The latest available version of the platform that can be installable, or
@@ -120,12 +120,12 @@ export interface PlatformMetadata {
     email: string;
     /**
      * If true this Platform has been installed manually in the user' sketchbook
-     * hardware folder
+     * hardware folder.
      */
     manuallyInstalled: boolean;
-    /** True if the latest release of this Platform has been deprecated */
+    /** True if the latest release of this Platform has been deprecated. */
     deprecated: boolean;
-    /** If true the platform is indexed */
+    /** If true the platform is indexed. */
     indexed: boolean;
 }
 
@@ -133,11 +133,11 @@ export interface PlatformMetadata {
 export interface PlatformRelease {
     /** Name used to identify the platform to humans (e.g., "Arduino AVR Boards"). */
     name: string;
-    /** Version of the platform release */
+    /** Version of the platform release. */
     version: string;
     /** Type of the platform. */
     types: string[];
-    /** True if the platform is installed */
+    /** True if the platform is installed. */
     installed: boolean;
     /**
      * List of boards provided by the platform. If the platform is installed,
@@ -160,7 +160,7 @@ export interface PlatformRelease {
      * PlatformRelease is `Installed` otherwise is an undefined behaviour.
      */
     missingMetadata: boolean;
-    /** True this release is deprecated */
+    /** True this release is deprecated. */
     deprecated: boolean;
     /**
      * True if the platform dependencies are available for the current OS/ARCH.
@@ -174,9 +174,9 @@ export interface InstalledPlatformReference {
     id: string;
     /** Version of the platform. */
     version: string;
-    /** Installation directory of the platform */
+    /** Installation directory of the platform. */
     installDir: string;
-    /** 3rd party platform URL */
+    /** 3rd party platform URL. */
     packageUrl: string;
 }
 
@@ -199,40 +199,60 @@ export interface HelpResources {
 }
 
 export interface Sketch {
-    /** Absolute path to a main sketch files */
+    /** Absolute path to a main sketch files. */
     mainFile: string;
-    /** Absolute path to folder that contains main_file */
+    /** Absolute path to folder that contains main_file. */
     locationPath: string;
-    /** List of absolute paths to other sketch files */
+    /** List of absolute paths to other sketch files. */
     otherSketchFiles: string[];
-    /** List of absolute paths to additional sketch files */
+    /** List of absolute paths to additional sketch files. */
     additionalFiles: string[];
     /**
      * List of absolute paths to supported files in the sketch root folder, main
-     * file excluded
+     * file excluded.
      */
     rootFolderFiles: string[];
-    /** Default FQBN set in project file (sketch.yaml) */
+    /** Default FQBN set in project file (sketch.yaml). */
     defaultFqbn: string;
-    /** Default Port set in project file (sketch.yaml) */
+    /** Default Port set in project file (sketch.yaml). */
     defaultPort: string;
-    /** Default Protocol set in project file (sketch.yaml) */
+    /** Default Protocol set in project file (sketch.yaml). */
     defaultProtocol: string;
-    /** List of profiles present in the project file (sketch.yaml) */
+    /** List of profiles present in the project file (sketch.yaml). */
     profiles: SketchProfile[];
-    /** Default profile set in the project file (sketch.yaml) */
+    /** Default profile set in the project file (sketch.yaml). */
     defaultProfile: SketchProfile | undefined;
-    /** Default Programmer set in project file (sketch.yaml) */
+    /** Default Programmer set in project file (sketch.yaml). */
     defaultProgrammer: string;
+    /** Default Port configuration set in project file (sketch.yaml). */
+    defaultPortConfig: MonitorPortConfiguration | undefined;
+}
+
+export interface MonitorPortConfiguration {
+    /** The port configuration parameters. */
+    settings: MonitorPortSetting[];
+}
+
+export interface MonitorPortSetting {
+    /** The setting identifier. */
+    settingId: string;
+    /** The setting value. */
+    value: string;
 }
 
 export interface SketchProfile {
-    /** Name of the profile */
+    /** Name of the profile. */
     name: string;
-    /** FQBN used by the profile */
+    /** FQBN used by the profile. */
     fqbn: string;
-    /** Programmer used by the profile */
+    /** Programmer used by the profile. */
     programmer: string;
+    /** Default Port in this profile. */
+    port: string;
+    /** Default Port configuration set in project file (sketch.yaml). */
+    portConfig: MonitorPortConfiguration | undefined;
+    /** Default Protocol in this profile. */
+    protocol: string;
 }
 
 function createBaseInstance(): Instance {
@@ -1936,6 +1956,7 @@ function createBaseSketch(): Sketch {
         profiles: [],
         defaultProfile: undefined,
         defaultProgrammer: '',
+        defaultPortConfig: undefined,
     };
 }
 
@@ -1979,6 +2000,12 @@ export const Sketch = {
         }
         if (message.defaultProgrammer !== '') {
             writer.uint32(90).string(message.defaultProgrammer);
+        }
+        if (message.defaultPortConfig !== undefined) {
+            MonitorPortConfiguration.encode(
+                message.defaultPortConfig,
+                writer.uint32(98).fork()
+            ).ldelim();
         }
         return writer;
     },
@@ -2073,6 +2100,16 @@ export const Sketch = {
 
                     message.defaultProgrammer = reader.string();
                     continue;
+                case 12:
+                    if (tag !== 98) {
+                        break;
+                    }
+
+                    message.defaultPortConfig = MonitorPortConfiguration.decode(
+                        reader,
+                        reader.uint32()
+                    );
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -2115,6 +2152,9 @@ export const Sketch = {
             defaultProgrammer: isSet(object.defaultProgrammer)
                 ? String(object.defaultProgrammer)
                 : '',
+            defaultPortConfig: isSet(object.defaultPortConfig)
+                ? MonitorPortConfiguration.fromJSON(object.defaultPortConfig)
+                : undefined,
         };
     },
 
@@ -2157,6 +2197,10 @@ export const Sketch = {
                 : undefined);
         message.defaultProgrammer !== undefined &&
             (obj.defaultProgrammer = message.defaultProgrammer);
+        message.defaultPortConfig !== undefined &&
+            (obj.defaultPortConfig = message.defaultPortConfig
+                ? MonitorPortConfiguration.toJSON(message.defaultPortConfig)
+                : undefined);
         return obj;
     },
 
@@ -2182,12 +2226,185 @@ export const Sketch = {
                 ? SketchProfile.fromPartial(object.defaultProfile)
                 : undefined;
         message.defaultProgrammer = object.defaultProgrammer ?? '';
+        message.defaultPortConfig =
+            object.defaultPortConfig !== undefined &&
+            object.defaultPortConfig !== null
+                ? MonitorPortConfiguration.fromPartial(object.defaultPortConfig)
+                : undefined;
+        return message;
+    },
+};
+
+function createBaseMonitorPortConfiguration(): MonitorPortConfiguration {
+    return { settings: [] };
+}
+
+export const MonitorPortConfiguration = {
+    encode(
+        message: MonitorPortConfiguration,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        for (const v of message.settings) {
+            MonitorPortSetting.encode(v!, writer.uint32(10).fork()).ldelim();
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): MonitorPortConfiguration {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseMonitorPortConfiguration();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.settings.push(
+                        MonitorPortSetting.decode(reader, reader.uint32())
+                    );
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): MonitorPortConfiguration {
+        return {
+            settings: Array.isArray(object?.settings)
+                ? object.settings.map((e: any) =>
+                      MonitorPortSetting.fromJSON(e)
+                  )
+                : [],
+        };
+    },
+
+    toJSON(message: MonitorPortConfiguration): unknown {
+        const obj: any = {};
+        if (message.settings) {
+            obj.settings = message.settings.map((e) =>
+                e ? MonitorPortSetting.toJSON(e) : undefined
+            );
+        } else {
+            obj.settings = [];
+        }
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<MonitorPortConfiguration>
+    ): MonitorPortConfiguration {
+        return MonitorPortConfiguration.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<MonitorPortConfiguration>
+    ): MonitorPortConfiguration {
+        const message = createBaseMonitorPortConfiguration();
+        message.settings =
+            object.settings?.map((e) => MonitorPortSetting.fromPartial(e)) ||
+            [];
+        return message;
+    },
+};
+
+function createBaseMonitorPortSetting(): MonitorPortSetting {
+    return { settingId: '', value: '' };
+}
+
+export const MonitorPortSetting = {
+    encode(
+        message: MonitorPortSetting,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.settingId !== '') {
+            writer.uint32(10).string(message.settingId);
+        }
+        if (message.value !== '') {
+            writer.uint32(18).string(message.value);
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): MonitorPortSetting {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseMonitorPortSetting();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.settingId = reader.string();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.value = reader.string();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): MonitorPortSetting {
+        return {
+            settingId: isSet(object.settingId) ? String(object.settingId) : '',
+            value: isSet(object.value) ? String(object.value) : '',
+        };
+    },
+
+    toJSON(message: MonitorPortSetting): unknown {
+        const obj: any = {};
+        message.settingId !== undefined && (obj.settingId = message.settingId);
+        message.value !== undefined && (obj.value = message.value);
+        return obj;
+    },
+
+    create(base?: DeepPartial<MonitorPortSetting>): MonitorPortSetting {
+        return MonitorPortSetting.fromPartial(base ?? {});
+    },
+
+    fromPartial(object: DeepPartial<MonitorPortSetting>): MonitorPortSetting {
+        const message = createBaseMonitorPortSetting();
+        message.settingId = object.settingId ?? '';
+        message.value = object.value ?? '';
         return message;
     },
 };
 
 function createBaseSketchProfile(): SketchProfile {
-    return { name: '', fqbn: '', programmer: '' };
+    return {
+        name: '',
+        fqbn: '',
+        programmer: '',
+        port: '',
+        portConfig: undefined,
+        protocol: '',
+    };
 }
 
 export const SketchProfile = {
@@ -2203,6 +2420,18 @@ export const SketchProfile = {
         }
         if (message.programmer !== '') {
             writer.uint32(26).string(message.programmer);
+        }
+        if (message.port !== '') {
+            writer.uint32(34).string(message.port);
+        }
+        if (message.portConfig !== undefined) {
+            MonitorPortConfiguration.encode(
+                message.portConfig,
+                writer.uint32(42).fork()
+            ).ldelim();
+        }
+        if (message.protocol !== '') {
+            writer.uint32(50).string(message.protocol);
         }
         return writer;
     },
@@ -2236,6 +2465,30 @@ export const SketchProfile = {
 
                     message.programmer = reader.string();
                     continue;
+                case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+
+                    message.port = reader.string();
+                    continue;
+                case 5:
+                    if (tag !== 42) {
+                        break;
+                    }
+
+                    message.portConfig = MonitorPortConfiguration.decode(
+                        reader,
+                        reader.uint32()
+                    );
+                    continue;
+                case 6:
+                    if (tag !== 50) {
+                        break;
+                    }
+
+                    message.protocol = reader.string();
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -2252,6 +2505,11 @@ export const SketchProfile = {
             programmer: isSet(object.programmer)
                 ? String(object.programmer)
                 : '',
+            port: isSet(object.port) ? String(object.port) : '',
+            portConfig: isSet(object.portConfig)
+                ? MonitorPortConfiguration.fromJSON(object.portConfig)
+                : undefined,
+            protocol: isSet(object.protocol) ? String(object.protocol) : '',
         };
     },
 
@@ -2261,6 +2519,12 @@ export const SketchProfile = {
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
         message.programmer !== undefined &&
             (obj.programmer = message.programmer);
+        message.port !== undefined && (obj.port = message.port);
+        message.portConfig !== undefined &&
+            (obj.portConfig = message.portConfig
+                ? MonitorPortConfiguration.toJSON(message.portConfig)
+                : undefined);
+        message.protocol !== undefined && (obj.protocol = message.protocol);
         return obj;
     },
 
@@ -2273,6 +2537,12 @@ export const SketchProfile = {
         message.name = object.name ?? '';
         message.fqbn = object.fqbn ?? '';
         message.programmer = object.programmer ?? '';
+        message.port = object.port ?? '';
+        message.portConfig =
+            object.portConfig !== undefined && object.portConfig !== null
+                ? MonitorPortConfiguration.fromPartial(object.portConfig)
+                : undefined;
+        message.protocol = object.protocol ?? '';
         return message;
     },
 };

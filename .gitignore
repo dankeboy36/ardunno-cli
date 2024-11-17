@@ -3,3 +3,4 @@ arduino-cli
 .DS_Store
 *.ts.bak
 dist
+schemas

@@ -7,140 +7,151 @@ import _m0 from 'protobufjs/minimal';
  * Any missing field will be kept at the default value.
  */
 export interface Configuration {
+    /** The directories configuration. */
     directories: Configuration_Directories | undefined;
+    /** The network configuration. */
     network: Configuration_Network | undefined;
+    /** The sketch configuration. */
     sketch: Configuration_Sketch | undefined;
+    /** The build cache configuration. */
     buildCache: Configuration_BuildCache | undefined;
+    /** The board manager configuration. */
     boardManager: Configuration_BoardManager | undefined;
+    /** The daemon configuration. */
     daemon: Configuration_Daemon | undefined;
+    /** The console output configuration. */
     output: Configuration_Output | undefined;
+    /** The logging configuration. */
     logging: Configuration_Logging | undefined;
+    /** The library configuration. */
     library: Configuration_Library | undefined;
+    /** The updater configuration. */
     updater: Configuration_Updater | undefined;
+    /** The language locale to use. */
     locale?: string | undefined;
 }
 
 export interface Configuration_Directories {
-    /** Data directory */
+    /** Data directory. */
     data: string;
-    /** User directory */
+    /** User directory. */
     user: string;
-    /** Downloads directory */
+    /** Downloads directory. */
     downloads: string;
-    /** The directory where the built-in resources are installed */
+    /** The directory where the built-in resources are installed. */
     builtin?: Configuration_Directories_Builtin | undefined;
 }
 
 export interface Configuration_Directories_Builtin {
-    /** The directory where the built-in libraries are installed */
+    /** The directory where the built-in libraries are installed. */
     libraries?: string | undefined;
 }
 
 export interface Configuration_Network {
-    /** Extra user-agent information to be appended in network requests */
+    /** Extra user-agent information to be appended in network requests. */
     extraUserAgent?: string | undefined;
-    /** The proxy to use for network requests */
+    /** The proxy to use for network requests. */
     proxy?: string | undefined;
 }
 
 export interface Configuration_Sketch {
-    /** Set to true to always export binaries to the sketch directory */
+    /** Set to true to always export binaries to the sketch directory. */
     alwaysExportBinaries: boolean;
 }
 
 export interface Configuration_BuildCache {
-    /** The minimum number of compilations before the cache is purged */
+    /** The minimum number of compilations before the cache is purged. */
     compilationsBeforePurge: number;
-    /** Time to live of the cache in seconds */
+    /** Time to live of the cache in seconds. */
     ttlSecs: number;
 }
 
 export interface Configuration_BoardManager {
-    /** Additional URLs to be used for the board manager */
+    /** Additional URLs to be used for the board manager. */
     additionalUrls: string[];
 }
 
 export interface Configuration_Daemon {
-    /** The TCP port of the daemon */
+    /** The TCP port of the daemon. */
     port: string;
 }
 
 export interface Configuration_Output {
-    /** Set to true to disable coloring of the output */
+    /** Set to true to disable coloring of the output. */
     noColor: boolean;
 }
 
 export interface Configuration_Logging {
-    /** The logging level */
+    /** The logging level. */
     level: string;
-    /** The logging format */
+    /** The logging format. */
     format: string;
-    /** The logging file */
+    /** The logging file. */
     file?: string | undefined;
 }
 
 export interface Configuration_Library {
     /**
      * Set to true to enable library installation from zip archives or git
-     * repositories
+     * repositories.
      */
     enableUnsafeInstall: boolean;
 }
 
 export interface Configuration_Updater {
-    /** Set to true to enable notifications for updates */
+    /** Set to true to enable notifications for updates. */
     enableNotification: boolean;
 }
 
 export interface ConfigurationGetRequest {}
 
 export interface ConfigurationGetResponse {
-    /** The current configuration */
+    /** The current configuration. */
     configuration: Configuration | undefined;
 }
 
 export interface ConfigurationSaveRequest {
-    /** The format of the encoded settings, allowed values are "json" and "yaml" */
+    /** The format of the encoded settings, allowed values are "json" and "yaml". */
     settingsFormat: string;
 }
 
 export interface ConfigurationSaveResponse {
-    /** The encoded settings */
+    /** The encoded settings. */
     encodedSettings: string;
 }
 
 export interface ConfigurationOpenRequest {
-    /** The encoded settings */
+    /** The encoded settings. */
     encodedSettings: string;
-    /** The format of the encoded settings, allowed values are "json" and "yaml" */
+    /** The format of the encoded settings, allowed values are "json" and "yaml". */
     settingsFormat: string;
 }
 
 export interface ConfigurationOpenResponse {
     /**
      * Warnings that occurred while opening the configuration (e.g. unknown keys,
-     * or invalid values)
+     * or invalid values).
      */
     warnings: string[];
 }
 
 export interface SettingsGetValueRequest {
-    /** The key to get */
+    /** The key to get. */
     key: string;
     /**
      * The format of the encoded_value (default is "json", allowed values are
-     * "json" and "yaml)
+     * "json" and "yaml).
      */
     valueFormat: string;
 }
 
 export interface SettingsGetValueResponse {
-    /** The value of the key (encoded) */
+    /** The value of the key (encoded). */
     encodedValue: string;
 }
 
 export interface SettingsSetValueRequest {
-    /** The key to change */
+    /** The key to change. */
     key: string;
     /**
      * The new value (encoded), no objects, only scalar or array of scalars are
@@ -149,7 +160,7 @@ export interface SettingsSetValueRequest {
     encodedValue: string;
     /**
      * The format of the encoded_value (default is "json", allowed values are
-     * "json", "yaml" and "cli")
+     * "json", "yaml" and "cli").
      */
     valueFormat: string;
 }
@@ -159,14 +170,14 @@ export interface SettingsSetValueResponse {}
 export interface SettingsEnumerateRequest {}
 
 export interface SettingsEnumerateResponse {
-    /** The list of key/value pairs */
+    /** The list of key/value pairs. */
     entries: SettingsEnumerateResponse_Entry[];
 }
 
 export interface SettingsEnumerateResponse_Entry {
-    /** The key */
+    /** The key. */
     key: string;
-    /** The key type */
+    /** The key type. */
     type: string;
 }
 
