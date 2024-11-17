@@ -1,30 +1,47 @@
 {
   "name": "ardunno-cli",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "nice-grpc API for the Arduino CLI",
-  "license": "MIT",
-  "author": "dankeboy36",
+  "keywords": [
+    "arduino",
+    "arduino-cli",
+    "grpc",
+    "nice-grpc",
+    "proto"
+  ],
+  "bugs": {
+    "url": "https://github.com/dankeboy36/ardunno-cli/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dankeboy36/ardunno-cli.git"
   },
-  "bugs": {
-    "url": "https://github.com/dankeboy36/ardunno-cli/issues"
-  },
-  "type": "module",
+  "license": "MIT",
+  "author": "dankeboy36",
+  "type": "commonjs",
   "exports": {
     ".": "./dist/api/index.js",
     "./api": "./dist/api/index.js",
     "./config": "./dist/config/index.js"
   },
   "main": "./dist/api/index.js",
+  "typesVersions": {
+    "*": {
+      "api": [
+        "dist/api/index.d.ts"
+      ],
+      "config": [
+        "dist/config/index.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist",
     "schemas"
   ],
   "scripts": {
     "compile": "tsc -p ./",
-    "format": "prettier --write . && prettier-package-json --write ./package.json",
+    "format": "prettier --write .",
     "generate:api": "ardunno-cli generate v1.1.0 -o src/api -f && ctix single -p ./tsconfig.json -o ./src/api/api.ts -w && replace-in-files --string ' type ' --replacement '' ./src/api/index.ts",
     "generate:config": "node ./scripts/getSchema.js v1.1.0 && json2ts --input ./schemas/arduino-cli-schema.json --output ./src/config/index.ts --no-format --no-additionalProperties",
     "lint": "eslint ./src --ext ts",
@@ -46,27 +63,10 @@
     "ipull": "^3.8.0",
     "json-schema-to-typescript": "^13.0.1",
     "prettier": "^2.8.8",
-    "prettier-package-json": "^2.8.0",
+    "prettier-plugin-packagejson": "^2.5.3",
     "replace-in-files-cli": "^2.2.0",
     "semver": "^7.6.3",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.3"
-  },
-  "keywords": [
-    "arduino",
-    "arduino-cli",
-    "grpc",
-    "nice-grpc",
-    "proto"
-  ],
-  "typesVersions": {
-    "*": {
-      "api": [
-        "dist/api/index.d.ts"
-      ],
-      "config": [
-        "dist/config/index.d.ts"
-      ]
-    }
   }
 }
