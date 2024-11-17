@@ -55,7 +55,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.59.7",
     "@typescript-eslint/parser": "^5.59.7",
-    "ardunno-cli-gen": "^0.1.7",
+    "ardunno-cli-gen": "^0.1.10",
     "ctix": "^1.8.2",
     "eslint": "^8.41.0",
     "eslint-config-prettier": "^8.8.0",
