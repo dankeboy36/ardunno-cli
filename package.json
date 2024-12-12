@@ -1,6 +1,6 @@
 {
   "name": "ardunno-cli",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "nice-grpc API for the Arduino CLI",
   "keywords": [
     "arduino",
@@ -42,8 +42,8 @@
   "scripts": {
     "compile": "tsc -p ./",
     "format": "prettier --write .",
-    "generate:api": "ardunno-cli generate v1.1.0 -o src/api -f && ctix single -p ./tsconfig.json -o ./src/api/api.ts -w && replace-in-files --string ' type ' --replacement '' ./src/api/index.ts",
-    "generate:config": "node ./scripts/getSchema.js v1.1.0 && json2ts --input ./schemas/arduino-cli-schema.json --output ./src/config/index.ts --no-format --no-additionalProperties",
+    "generate:api": "ardunno-cli generate v1.1.1 -o src/api -f && ctix single -p ./tsconfig.json -o ./src/api/api.ts -w && replace-in-files --string ' type ' --replacement '' ./src/api/index.ts",
+    "generate:config": "node ./scripts/getSchema.js v1.1.1 && json2ts --input ./schemas/arduino-cli-schema.json --output ./src/config/index.ts --no-format --no-additionalProperties",
     "lint": "eslint ./src --ext ts",
     "prepublishOnly": "npm run generate:api && npm run generate:config && npm run format && npm run compile && npm run lint",
     "watch": "tsc -p ./ -w"
