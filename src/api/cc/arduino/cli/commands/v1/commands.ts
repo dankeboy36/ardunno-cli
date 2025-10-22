@@ -6,6 +6,8 @@ import { Status } from '../../../../../google/rpc/status';
 import {
     BoardDetailsRequest,
     BoardDetailsResponse,
+    BoardIdentifyRequest,
+    BoardIdentifyResponse,
     BoardListAllRequest,
     BoardListAllResponse,
     BoardListRequest,
@@ -3153,6 +3155,15 @@ export const ArduinoCoreServiceDefinition = {
             responseStream: false,
             options: {},
         },
+        /** Identify a board using the given properties. */
+        boardIdentify: {
+            name: 'BoardIdentify',
+            requestType: BoardIdentifyRequest,
+            requestStream: false,
+            responseType: BoardIdentifyResponse,
+            responseStream: false,
+            options: {},
+        },
         /** List boards connection and disconnected events. */
         boardListWatch: {
             name: 'BoardListWatch',
@@ -3564,6 +3575,11 @@ export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
         request: BoardSearchRequest,
         context: CallContext & CallContextExt
     ): Promise<DeepPartial<BoardSearchResponse>>;
+    /** Identify a board using the given properties. */
+    boardIdentify(
+        request: BoardIdentifyRequest,
+        context: CallContext & CallContextExt
+    ): Promise<DeepPartial<BoardIdentifyResponse>>;
     /** List boards connection and disconnected events. */
     boardListWatch(
         request: BoardListWatchRequest,
@@ -3834,6 +3850,11 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
         request: DeepPartial<BoardSearchRequest>,
         options?: CallOptions & CallOptionsExt
     ): Promise<BoardSearchResponse>;
+    /** Identify a board using the given properties. */
+    boardIdentify(
+        request: DeepPartial<BoardIdentifyRequest>,
+        options?: CallOptions & CallOptionsExt
+    ): Promise<BoardIdentifyResponse>;
     /** List boards connection and disconnected events. */
     boardListWatch(
         request: DeepPartial<BoardListWatchRequest>,

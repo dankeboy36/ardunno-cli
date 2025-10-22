@@ -2,7 +2,7 @@
 
 [`nice-grpc`](https://github.com/deeplay-io/nice-grpc) API for the [Arduino CLI](https://github.com/arduino/arduino-cli).
 
-The CLI API code in this repository is generated from the [`.proto` files](https://github.com/arduino/arduino-cli/tree/master/rpc) of the Arduino CLI. The API is compatible with [Arduino CLI `v1.1.1`](https://github.com/arduino/arduino-cli/releases/tag/v1.1.1). This project uses [`ardunno-cli-gen`](https://github.com/dankeboy36/ardunno-cli-gen/) for the API generation.
+The CLI API code in this repository is generated from the [`.proto` files](https://github.com/arduino/arduino-cli/tree/master/rpc) of the Arduino CLI. The API is compatible with [Arduino CLI `v1.3.1`](https://github.com/arduino/arduino-cli/releases/tag/v1.3.1). This project uses [`ardunno-cli-gen`](https://github.com/dankeboy36/ardunno-cli-gen/) for the API generation.
 
 ## Installing
 

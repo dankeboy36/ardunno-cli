@@ -14,6 +14,10 @@ export interface ArduinoCLIConfigurationSchema {
          * the URLs to any additional Boards Manager package index files needed for your boards platforms.
          */
         additional_urls?: string[];
+        /**
+         * set to `true` to allow installation of packages that do not pass the checksum test. This is considered an unsafe installation method and should be used only for development purposes.
+         */
+        enable_unsafe_install?: boolean;
     };
     /**
      * configuration options related to the compilation cache
@@ -34,7 +38,7 @@ export interface ArduinoCLIConfigurationSchema {
         /**
          * cache expiration time of build folders. If the cache is hit by a compilation the corresponding build files lifetime is renewed. The value format must be a valid input for time.ParseDuration(), defaults to `720h` (30 days)
          */
-        ttl?: number | string;
+        ttl?: string;
     };
     /**
      * options related to running Arduino CLI as a [gRPC] server.
@@ -121,6 +125,32 @@ export interface ArduinoCLIConfigurationSchema {
          * controls the use of metrics.
          */
         enabled?: boolean;
+    };
+    /**
+     * settings related to network connections.
+     */
+    network?: {
+        /**
+         * proxy settings for network connections.
+         */
+        proxy?: string;
+        /**
+         * extra string to append to the user agent string in HTTP requests.
+         */
+        user_agent_ext?: string;
+        /**
+         * timeout for network connections, defaults to '30s'
+         */
+        connection_timeout?: string;
+        /**
+         * settings related to the Arduino Cloud API.
+         */
+        cloud_api?: {
+            /**
+             * do not call the Arduino Cloud API to detect an unknown board
+             */
+            skip_board_detection_calls?: boolean;
+        };
     };
     /**
      * settings related to text output.
