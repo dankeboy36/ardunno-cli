@@ -134,6 +134,8 @@ export enum LibraryLocation {
     LIBRARY_LOCATION_REFERENCED_PLATFORM_BUILTIN = 3,
     /** LIBRARY_LOCATION_UNMANAGED - Outside the `libraries` folders managed by the CLI. */
     LIBRARY_LOCATION_UNMANAGED = 4,
+    /** LIBRARY_LOCATION_PROFILE - Library is part of the sketch profile. */
+    LIBRARY_LOCATION_PROFILE = 5,
     UNRECOGNIZED = -1,
 }
 
@@ -154,6 +156,9 @@ export function libraryLocationFromJSON(object: any): LibraryLocation {
         case 4:
         case 'LIBRARY_LOCATION_UNMANAGED':
             return LibraryLocation.LIBRARY_LOCATION_UNMANAGED;
+        case 5:
+        case 'LIBRARY_LOCATION_PROFILE':
+            return LibraryLocation.LIBRARY_LOCATION_PROFILE;
         case -1:
         case 'UNRECOGNIZED':
         default:
@@ -173,6 +178,8 @@ export function libraryLocationToJSON(object: LibraryLocation): string {
             return 'LIBRARY_LOCATION_REFERENCED_PLATFORM_BUILTIN';
         case LibraryLocation.LIBRARY_LOCATION_UNMANAGED:
             return 'LIBRARY_LOCATION_UNMANAGED';
+        case LibraryLocation.LIBRARY_LOCATION_PROFILE:
+            return 'LIBRARY_LOCATION_PROFILE';
         case LibraryLocation.UNRECOGNIZED:
         default:
             return 'UNRECOGNIZED';

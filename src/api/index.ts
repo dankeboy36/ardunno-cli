@@ -20,6 +20,9 @@ export {
     BoardListItem,
     BoardSearchRequest,
     BoardSearchResponse,
+    BoardIdentifyRequest,
+    BoardIdentifyRequest_PropertiesEntry,
+    BoardIdentifyResponse,
 } from './cc/arduino/cli/commands/v1/board';
 export {
     failedInstanceInitReasonFromJSON,

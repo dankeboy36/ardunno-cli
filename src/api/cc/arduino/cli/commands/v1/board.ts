@@ -157,6 +157,11 @@ export interface BoardListRequest {
      * (e.g., `arduino:avr:uno`).
      */
     fqbn: string;
+    /**
+     * If set to true, when a board cannot be identified using the installed
+     * platforms, the cloud API will not be called to detect the board.
+     */
+    skipCloudApiForBoardDetection: boolean;
 }
 
 export interface BoardListResponse {
@@ -190,6 +195,11 @@ export interface BoardListAllResponse {
 export interface BoardListWatchRequest {
     /** Arduino Core Service instance from the `Init` response. */
     instance: Instance | undefined;
+    /**
+     * If set to true, when a board cannot be identified using the installed
+     * platforms, the cloud API will not be called to detect the board.
+     */
+    skipCloudApiForBoardDetection: boolean;
 }
 
 export interface BoardListWatchResponse {
@@ -226,6 +236,28 @@ export interface BoardSearchRequest {
 
 export interface BoardSearchResponse {
     /** List of installed and installable boards. */
+    boards: BoardListItem[];
+}
+
+export interface BoardIdentifyRequest {
+    /** Arduino Core Service instance from the `Init` response. */
+    instance: Instance | undefined;
+    /** A set of properties to search (can be taken from a Port message). */
+    properties: { [key: string]: string };
+    /**
+     * If set to true, when a board cannot be identified using the installed
+     * platforms, the cloud API will be called to detect the board.
+     */
+    useCloudApiForUnknownBoardDetection: boolean;
+}
+
+export interface BoardIdentifyRequest_PropertiesEntry {
+    key: string;
+    value: string;
+}
+
+export interface BoardIdentifyResponse {
+    /** List of matching boards (they may have an FQBN with options set). */
     boards: BoardListItem[];
 }
 
@@ -1660,7 +1692,12 @@ export const ConfigValue = {
 };
 
 function createBaseBoardListRequest(): BoardListRequest {
-    return { instance: undefined, timeout: 0, fqbn: '' };
+    return {
+        instance: undefined,
+        timeout: 0,
+        fqbn: '',
+        skipCloudApiForBoardDetection: false,
+    };
 }
 
 export const BoardListRequest = {
@@ -1679,6 +1716,9 @@ export const BoardListRequest = {
         }
         if (message.fqbn !== '') {
             writer.uint32(26).string(message.fqbn);
+        }
+        if (message.skipCloudApiForBoardDetection === true) {
+            writer.uint32(32).bool(message.skipCloudApiForBoardDetection);
         }
         return writer;
     },
@@ -1712,6 +1752,13 @@ export const BoardListRequest = {
 
                     message.fqbn = reader.string();
                     continue;
+                case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+
+                    message.skipCloudApiForBoardDetection = reader.bool();
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -1728,6 +1775,11 @@ export const BoardListRequest = {
                 : undefined,
             timeout: isSet(object.timeout) ? Number(object.timeout) : 0,
             fqbn: isSet(object.fqbn) ? String(object.fqbn) : '',
+            skipCloudApiForBoardDetection: isSet(
+                object.skipCloudApiForBoardDetection
+            )
+                ? Boolean(object.skipCloudApiForBoardDetection)
+                : false,
         };
     },
 
@@ -1740,6 +1792,9 @@ export const BoardListRequest = {
         message.timeout !== undefined &&
             (obj.timeout = Math.round(message.timeout));
         message.fqbn !== undefined && (obj.fqbn = message.fqbn);
+        message.skipCloudApiForBoardDetection !== undefined &&
+            (obj.skipCloudApiForBoardDetection =
+                message.skipCloudApiForBoardDetection);
         return obj;
     },
 
@@ -1755,6 +1810,8 @@ export const BoardListRequest = {
                 : undefined;
         message.timeout = object.timeout ?? 0;
         message.fqbn = object.fqbn ?? '';
+        message.skipCloudApiForBoardDetection =
+            object.skipCloudApiForBoardDetection ?? false;
         return message;
     },
 };
@@ -2134,7 +2191,7 @@ export const BoardListAllResponse = {
 };
 
 function createBaseBoardListWatchRequest(): BoardListWatchRequest {
-    return { instance: undefined };
+    return { instance: undefined, skipCloudApiForBoardDetection: false };
 }
 
 export const BoardListWatchRequest = {
@@ -2147,6 +2204,9 @@ export const BoardListWatchRequest = {
                 message.instance,
                 writer.uint32(10).fork()
             ).ldelim();
+        }
+        if (message.skipCloudApiForBoardDetection === true) {
+            writer.uint32(16).bool(message.skipCloudApiForBoardDetection);
         }
         return writer;
     },
@@ -2169,6 +2229,13 @@ export const BoardListWatchRequest = {
 
                     message.instance = Instance.decode(reader, reader.uint32());
                     continue;
+                case 2:
+                    if (tag !== 16) {
+                        break;
+                    }
+
+                    message.skipCloudApiForBoardDetection = reader.bool();
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -2183,6 +2250,11 @@ export const BoardListWatchRequest = {
             instance: isSet(object.instance)
                 ? Instance.fromJSON(object.instance)
                 : undefined,
+            skipCloudApiForBoardDetection: isSet(
+                object.skipCloudApiForBoardDetection
+            )
+                ? Boolean(object.skipCloudApiForBoardDetection)
+                : false,
         };
     },
 
@@ -2192,6 +2264,9 @@ export const BoardListWatchRequest = {
             (obj.instance = message.instance
                 ? Instance.toJSON(message.instance)
                 : undefined);
+        message.skipCloudApiForBoardDetection !== undefined &&
+            (obj.skipCloudApiForBoardDetection =
+                message.skipCloudApiForBoardDetection);
         return obj;
     },
 
@@ -2207,6 +2282,8 @@ export const BoardListWatchRequest = {
             object.instance !== undefined && object.instance !== null
                 ? Instance.fromPartial(object.instance)
                 : undefined;
+        message.skipCloudApiForBoardDetection =
+            object.skipCloudApiForBoardDetection ?? false;
         return message;
     },
 };
@@ -2605,6 +2682,309 @@ export const BoardSearchResponse = {
 
     fromPartial(object: DeepPartial<BoardSearchResponse>): BoardSearchResponse {
         const message = createBaseBoardSearchResponse();
+        message.boards =
+            object.boards?.map((e) => BoardListItem.fromPartial(e)) || [];
+        return message;
+    },
+};
+
+function createBaseBoardIdentifyRequest(): BoardIdentifyRequest {
+    return {
+        instance: undefined,
+        properties: {},
+        useCloudApiForUnknownBoardDetection: false,
+    };
+}
+
+export const BoardIdentifyRequest = {
+    encode(
+        message: BoardIdentifyRequest,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.instance !== undefined) {
+            Instance.encode(
+                message.instance,
+                writer.uint32(10).fork()
+            ).ldelim();
+        }
+        Object.entries(message.properties).forEach(([key, value]) => {
+            BoardIdentifyRequest_PropertiesEntry.encode(
+                { key: key as any, value },
+                writer.uint32(18).fork()
+            ).ldelim();
+        });
+        if (message.useCloudApiForUnknownBoardDetection === true) {
+            writer.uint32(24).bool(message.useCloudApiForUnknownBoardDetection);
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BoardIdentifyRequest {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseBoardIdentifyRequest();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.instance = Instance.decode(reader, reader.uint32());
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    const entry2 = BoardIdentifyRequest_PropertiesEntry.decode(
+                        reader,
+                        reader.uint32()
+                    );
+                    if (entry2.value !== undefined) {
+                        message.properties[entry2.key] = entry2.value;
+                    }
+                    continue;
+                case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+
+                    message.useCloudApiForUnknownBoardDetection = reader.bool();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): BoardIdentifyRequest {
+        return {
+            instance: isSet(object.instance)
+                ? Instance.fromJSON(object.instance)
+                : undefined,
+            properties: isObject(object.properties)
+                ? Object.entries(object.properties).reduce<{
+                      [key: string]: string;
+                  }>((acc, [key, value]) => {
+                      acc[key] = String(value);
+                      return acc;
+                  }, {})
+                : {},
+            useCloudApiForUnknownBoardDetection: isSet(
+                object.useCloudApiForUnknownBoardDetection
+            )
+                ? Boolean(object.useCloudApiForUnknownBoardDetection)
+                : false,
+        };
+    },
+
+    toJSON(message: BoardIdentifyRequest): unknown {
+        const obj: any = {};
+        message.instance !== undefined &&
+            (obj.instance = message.instance
+                ? Instance.toJSON(message.instance)
+                : undefined);
+        obj.properties = {};
+        if (message.properties) {
+            Object.entries(message.properties).forEach(([k, v]) => {
+                obj.properties[k] = v;
+            });
+        }
+        message.useCloudApiForUnknownBoardDetection !== undefined &&
+            (obj.useCloudApiForUnknownBoardDetection =
+                message.useCloudApiForUnknownBoardDetection);
+        return obj;
+    },
+
+    create(base?: DeepPartial<BoardIdentifyRequest>): BoardIdentifyRequest {
+        return BoardIdentifyRequest.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<BoardIdentifyRequest>
+    ): BoardIdentifyRequest {
+        const message = createBaseBoardIdentifyRequest();
+        message.instance =
+            object.instance !== undefined && object.instance !== null
+                ? Instance.fromPartial(object.instance)
+                : undefined;
+        message.properties = Object.entries(object.properties ?? {}).reduce<{
+            [key: string]: string;
+        }>((acc, [key, value]) => {
+            if (value !== undefined) {
+                acc[key] = String(value);
+            }
+            return acc;
+        }, {});
+        message.useCloudApiForUnknownBoardDetection =
+            object.useCloudApiForUnknownBoardDetection ?? false;
+        return message;
+    },
+};
+
+function createBaseBoardIdentifyRequest_PropertiesEntry(): BoardIdentifyRequest_PropertiesEntry {
+    return { key: '', value: '' };
+}
+
+export const BoardIdentifyRequest_PropertiesEntry = {
+    encode(
+        message: BoardIdentifyRequest_PropertiesEntry,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        if (message.key !== '') {
+            writer.uint32(10).string(message.key);
+        }
+        if (message.value !== '') {
+            writer.uint32(18).string(message.value);
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BoardIdentifyRequest_PropertiesEntry {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseBoardIdentifyRequest_PropertiesEntry();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.key = reader.string();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+
+                    message.value = reader.string();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): BoardIdentifyRequest_PropertiesEntry {
+        return {
+            key: isSet(object.key) ? String(object.key) : '',
+            value: isSet(object.value) ? String(object.value) : '',
+        };
+    },
+
+    toJSON(message: BoardIdentifyRequest_PropertiesEntry): unknown {
+        const obj: any = {};
+        message.key !== undefined && (obj.key = message.key);
+        message.value !== undefined && (obj.value = message.value);
+        return obj;
+    },
+
+    create(
+        base?: DeepPartial<BoardIdentifyRequest_PropertiesEntry>
+    ): BoardIdentifyRequest_PropertiesEntry {
+        return BoardIdentifyRequest_PropertiesEntry.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<BoardIdentifyRequest_PropertiesEntry>
+    ): BoardIdentifyRequest_PropertiesEntry {
+        const message = createBaseBoardIdentifyRequest_PropertiesEntry();
+        message.key = object.key ?? '';
+        message.value = object.value ?? '';
+        return message;
+    },
+};
+
+function createBaseBoardIdentifyResponse(): BoardIdentifyResponse {
+    return { boards: [] };
+}
+
+export const BoardIdentifyResponse = {
+    encode(
+        message: BoardIdentifyResponse,
+        writer: _m0.Writer = _m0.Writer.create()
+    ): _m0.Writer {
+        for (const v of message.boards) {
+            BoardListItem.encode(v!, writer.uint32(10).fork()).ldelim();
+        }
+        return writer;
+    },
+
+    decode(
+        input: _m0.Reader | Uint8Array,
+        length?: number
+    ): BoardIdentifyResponse {
+        const reader =
+            input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseBoardIdentifyResponse();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+
+                    message.boards.push(
+                        BoardListItem.decode(reader, reader.uint32())
+                    );
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+
+    fromJSON(object: any): BoardIdentifyResponse {
+        return {
+            boards: Array.isArray(object?.boards)
+                ? object.boards.map((e: any) => BoardListItem.fromJSON(e))
+                : [],
+        };
+    },
+
+    toJSON(message: BoardIdentifyResponse): unknown {
+        const obj: any = {};
+        if (message.boards) {
+            obj.boards = message.boards.map((e) =>
+                e ? BoardListItem.toJSON(e) : undefined
+            );
+        } else {
+            obj.boards = [];
+        }
+        return obj;
+    },
+
+    create(base?: DeepPartial<BoardIdentifyResponse>): BoardIdentifyResponse {
+        return BoardIdentifyResponse.fromPartial(base ?? {});
+    },
+
+    fromPartial(
+        object: DeepPartial<BoardIdentifyResponse>
+    ): BoardIdentifyResponse {
+        const message = createBaseBoardIdentifyResponse();
         message.boards =
             object.boards?.map((e) => BoardListItem.fromPartial(e)) || [];
         return message;
