@@ -84,8 +84,9 @@ async function main() {
       './schemas/arduino-cli-schema.json',
       '--output',
       './src/config/index.ts',
-      '--no-format',
       '--no-additionalProperties',
+      '--bannerComment',
+      '/* This file was automatically generated. DO NOT MODIFY IT BY HAND. **/',
     ],
     { cwd: repoRoot }
   )
