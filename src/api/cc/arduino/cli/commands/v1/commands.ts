@@ -26,6 +26,7 @@ import {
 import {
   DownloadProgress,
   Instance,
+  ProfileLibraryReference,
   Sketch,
   SketchProfile,
   TaskProgress,
@@ -460,6 +461,94 @@ export interface CleanDownloadCacheDirectoryRequest {
 }
 
 export interface CleanDownloadCacheDirectoryResponse {}
+
+export interface ProfileCreateRequest {
+  /** An Arduino Core instance. */
+  instance: Instance | undefined
+  /** Absolute path to Sketch folder. */
+  sketchPath: string
+  /** Name of the profile. */
+  profileName: string
+  /** FQBN of the provided profile. */
+  fqbn: string
+  /** Set the created profile as the default one. */
+  defaultProfile: boolean
+}
+
+export interface ProfileCreateResponse {}
+
+export interface ProfileLibAddRequest {
+  /** An Arduino Core instance. */
+  instance: Instance | undefined
+  /** Absolute path to Sketch folder. */
+  sketchPath: string
+  /** Name of the profile. */
+  profileName: string
+  /** The library to add to the profile. */
+  library: ProfileLibraryReference | undefined
+  /** Set to true to add also all the dependencies of the library. */
+  addDependencies?: boolean | undefined
+  /** Set to true to avoid overwriting an existing library in the profile. */
+  noOverwrite?: boolean | undefined
+}
+
+export interface ProfileLibAddResponse {
+  /** The library that has been added or overwritten to the profile. */
+  addedLibraries: ProfileLibraryReference[]
+  /**
+   * The libraries that have been skipped because they were already present in
+   * the profile and the no_overwrite option was set to true.
+   */
+  skippedLibraries: ProfileLibraryReference[]
+  /** Name of the profile. */
+  profileName: string
+}
+
+export interface ProfileLibRemoveRequest {
+  /** An Arduino Core instance. */
+  instance: Instance | undefined
+  /** Absolute path to Sketch folder. */
+  sketchPath: string
+  /** Name of the profile. */
+  profileName: string
+  /** The library to remove from the profile. */
+  library: ProfileLibraryReference | undefined
+  /**
+   * Set to true to remove also all the dependencies of the library that are not
+   * used by other libraries in the profile.
+   */
+  removeDependencies?: boolean | undefined
+}
+
+export interface ProfileLibRemoveResponse {
+  /** The libraries that have been removed from the profile. */
+  removedLibraries: ProfileLibraryReference[]
+  /** Name of the profile. */
+  profileName: string
+}
+
+export interface ProfileLibListRequest {
+  /** Absolute path to Sketch folder. */
+  sketchPath: string
+  /** Name of the profile. */
+  profileName: string
+}
+
+export interface ProfileLibListResponse {
+  /** The libraries in the profile. */
+  libraries: ProfileLibraryReference[]
+  /** Name of the profile. */
+  profileName: string
+}
+
+export interface ProfileSetDefaultRequest {
+  /** Absolute path to Sketch folder. */
+  sketchPath: string
+  /** Name of the profile. */
+  profileName: string
+}
+
+export interface ProfileSetDefaultResponse {}
 
 function createBaseCreateRequest(): CreateRequest {
   return {}
@@ -2960,6 +3049,1069 @@ export const CleanDownloadCacheDirectoryResponse = {
   },
 }
 
+function createBaseProfileCreateRequest(): ProfileCreateRequest {
+  return {
+    instance: undefined,
+    sketchPath: '',
+    profileName: '',
+    fqbn: '',
+    defaultProfile: false,
+  }
+}
+
+export const ProfileCreateRequest = {
+  encode(
+    message: ProfileCreateRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.instance !== undefined) {
+      Instance.encode(message.instance, writer.uint32(10).fork()).ldelim()
+    }
+    if (message.sketchPath !== '') {
+      writer.uint32(18).string(message.sketchPath)
+    }
+    if (message.profileName !== '') {
+      writer.uint32(26).string(message.profileName)
+    }
+    if (message.fqbn !== '') {
+      writer.uint32(34).string(message.fqbn)
+    }
+    if (message.defaultProfile !== false) {
+      writer.uint32(40).bool(message.defaultProfile)
+    }
+    return writer
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ProfileCreateRequest {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseProfileCreateRequest()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break
+          }
+
+          message.instance = Instance.decode(reader, reader.uint32())
+          continue
+        case 2:
+          if (tag !== 18) {
+            break
+          }
+
+          message.sketchPath = reader.string()
+          continue
+        case 3:
+          if (tag !== 26) {
+            break
+          }
+
+          message.profileName = reader.string()
+          continue
+        case 4:
+          if (tag !== 34) {
+            break
+          }
+
+          message.fqbn = reader.string()
+          continue
+        case 5:
+          if (tag !== 40) {
+            break
+          }
+
+          message.defaultProfile = reader.bool()
+          continue
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break
+      }
+      reader.skipType(tag & 7)
+    }
+    return message
+  },
+
+  fromJSON(object: any): ProfileCreateRequest {
+    return {
+      instance: isSet(object.instance)
+        ? Instance.fromJSON(object.instance)
+        : undefined,
+      sketchPath: isSet(object.sketchPath)
+        ? globalThis.String(object.sketchPath)
+        : '',
+      profileName: isSet(object.profileName)
+        ? globalThis.String(object.profileName)
+        : '',
+      fqbn: isSet(object.fqbn) ? globalThis.String(object.fqbn) : '',
+      defaultProfile: isSet(object.defaultProfile)
+        ? globalThis.Boolean(object.defaultProfile)
+        : false,
+    }
+  },
+
+  toJSON(message: ProfileCreateRequest): unknown {
+    const obj: any = {}
+    if (message.instance !== undefined) {
+      obj.instance = Instance.toJSON(message.instance)
+    }
+    if (message.sketchPath !== '') {
+      obj.sketchPath = message.sketchPath
+    }
+    if (message.profileName !== '') {
+      obj.profileName = message.profileName
+    }
+    if (message.fqbn !== '') {
+      obj.fqbn = message.fqbn
+    }
+    if (message.defaultProfile !== false) {
+      obj.defaultProfile = message.defaultProfile
+    }
+    return obj
+  },
+
+  create(base?: DeepPartial<ProfileCreateRequest>): ProfileCreateRequest {
+    return ProfileCreateRequest.fromPartial(base ?? {})
+  },
+  fromPartial(object: DeepPartial<ProfileCreateRequest>): ProfileCreateRequest {
+    const message = createBaseProfileCreateRequest()
+    message.instance =
+      object.instance !== undefined && object.instance !== null
+        ? Instance.fromPartial(object.instance)
+        : undefined
+    message.sketchPath = object.sketchPath ?? ''
+    message.profileName = object.profileName ?? ''
+    message.fqbn = object.fqbn ?? ''
+    message.defaultProfile = object.defaultProfile ?? false
+    return message
+  },
+}
+
+function createBaseProfileCreateResponse(): ProfileCreateResponse {
+  return {}
+}
+
+export const ProfileCreateResponse = {
+  encode(
+    _: ProfileCreateResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    return writer
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ProfileCreateResponse {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseProfileCreateResponse()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break
+      }
+      reader.skipType(tag & 7)
+    }
+    return message
+  },
+
+  fromJSON(_: any): ProfileCreateResponse {
+    return {}
+  },
+
+  toJSON(_: ProfileCreateResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  create(base?: DeepPartial<ProfileCreateResponse>): ProfileCreateResponse {
+    return ProfileCreateResponse.fromPartial(base ?? {})
+  },
+  fromPartial(_: DeepPartial<ProfileCreateResponse>): ProfileCreateResponse {
+    const message = createBaseProfileCreateResponse()
+    return message
+  },
+}
+
+function createBaseProfileLibAddRequest(): ProfileLibAddRequest {
+  return {
+    instance: undefined,
+    sketchPath: '',
+    profileName: '',
+    library: undefined,
+    addDependencies: undefined,
+    noOverwrite: undefined,
+  }
+}
+
+export const ProfileLibAddRequest = {
+  encode(
+    message: ProfileLibAddRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.instance !== undefined) {
+      Instance.encode(message.instance, writer.uint32(10).fork()).ldelim()
+    }
+    if (message.sketchPath !== '') {
+      writer.uint32(18).string(message.sketchPath)
+    }
+    if (message.profileName !== '') {
+      writer.uint32(26).string(message.profileName)
+    }
+    if (message.library !== undefined) {
+      ProfileLibraryReference.encode(
+        message.library,
+        writer.uint32(34).fork()
+      ).ldelim()
+    }
+    if (message.addDependencies !== undefined) {
+      writer.uint32(40).bool(message.addDependencies)
+    }
+    if (message.noOverwrite !== undefined) {
+      writer.uint32(48).bool(message.noOverwrite)
+    }
+    return writer
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ProfileLibAddRequest {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseProfileLibAddRequest()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break
+          }
+
+          message.instance = Instance.decode(reader, reader.uint32())
+          continue
+        case 2:
+          if (tag !== 18) {
+            break
+          }
+
+          message.sketchPath = reader.string()
+          continue
+        case 3:
+          if (tag !== 26) {
+            break
+          }
+
+          message.profileName = reader.string()
+          continue
+        case 4:
+          if (tag !== 34) {
+            break
+          }
+
+          message.library = ProfileLibraryReference.decode(
+            reader,
+            reader.uint32()
+          )
+          continue
+        case 5:
+          if (tag !== 40) {
+            break
+          }
+
+          message.addDependencies = reader.bool()
+          continue
+        case 6:
+          if (tag !== 48) {
+            break
+          }
+
+          message.noOverwrite = reader.bool()
+          continue
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break
+      }
+      reader.skipType(tag & 7)
+    }
+    return message
+  },
+
+  fromJSON(object: any): ProfileLibAddRequest {
+    return {
+      instance: isSet(object.instance)
+        ? Instance.fromJSON(object.instance)
+        : undefined,
+      sketchPath: isSet(object.sketchPath)
+        ? globalThis.String(object.sketchPath)
+        : '',
+      profileName: isSet(object.profileName)
+        ? globalThis.String(object.profileName)
+        : '',
+      library: isSet(object.library)
+        ? ProfileLibraryReference.fromJSON(object.library)
+        : undefined,
+      addDependencies: isSet(object.addDependencies)
+        ? globalThis.Boolean(object.addDependencies)
+        : undefined,
+      noOverwrite: isSet(object.noOverwrite)
+        ? globalThis.Boolean(object.noOverwrite)
+        : undefined,
+    }
+  },
+
+  toJSON(message: ProfileLibAddRequest): unknown {
+    const obj: any = {}
+    if (message.instance !== undefined) {
+      obj.instance = Instance.toJSON(message.instance)
+    }
+    if (message.sketchPath !== '') {
+      obj.sketchPath = message.sketchPath
+    }
+    if (message.profileName !== '') {
+      obj.profileName = message.profileName
+    }
+    if (message.library !== undefined) {
+      obj.library = ProfileLibraryReference.toJSON(message.library)
+    }
+    if (message.addDependencies !== undefined) {
+      obj.addDependencies = message.addDependencies
+    }
+    if (message.noOverwrite !== undefined) {
+      obj.noOverwrite = message.noOverwrite
+    }
+    return obj
+  },
+
+  create(base?: DeepPartial<ProfileLibAddRequest>): ProfileLibAddRequest {
+    return ProfileLibAddRequest.fromPartial(base ?? {})
+  },
+  fromPartial(object: DeepPartial<ProfileLibAddRequest>): ProfileLibAddRequest {
+    const message = createBaseProfileLibAddRequest()
+    message.instance =
+      object.instance !== undefined && object.instance !== null
+        ? Instance.fromPartial(object.instance)
+        : undefined
+    message.sketchPath = object.sketchPath ?? ''
+    message.profileName = object.profileName ?? ''
+    message.library =
+      object.library !== undefined && object.library !== null
+        ? ProfileLibraryReference.fromPartial(object.library)
+        : undefined
+    message.addDependencies = object.addDependencies ?? undefined
+    message.noOverwrite = object.noOverwrite ?? undefined
+    return message
+  },
+}
+
+function createBaseProfileLibAddResponse(): ProfileLibAddResponse {
+  return { addedLibraries: [], skippedLibraries: [], profileName: '' }
+}
+
+export const ProfileLibAddResponse = {
+  encode(
+    message: ProfileLibAddResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.addedLibraries) {
+      ProfileLibraryReference.encode(v!, writer.uint32(10).fork()).ldelim()
+    }
+    for (const v of message.skippedLibraries) {
+      ProfileLibraryReference.encode(v!, writer.uint32(18).fork()).ldelim()
+    }
+    if (message.profileName !== '') {
+      writer.uint32(26).string(message.profileName)
+    }
+    return writer
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ProfileLibAddResponse {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseProfileLibAddResponse()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break
+          }
+
+          message.addedLibraries.push(
+            ProfileLibraryReference.decode(reader, reader.uint32())
+          )
+          continue
+        case 2:
+          if (tag !== 18) {
+            break
+          }
+
+          message.skippedLibraries.push(
+            ProfileLibraryReference.decode(reader, reader.uint32())
+          )
+          continue
+        case 3:
+          if (tag !== 26) {
+            break
+          }
+
+          message.profileName = reader.string()
+          continue
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break
+      }
+      reader.skipType(tag & 7)
+    }
+    return message
+  },
+
+  fromJSON(object: any): ProfileLibAddResponse {
+    return {
+      addedLibraries: globalThis.Array.isArray(object?.addedLibraries)
+        ? object.addedLibraries.map((e: any) =>
+            ProfileLibraryReference.fromJSON(e)
+          )
+        : [],
+      skippedLibraries: globalThis.Array.isArray(object?.skippedLibraries)
+        ? object.skippedLibraries.map((e: any) =>
+            ProfileLibraryReference.fromJSON(e)
+          )
+        : [],
+      profileName: isSet(object.profileName)
+        ? globalThis.String(object.profileName)
+        : '',
+    }
+  },
+
+  toJSON(message: ProfileLibAddResponse): unknown {
+    const obj: any = {}
+    if (message.addedLibraries?.length) {
+      obj.addedLibraries = message.addedLibraries.map((e) =>
+        ProfileLibraryReference.toJSON(e)
+      )
+    }
+    if (message.skippedLibraries?.length) {
+      obj.skippedLibraries = message.skippedLibraries.map((e) =>
+        ProfileLibraryReference.toJSON(e)
+      )
+    }
+    if (message.profileName !== '') {
+      obj.profileName = message.profileName
+    }
+    return obj
+  },
+
+  create(base?: DeepPartial<ProfileLibAddResponse>): ProfileLibAddResponse {
+    return ProfileLibAddResponse.fromPartial(base ?? {})
+  },
+  fromPartial(
+    object: DeepPartial<ProfileLibAddResponse>
+  ): ProfileLibAddResponse {
+    const message = createBaseProfileLibAddResponse()
+    message.addedLibraries =
+      object.addedLibraries?.map((e) =>
+        ProfileLibraryReference.fromPartial(e)
+      ) || []
+    message.skippedLibraries =
+      object.skippedLibraries?.map((e) =>
+        ProfileLibraryReference.fromPartial(e)
+      ) || []
+    message.profileName = object.profileName ?? ''
+    return message
+  },
+}
+
+function createBaseProfileLibRemoveRequest(): ProfileLibRemoveRequest {
+  return {
+    instance: undefined,
+    sketchPath: '',
+    profileName: '',
+    library: undefined,
+    removeDependencies: undefined,
+  }
+}
+
+export const ProfileLibRemoveRequest = {
+  encode(
+    message: ProfileLibRemoveRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.instance !== undefined) {
+      Instance.encode(message.instance, writer.uint32(10).fork()).ldelim()
+    }
+    if (message.sketchPath !== '') {
+      writer.uint32(18).string(message.sketchPath)
+    }
+    if (message.profileName !== '') {
+      writer.uint32(26).string(message.profileName)
+    }
+    if (message.library !== undefined) {
+      ProfileLibraryReference.encode(
+        message.library,
+        writer.uint32(34).fork()
+      ).ldelim()
+    }
+    if (message.removeDependencies !== undefined) {
+      writer.uint32(40).bool(message.removeDependencies)
+    }
+    return writer
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ProfileLibRemoveRequest {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseProfileLibRemoveRequest()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break
+          }
+
+          message.instance = Instance.decode(reader, reader.uint32())
+          continue
+        case 2:
+          if (tag !== 18) {
+            break
+          }
+
+          message.sketchPath = reader.string()
+          continue
+        case 3:
+          if (tag !== 26) {
+            break
+          }
+
+          message.profileName = reader.string()
+          continue
+        case 4:
+          if (tag !== 34) {
+            break
+          }
+
+          message.library = ProfileLibraryReference.decode(
+            reader,
+            reader.uint32()
+          )
+          continue
+        case 5:
+          if (tag !== 40) {
+            break
+          }
+
+          message.removeDependencies = reader.bool()
+          continue
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break
+      }
+      reader.skipType(tag & 7)
+    }
+    return message
+  },
+
+  fromJSON(object: any): ProfileLibRemoveRequest {
+    return {
+      instance: isSet(object.instance)
+        ? Instance.fromJSON(object.instance)
+        : undefined,
+      sketchPath: isSet(object.sketchPath)
+        ? globalThis.String(object.sketchPath)
+        : '',
+      profileName: isSet(object.profileName)
+        ? globalThis.String(object.profileName)
+        : '',
+      library: isSet(object.library)
+        ? ProfileLibraryReference.fromJSON(object.library)
+        : undefined,
+      removeDependencies: isSet(object.removeDependencies)
+        ? globalThis.Boolean(object.removeDependencies)
+        : undefined,
+    }
+  },
+
+  toJSON(message: ProfileLibRemoveRequest): unknown {
+    const obj: any = {}
+    if (message.instance !== undefined) {
+      obj.instance = Instance.toJSON(message.instance)
+    }
+    if (message.sketchPath !== '') {
+      obj.sketchPath = message.sketchPath
+    }
+    if (message.profileName !== '') {
+      obj.profileName = message.profileName
+    }
+    if (message.library !== undefined) {
+      obj.library = ProfileLibraryReference.toJSON(message.library)
+    }
+    if (message.removeDependencies !== undefined) {
+      obj.removeDependencies = message.removeDependencies
+    }
+    return obj
+  },
+
+  create(base?: DeepPartial<ProfileLibRemoveRequest>): ProfileLibRemoveRequest {
+    return ProfileLibRemoveRequest.fromPartial(base ?? {})
+  },
+  fromPartial(
+    object: DeepPartial<ProfileLibRemoveRequest>
+  ): ProfileLibRemoveRequest {
+    const message = createBaseProfileLibRemoveRequest()
+    message.instance =
+      object.instance !== undefined && object.instance !== null
+        ? Instance.fromPartial(object.instance)
+        : undefined
+    message.sketchPath = object.sketchPath ?? ''
+    message.profileName = object.profileName ?? ''
+    message.library =
+      object.library !== undefined && object.library !== null
+        ? ProfileLibraryReference.fromPartial(object.library)
+        : undefined
+    message.removeDependencies = object.removeDependencies ?? undefined
+    return message
+  },
+}
+
+function createBaseProfileLibRemoveResponse(): ProfileLibRemoveResponse {
+  return { removedLibraries: [], profileName: '' }
+}
+
+export const ProfileLibRemoveResponse = {
+  encode(
+    message: ProfileLibRemoveResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.removedLibraries) {
+      ProfileLibraryReference.encode(v!, writer.uint32(10).fork()).ldelim()
+    }
+    if (message.profileName !== '') {
+      writer.uint32(18).string(message.profileName)
+    }
+    return writer
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ProfileLibRemoveResponse {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseProfileLibRemoveResponse()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break
+          }
+
+          message.removedLibraries.push(
+            ProfileLibraryReference.decode(reader, reader.uint32())
+          )
+          continue
+        case 2:
+          if (tag !== 18) {
+            break
+          }
+
+          message.profileName = reader.string()
+          continue
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break
+      }
+      reader.skipType(tag & 7)
+    }
+    return message
+  },
+
+  fromJSON(object: any): ProfileLibRemoveResponse {
+    return {
+      removedLibraries: globalThis.Array.isArray(object?.removedLibraries)
+        ? object.removedLibraries.map((e: any) =>
+            ProfileLibraryReference.fromJSON(e)
+          )
+        : [],
+      profileName: isSet(object.profileName)
+        ? globalThis.String(object.profileName)
+        : '',
+    }
+  },
+
+  toJSON(message: ProfileLibRemoveResponse): unknown {
+    const obj: any = {}
+    if (message.removedLibraries?.length) {
+      obj.removedLibraries = message.removedLibraries.map((e) =>
+        ProfileLibraryReference.toJSON(e)
+      )
+    }
+    if (message.profileName !== '') {
+      obj.profileName = message.profileName
+    }
+    return obj
+  },
+
+  create(
+    base?: DeepPartial<ProfileLibRemoveResponse>
+  ): ProfileLibRemoveResponse {
+    return ProfileLibRemoveResponse.fromPartial(base ?? {})
+  },
+  fromPartial(
+    object: DeepPartial<ProfileLibRemoveResponse>
+  ): ProfileLibRemoveResponse {
+    const message = createBaseProfileLibRemoveResponse()
+    message.removedLibraries =
+      object.removedLibraries?.map((e) =>
+        ProfileLibraryReference.fromPartial(e)
+      ) || []
+    message.profileName = object.profileName ?? ''
+    return message
+  },
+}
+
+function createBaseProfileLibListRequest(): ProfileLibListRequest {
+  return { sketchPath: '', profileName: '' }
+}
+
+export const ProfileLibListRequest = {
+  encode(
+    message: ProfileLibListRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.sketchPath !== '') {
+      writer.uint32(10).string(message.sketchPath)
+    }
+    if (message.profileName !== '') {
+      writer.uint32(18).string(message.profileName)
+    }
+    return writer
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ProfileLibListRequest {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseProfileLibListRequest()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break
+          }
+
+          message.sketchPath = reader.string()
+          continue
+        case 2:
+          if (tag !== 18) {
+            break
+          }
+
+          message.profileName = reader.string()
+          continue
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break
+      }
+      reader.skipType(tag & 7)
+    }
+    return message
+  },
+
+  fromJSON(object: any): ProfileLibListRequest {
+    return {
+      sketchPath: isSet(object.sketchPath)
+        ? globalThis.String(object.sketchPath)
+        : '',
+      profileName: isSet(object.profileName)
+        ? globalThis.String(object.profileName)
+        : '',
+    }
+  },
+
+  toJSON(message: ProfileLibListRequest): unknown {
+    const obj: any = {}
+    if (message.sketchPath !== '') {
+      obj.sketchPath = message.sketchPath
+    }
+    if (message.profileName !== '') {
+      obj.profileName = message.profileName
+    }
+    return obj
+  },
+
+  create(base?: DeepPartial<ProfileLibListRequest>): ProfileLibListRequest {
+    return ProfileLibListRequest.fromPartial(base ?? {})
+  },
+  fromPartial(
+    object: DeepPartial<ProfileLibListRequest>
+  ): ProfileLibListRequest {
+    const message = createBaseProfileLibListRequest()
+    message.sketchPath = object.sketchPath ?? ''
+    message.profileName = object.profileName ?? ''
+    return message
+  },
+}
+
+function createBaseProfileLibListResponse(): ProfileLibListResponse {
+  return { libraries: [], profileName: '' }
+}
+
+export const ProfileLibListResponse = {
+  encode(
+    message: ProfileLibListResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.libraries) {
+      ProfileLibraryReference.encode(v!, writer.uint32(10).fork()).ldelim()
+    }
+    if (message.profileName !== '') {
+      writer.uint32(18).string(message.profileName)
+    }
+    return writer
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ProfileLibListResponse {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseProfileLibListResponse()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break
+          }
+
+          message.libraries.push(
+            ProfileLibraryReference.decode(reader, reader.uint32())
+          )
+          continue
+        case 2:
+          if (tag !== 18) {
+            break
+          }
+
+          message.profileName = reader.string()
+          continue
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break
+      }
+      reader.skipType(tag & 7)
+    }
+    return message
+  },
+
+  fromJSON(object: any): ProfileLibListResponse {
+    return {
+      libraries: globalThis.Array.isArray(object?.libraries)
+        ? object.libraries.map((e: any) => ProfileLibraryReference.fromJSON(e))
+        : [],
+      profileName: isSet(object.profileName)
+        ? globalThis.String(object.profileName)
+        : '',
+    }
+  },
+
+  toJSON(message: ProfileLibListResponse): unknown {
+    const obj: any = {}
+    if (message.libraries?.length) {
+      obj.libraries = message.libraries.map((e) =>
+        ProfileLibraryReference.toJSON(e)
+      )
+    }
+    if (message.profileName !== '') {
+      obj.profileName = message.profileName
+    }
+    return obj
+  },
+
+  create(base?: DeepPartial<ProfileLibListResponse>): ProfileLibListResponse {
+    return ProfileLibListResponse.fromPartial(base ?? {})
+  },
+  fromPartial(
+    object: DeepPartial<ProfileLibListResponse>
+  ): ProfileLibListResponse {
+    const message = createBaseProfileLibListResponse()
+    message.libraries =
+      object.libraries?.map((e) => ProfileLibraryReference.fromPartial(e)) || []
+    message.profileName = object.profileName ?? ''
+    return message
+  },
+}
+
+function createBaseProfileSetDefaultRequest(): ProfileSetDefaultRequest {
+  return { sketchPath: '', profileName: '' }
+}
+
+export const ProfileSetDefaultRequest = {
+  encode(
+    message: ProfileSetDefaultRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.sketchPath !== '') {
+      writer.uint32(10).string(message.sketchPath)
+    }
+    if (message.profileName !== '') {
+      writer.uint32(18).string(message.profileName)
+    }
+    return writer
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ProfileSetDefaultRequest {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseProfileSetDefaultRequest()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break
+          }
+
+          message.sketchPath = reader.string()
+          continue
+        case 2:
+          if (tag !== 18) {
+            break
+          }
+
+          message.profileName = reader.string()
+          continue
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break
+      }
+      reader.skipType(tag & 7)
+    }
+    return message
+  },
+
+  fromJSON(object: any): ProfileSetDefaultRequest {
+    return {
+      sketchPath: isSet(object.sketchPath)
+        ? globalThis.String(object.sketchPath)
+        : '',
+      profileName: isSet(object.profileName)
+        ? globalThis.String(object.profileName)
+        : '',
+    }
+  },
+
+  toJSON(message: ProfileSetDefaultRequest): unknown {
+    const obj: any = {}
+    if (message.sketchPath !== '') {
+      obj.sketchPath = message.sketchPath
+    }
+    if (message.profileName !== '') {
+      obj.profileName = message.profileName
+    }
+    return obj
+  },
+
+  create(
+    base?: DeepPartial<ProfileSetDefaultRequest>
+  ): ProfileSetDefaultRequest {
+    return ProfileSetDefaultRequest.fromPartial(base ?? {})
+  },
+  fromPartial(
+    object: DeepPartial<ProfileSetDefaultRequest>
+  ): ProfileSetDefaultRequest {
+    const message = createBaseProfileSetDefaultRequest()
+    message.sketchPath = object.sketchPath ?? ''
+    message.profileName = object.profileName ?? ''
+    return message
+  },
+}
+
+function createBaseProfileSetDefaultResponse(): ProfileSetDefaultResponse {
+  return {}
+}
+
+export const ProfileSetDefaultResponse = {
+  encode(
+    _: ProfileSetDefaultResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    return writer
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ProfileSetDefaultResponse {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseProfileSetDefaultResponse()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break
+      }
+      reader.skipType(tag & 7)
+    }
+    return message
+  },
+
+  fromJSON(_: any): ProfileSetDefaultResponse {
+    return {}
+  },
+
+  toJSON(_: ProfileSetDefaultResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  create(
+    base?: DeepPartial<ProfileSetDefaultResponse>
+  ): ProfileSetDefaultResponse {
+    return ProfileSetDefaultResponse.fromPartial(base ?? {})
+  },
+  fromPartial(
+    _: DeepPartial<ProfileSetDefaultResponse>
+  ): ProfileSetDefaultResponse {
+    const message = createBaseProfileSetDefaultResponse()
+    return message
+  },
+}
+
 /** The main Arduino Platform service API. */
 export type ArduinoCoreServiceDefinition = typeof ArduinoCoreServiceDefinition
 export const ArduinoCoreServiceDefinition = {
@@ -3438,6 +4590,51 @@ export const ArduinoCoreServiceDefinition = {
       responseStream: false,
       options: {},
     },
+    /** Create the sketch project file and add a build profile to it. */
+    profileCreate: {
+      name: 'ProfileCreate',
+      requestType: ProfileCreateRequest,
+      requestStream: false,
+      responseType: ProfileCreateResponse,
+      responseStream: false,
+      options: {},
+    },
+    /** Add a library to the build profile. */
+    profileLibAdd: {
+      name: 'ProfileLibAdd',
+      requestType: ProfileLibAddRequest,
+      requestStream: false,
+      responseType: ProfileLibAddResponse,
+      responseStream: false,
+      options: {},
+    },
+    /** Remove a library from the build profile. */
+    profileLibRemove: {
+      name: 'ProfileLibRemove',
+      requestType: ProfileLibRemoveRequest,
+      requestStream: false,
+      responseType: ProfileLibRemoveResponse,
+      responseStream: false,
+      options: {},
+    },
+    /** List the libraries in the build profile. */
+    profileLibList: {
+      name: 'ProfileLibList',
+      requestType: ProfileLibListRequest,
+      requestStream: false,
+      responseType: ProfileLibListResponse,
+      responseStream: false,
+      options: {},
+    },
+    /** Set the default build profile. */
+    profileSetDefault: {
+      name: 'ProfileSetDefault',
+      requestType: ProfileSetDefaultRequest,
+      requestStream: false,
+      responseType: ProfileSetDefaultResponse,
+      responseStream: false,
+      options: {},
+    },
   },
 } as const
 
@@ -3714,6 +4911,31 @@ export interface ArduinoCoreServiceImplementation<CallContextExt = {}> {
     request: SettingsSetValueRequest,
     context: CallContext & CallContextExt
   ): Promise<DeepPartial<SettingsSetValueResponse>>
+  /** Create the sketch project file and add a build profile to it. */
+  profileCreate(
+    request: ProfileCreateRequest,
+    context: CallContext & CallContextExt
+  ): Promise<DeepPartial<ProfileCreateResponse>>
+  /** Add a library to the build profile. */
+  profileLibAdd(
+    request: ProfileLibAddRequest,
+    context: CallContext & CallContextExt
+  ): Promise<DeepPartial<ProfileLibAddResponse>>
+  /** Remove a library from the build profile. */
+  profileLibRemove(
+    request: ProfileLibRemoveRequest,
+    context: CallContext & CallContextExt
+  ): Promise<DeepPartial<ProfileLibRemoveResponse>>
+  /** List the libraries in the build profile. */
+  profileLibList(
+    request: ProfileLibListRequest,
+    context: CallContext & CallContextExt
+  ): Promise<DeepPartial<ProfileLibListResponse>>
+  /** Set the default build profile. */
+  profileSetDefault(
+    request: ProfileSetDefaultRequest,
+    context: CallContext & CallContextExt
+  ): Promise<DeepPartial<ProfileSetDefaultResponse>>
 }
 
 export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
@@ -3989,6 +5211,31 @@ export interface ArduinoCoreServiceClient<CallOptionsExt = {}> {
     request: DeepPartial<SettingsSetValueRequest>,
     options?: CallOptions & CallOptionsExt
   ): Promise<SettingsSetValueResponse>
+  /** Create the sketch project file and add a build profile to it. */
+  profileCreate(
+    request: DeepPartial<ProfileCreateRequest>,
+    options?: CallOptions & CallOptionsExt
+  ): Promise<ProfileCreateResponse>
+  /** Add a library to the build profile. */
+  profileLibAdd(
+    request: DeepPartial<ProfileLibAddRequest>,
+    options?: CallOptions & CallOptionsExt
+  ): Promise<ProfileLibAddResponse>
+  /** Remove a library from the build profile. */
+  profileLibRemove(
+    request: DeepPartial<ProfileLibRemoveRequest>,
+    options?: CallOptions & CallOptionsExt
+  ): Promise<ProfileLibRemoveResponse>
+  /** List the libraries in the build profile. */
+  profileLibList(
+    request: DeepPartial<ProfileLibListRequest>,
+    options?: CallOptions & CallOptionsExt
+  ): Promise<ProfileLibListResponse>
+  /** Set the default build profile. */
+  profileSetDefault(
+    request: DeepPartial<ProfileSetDefaultRequest>,
+    options?: CallOptions & CallOptionsExt
+  ): Promise<ProfileSetDefaultResponse>
 }
 
 type Builtin =
