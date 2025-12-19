@@ -13,14 +13,14 @@
 export interface ArduinoCLIConfigurationSchema {
   board_manager?: {
     /**
-     * The URLs to any additional Boards Manager package index files needed for your
-     * boards platforms.
+     * The URLs to any additional Boards Manager package index files needed for
+     * your boards platforms.
      */
     additional_urls?: string[]
     /**
-     * Set to `true` to allow installation of packages that do not pass the checksum
-     * test. This is considered an unsafe installation method and should be used
-     * only for development purposes.
+     * Set to `true` to allow installation of packages that do not pass the
+     * checksum test. This is considered an unsafe installation method and
+     * should be used only for development purposes.
      */
     enable_unsafe_install?: boolean
   }
@@ -34,14 +34,15 @@ export interface ArduinoCLIConfigurationSchema {
      */
     extra_paths?: string[]
     /**
-     * Interval, in number of compilations, at which the cache is purged, defaults
-     * to `10`. When `0` the cache is never purged.
+     * Interval, in number of compilations, at which the cache is purged,
+     * defaults to `10`. When `0` the cache is never purged.
      */
     compilations_before_purge?: number
     /**
-     * Cache expiration time of build folders. If the cache is hit by a compilation
-     * the corresponding build files lifetime is renewed. The value format must be a
-     * valid input for time.ParseDuration(), defaults to `720h` (30 days)
+     * Cache expiration time of build folders. If the cache is hit by a
+     * compilation the corresponding build files lifetime is renewed. The value
+     * format must be a valid input for time.ParseDuration(), defaults to `720h`
+     * (30 days)
      */
     ttl?: string
   }
@@ -54,22 +55,22 @@ export interface ArduinoCLIConfigurationSchema {
   directories?: {
     builtin?: {
       /**
-       * The libraries in this directory will be available to all platforms without
-       * the need for the user to install them, but with the lowest priority over
-       * other installed libraries with the same name, it's the equivalent of the
-       * Arduino IDE's bundled libraries directory.
+       * The libraries in this directory will be available to all platforms
+       * without the need for the user to install them, but with the lowest
+       * priority over other installed libraries with the same name, it's the
+       * equivalent of the Arduino IDE's bundled libraries directory.
        */
       libraries?: string
       /**
-       * It's a list of directories of tools that will be available to all platforms
-       * without the need for the user to install them, it's the equivalent of the
-       * Arduino IDE 1.x bundled tools directory.
+       * It's a list of directories of tools that will be available to all
+       * platforms without the need for the user to install them, it's the
+       * equivalent of the Arduino IDE 1.x bundled tools directory.
        */
       tools?: string[]
     }
     /**
-     * Directory used to store Boards/Library Manager index files and Boards Manager
-     * platform installations.
+     * Directory used to store Boards/Library Manager index files and Boards
+     * Manager platform installations.
      */
     data?: string
     /**
@@ -89,14 +90,15 @@ export interface ArduinoCLIConfigurationSchema {
     /**
      * Set to `true` to enable the use of the `--git-url` and `--zip-file` flags
      * with [`arduino-cli lib install`][arduino cli lib install]. These are
-     * considered "unsafe" installation methods because they allow installing files
-     * that have not passed through the Library Manager submission process.
+     * considered "unsafe" installation methods because they allow installing
+     * files that have not passed through the Library Manager submission
+     * process.
      */
     enable_unsafe_install?: boolean
   }
   /**
-   * The language used by Arduino CLI to communicate to the user, the parameter is
-   * the language identifier in the standard POSIX format
+   * The language used by Arduino CLI to communicate to the user, the parameter
+   * is the language identifier in the standard POSIX format
    * `<language>[_<TERRITORY>[.<encoding>]]` (for example `it` or `it_IT`, or
    * `it_IT.UTF-8`).
    */
@@ -108,14 +110,14 @@ export interface ArduinoCLIConfigurationSchema {
     /** Output format for the logs. Allowed values are `text` or `json`. */
     format?: 'text' | 'json'
     /**
-     * Messages with this level and above will be logged. Valid levels are: `trace`,
-     * `debug`, `info`, `warn`, `error`, `fatal`, `panic`.
+     * Messages with this level and above will be logged. Valid levels are:
+     * `trace`, `debug`, `info`, `warn`, `error`, `fatal`, `panic`.
      */
     level?: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal' | 'panic'
   }
   /**
-   * Settings related to the collection of data used for continued improvement of
-   * Arduino CLI.
+   * Settings related to the collection of data used for continued improvement
+   * of Arduino CLI.
    */
   metrics?: {
     /** TCP port used for metrics communication. */
@@ -140,8 +142,8 @@ export interface ArduinoCLIConfigurationSchema {
   /** Settings related to text output. */
   output?: {
     /**
-     * ANSI color escape codes are added by default to the output. Set to `true` to
-     * disable colored text output.
+     * ANSI color escape codes are added by default to the output. Set to `true`
+     * to disable colored text output.
      */
     no_color?: boolean
   }
@@ -157,8 +159,8 @@ export interface ArduinoCLIConfigurationSchema {
   /** Configuration options related to Arduino CLI updates */
   updater?: {
     /**
-     * Set to `false` to disable notifications of new Arduino CLI releases, defaults
-     * to `true`
+     * Set to `false` to disable notifications of new Arduino CLI releases,
+     * defaults to `true`
      */
     enable_notification?: boolean
   }
