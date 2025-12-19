@@ -26,7 +26,7 @@ jobs:
         run: npm ci
 
       - name: Bump Arduino CLI and regenerate
-        run: npm arduino:version:bump
+        run: npm run arduino:version:bump
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
