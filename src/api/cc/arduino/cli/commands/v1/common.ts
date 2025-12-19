@@ -261,6 +261,33 @@ export interface SketchProfile {
   protocol: string
 }
 
+export interface ProfileLibraryReference {
+  library?:
+    | {
+        $case: 'indexLibrary'
+        indexLibrary: ProfileLibraryReference_IndexLibrary
+      }
+    | {
+        $case: 'localLibrary'
+        localLibrary: ProfileLibraryReference_LocalLibrary
+      }
+    | undefined
+}
+
+export interface ProfileLibraryReference_IndexLibrary {
+  /** Name of the library. */
+  name: string
+  /** Version of the library if taken from the Library Index. */
+  version: string
+  /** If true, this library is marked as a dependency. */
+  isDependency: boolean
+}
+
+export interface ProfileLibraryReference_LocalLibrary {
+  /** Absolute path to the library. */
+  path: string
+}
+
 function createBaseInstance(): Instance {
   return { id: 0 }
 }
@@ -2543,6 +2570,318 @@ export const SketchProfile = {
         ? MonitorPortConfiguration.fromPartial(object.portConfig)
         : undefined
     message.protocol = object.protocol ?? ''
+    return message
+  },
+}
+
+function createBaseProfileLibraryReference(): ProfileLibraryReference {
+  return { library: undefined }
+}
+
+export const ProfileLibraryReference = {
+  encode(
+    message: ProfileLibraryReference,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    switch (message.library?.$case) {
+      case 'indexLibrary':
+        ProfileLibraryReference_IndexLibrary.encode(
+          message.library.indexLibrary,
+          writer.uint32(10).fork()
+        ).ldelim()
+        break
+      case 'localLibrary':
+        ProfileLibraryReference_LocalLibrary.encode(
+          message.library.localLibrary,
+          writer.uint32(18).fork()
+        ).ldelim()
+        break
+    }
+    return writer
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ProfileLibraryReference {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseProfileLibraryReference()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break
+          }
+
+          message.library = {
+            $case: 'indexLibrary',
+            indexLibrary: ProfileLibraryReference_IndexLibrary.decode(
+              reader,
+              reader.uint32()
+            ),
+          }
+          continue
+        case 2:
+          if (tag !== 18) {
+            break
+          }
+
+          message.library = {
+            $case: 'localLibrary',
+            localLibrary: ProfileLibraryReference_LocalLibrary.decode(
+              reader,
+              reader.uint32()
+            ),
+          }
+          continue
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break
+      }
+      reader.skipType(tag & 7)
+    }
+    return message
+  },
+
+  fromJSON(object: any): ProfileLibraryReference {
+    return {
+      library: isSet(object.indexLibrary)
+        ? {
+            $case: 'indexLibrary',
+            indexLibrary: ProfileLibraryReference_IndexLibrary.fromJSON(
+              object.indexLibrary
+            ),
+          }
+        : isSet(object.localLibrary)
+          ? {
+              $case: 'localLibrary',
+              localLibrary: ProfileLibraryReference_LocalLibrary.fromJSON(
+                object.localLibrary
+              ),
+            }
+          : undefined,
+    }
+  },
+
+  toJSON(message: ProfileLibraryReference): unknown {
+    const obj: any = {}
+    if (message.library?.$case === 'indexLibrary') {
+      obj.indexLibrary = ProfileLibraryReference_IndexLibrary.toJSON(
+        message.library.indexLibrary
+      )
+    }
+    if (message.library?.$case === 'localLibrary') {
+      obj.localLibrary = ProfileLibraryReference_LocalLibrary.toJSON(
+        message.library.localLibrary
+      )
+    }
+    return obj
+  },
+
+  create(base?: DeepPartial<ProfileLibraryReference>): ProfileLibraryReference {
+    return ProfileLibraryReference.fromPartial(base ?? {})
+  },
+  fromPartial(
+    object: DeepPartial<ProfileLibraryReference>
+  ): ProfileLibraryReference {
+    const message = createBaseProfileLibraryReference()
+    if (
+      object.library?.$case === 'indexLibrary' &&
+      object.library?.indexLibrary !== undefined &&
+      object.library?.indexLibrary !== null
+    ) {
+      message.library = {
+        $case: 'indexLibrary',
+        indexLibrary: ProfileLibraryReference_IndexLibrary.fromPartial(
+          object.library.indexLibrary
+        ),
+      }
+    }
+    if (
+      object.library?.$case === 'localLibrary' &&
+      object.library?.localLibrary !== undefined &&
+      object.library?.localLibrary !== null
+    ) {
+      message.library = {
+        $case: 'localLibrary',
+        localLibrary: ProfileLibraryReference_LocalLibrary.fromPartial(
+          object.library.localLibrary
+        ),
+      }
+    }
+    return message
+  },
+}
+
+function createBaseProfileLibraryReference_IndexLibrary(): ProfileLibraryReference_IndexLibrary {
+  return { name: '', version: '', isDependency: false }
+}
+
+export const ProfileLibraryReference_IndexLibrary = {
+  encode(
+    message: ProfileLibraryReference_IndexLibrary,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.name !== '') {
+      writer.uint32(10).string(message.name)
+    }
+    if (message.version !== '') {
+      writer.uint32(18).string(message.version)
+    }
+    if (message.isDependency !== false) {
+      writer.uint32(24).bool(message.isDependency)
+    }
+    return writer
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ProfileLibraryReference_IndexLibrary {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseProfileLibraryReference_IndexLibrary()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break
+          }
+
+          message.name = reader.string()
+          continue
+        case 2:
+          if (tag !== 18) {
+            break
+          }
+
+          message.version = reader.string()
+          continue
+        case 3:
+          if (tag !== 24) {
+            break
+          }
+
+          message.isDependency = reader.bool()
+          continue
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break
+      }
+      reader.skipType(tag & 7)
+    }
+    return message
+  },
+
+  fromJSON(object: any): ProfileLibraryReference_IndexLibrary {
+    return {
+      name: isSet(object.name) ? globalThis.String(object.name) : '',
+      version: isSet(object.version) ? globalThis.String(object.version) : '',
+      isDependency: isSet(object.isDependency)
+        ? globalThis.Boolean(object.isDependency)
+        : false,
+    }
+  },
+
+  toJSON(message: ProfileLibraryReference_IndexLibrary): unknown {
+    const obj: any = {}
+    if (message.name !== '') {
+      obj.name = message.name
+    }
+    if (message.version !== '') {
+      obj.version = message.version
+    }
+    if (message.isDependency !== false) {
+      obj.isDependency = message.isDependency
+    }
+    return obj
+  },
+
+  create(
+    base?: DeepPartial<ProfileLibraryReference_IndexLibrary>
+  ): ProfileLibraryReference_IndexLibrary {
+    return ProfileLibraryReference_IndexLibrary.fromPartial(base ?? {})
+  },
+  fromPartial(
+    object: DeepPartial<ProfileLibraryReference_IndexLibrary>
+  ): ProfileLibraryReference_IndexLibrary {
+    const message = createBaseProfileLibraryReference_IndexLibrary()
+    message.name = object.name ?? ''
+    message.version = object.version ?? ''
+    message.isDependency = object.isDependency ?? false
+    return message
+  },
+}
+
+function createBaseProfileLibraryReference_LocalLibrary(): ProfileLibraryReference_LocalLibrary {
+  return { path: '' }
+}
+
+export const ProfileLibraryReference_LocalLibrary = {
+  encode(
+    message: ProfileLibraryReference_LocalLibrary,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.path !== '') {
+      writer.uint32(10).string(message.path)
+    }
+    return writer
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ProfileLibraryReference_LocalLibrary {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseProfileLibraryReference_LocalLibrary()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break
+          }
+
+          message.path = reader.string()
+          continue
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break
+      }
+      reader.skipType(tag & 7)
+    }
+    return message
+  },
+
+  fromJSON(object: any): ProfileLibraryReference_LocalLibrary {
+    return { path: isSet(object.path) ? globalThis.String(object.path) : '' }
+  },
+
+  toJSON(message: ProfileLibraryReference_LocalLibrary): unknown {
+    const obj: any = {}
+    if (message.path !== '') {
+      obj.path = message.path
+    }
+    return obj
+  },
+
+  create(
+    base?: DeepPartial<ProfileLibraryReference_LocalLibrary>
+  ): ProfileLibraryReference_LocalLibrary {
+    return ProfileLibraryReference_LocalLibrary.fromPartial(base ?? {})
+  },
+  fromPartial(
+    object: DeepPartial<ProfileLibraryReference_LocalLibrary>
+  ): ProfileLibraryReference_LocalLibrary {
+    const message = createBaseProfileLibraryReference_LocalLibrary()
+    message.path = object.path ?? ''
     return message
   },
 }
