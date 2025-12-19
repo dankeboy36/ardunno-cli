@@ -1,0 +1,45 @@
+name: Update Arduino CLI
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Bump Arduino CLI and regenerate
+        run: npm arduino:version:bump
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read Arduino CLI version
+        run: |
+          version="$(npm run -s arduino:version)"
+          echo "ARDUINO_CLI_VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: feat/bump-arduino-cli
+          commit-message: 'feat: bump arduino-cli to ${{ env.ARDUINO_CLI_VERSION }}'
+          title: 'feat: bump arduino-cli to ${{ env.ARDUINO_CLI_VERSION }}'
+          body: 'Automated Arduino CLI update.'
+          labels: 'dependencies'

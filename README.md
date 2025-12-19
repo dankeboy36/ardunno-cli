@@ -15,15 +15,15 @@ npm i ardunno-cli --save
 ### TypeScript:
 
 ```ts
-import { createChannel, createClient } from 'nice-grpc';
-import { ArduinoCoreServiceDefinition } from 'ardunno-cli';
+import { createChannel, createClient } from 'nice-grpc'
+import { ArduinoCoreServiceDefinition } from 'ardunno-cli'
 ```
 
 ### JavaScript:
 
 ```js
-const { createChannel, createClient } = require('nice-grpc');
-const { ArduinoCoreServiceDefinition } = require('ardunno-cli');
+const { createChannel, createClient } = require('nice-grpc')
+const { ArduinoCoreServiceDefinition } = require('ardunno-cli')
 ```
 
 ### Create a gRPC client:
@@ -39,8 +39,8 @@ Requires a running Arduino CLI daemon to connect to.
 ```
 
 ```ts
-const channel = createChannel('localhost:50051');
-const client = createClient(ArduinoCoreServiceDefinition, channel);
+const channel = createChannel('localhost:50051')
+const client = createClient(ArduinoCoreServiceDefinition, channel)
 ```
 
 ### Create:
@@ -48,7 +48,7 @@ const client = createClient(ArduinoCoreServiceDefinition, channel);
 Creates a new Arduino Core instance.
 
 ```ts
-const { instance } = await client.create({});
+const { instance } = await client.create({})
 ```
 
 ### Initialize:
@@ -57,10 +57,10 @@ Initializes an existing Arduino Core instance by loading platforms and libraries
 
 ```ts
 for await (const { message } of client.init({ instance })) {
-    switch (message.$case) {
-        case 'error':
-            throw new Error(message.error);
-    }
+  switch (message.$case) {
+    case 'error':
+      throw new Error(message.error)
+  }
 }
 ```
 
@@ -68,10 +68,10 @@ for await (const { message } of client.init({ instance })) {
 
 ```ts
 const { searchOutput } = await client.platformSearch({
-    instance,
-    searchArgs: 'SAMD',
-});
-searchOutput.forEach(({ id, latest }) => console.log(`${id}@${latest}`));
+  instance,
+  searchArgs: 'SAMD',
+})
+searchOutput.forEach(({ id, latest }) => console.log(`${id}@${latest}`))
 
 // arduino:samd@1.8.13
 // Arrow:samd@2.1.0

@@ -1,5 +1,6 @@
 node_modules
 arduino-cli
+.bin
 .DS_Store
 *.ts.bak
 dist
