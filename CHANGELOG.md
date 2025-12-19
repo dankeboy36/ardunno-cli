@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/dankeboy36/ardunno-cli/compare/1.0.0...1.1.0) (2025-12-19)
+
+
+### Features
+
+* bump `arduino-cli` to `v1.4.0` ([#16](https://github.com/dankeboy36/ardunno-cli/issues/16)) ([53d4d2f](https://github.com/dankeboy36/ardunno-cli/commit/53d4d2fb0cab0bc50eb7d9725df918b81c0fbe82))
+
 # 1.0.0 (2025-12-19)
 
 
