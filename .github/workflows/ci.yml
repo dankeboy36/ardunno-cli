@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    name: test (${{ matrix.os }}, node-${{ matrix.node }})
+    name: Build (${{ matrix.os }}, node-${{ matrix.node }})
     strategy:
       fail-fast: false
       matrix:
@@ -36,7 +36,7 @@ jobs:
         run: npm run generate
       - name: Check Format
         run: npm run format && git diff --exit-code
-      - name: Lint
+      - name: Check Lint
         run: npm run lint
 
   release:

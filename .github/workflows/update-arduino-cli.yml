@@ -26,19 +26,7 @@ jobs:
         run: npm ci
 
       - name: Bump Arduino CLI and regenerate
-        run: |
-          set +e
-          node ./scripts/bump-arduino-cli.js
-          status=$?
-          if [ $status -eq 0 ]; then
-            npm run generate
-            exit $?
-          fi
-          if [ $status -eq 2 ]; then
-            echo "Arduino CLI version is up-to-date."
-            exit 0
-          fi
-          exit $status
+        run: npm arduino:version:bump
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

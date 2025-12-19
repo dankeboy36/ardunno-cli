@@ -41,6 +41,7 @@
   ],
   "scripts": {
     "arduino:version": "node ./scripts/print-arduino-version.js",
+    "arduino:version:bump": "node ./scripts/bump-arduino-cli.js && npm run generate",
     "compile": "tsc -p ./",
     "format": "prettier --write .",
     "generate": "node ./scripts/generate.js",

@@ -92,13 +92,7 @@ async function main() {
   return updated
 }
 
-main()
-  .then((updated) => {
-    if (!updated) {
-      process.exit(2)
-    }
-  })
-  .catch((err) => {
-    console.error(err)
-    process.exit(1)
-  })
+main().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})
