@@ -39,7 +39,7 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           branch: feat/bump-arduino-cli
-          commit-message: 'feat: bump arduino-cli to ${{ env.ARDUINO_CLI_VERSION }}'
-          title: 'feat: bump arduino-cli to ${{ env.ARDUINO_CLI_VERSION }}'
-          body: 'Automated Arduino CLI update.'
+          commit-message: 'feat: bump `arduino-cli` to `${{ env.ARDUINO_CLI_VERSION }}`'
+          title: 'feat: bump arduino-cli to `${{ env.ARDUINO_CLI_VERSION }}`'
+          body: 'Automated Arduino CLI update to ${{ env.ARDUINO_CLI_VERSION }}.'
           labels: 'dependencies'
