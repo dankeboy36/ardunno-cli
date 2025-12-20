@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/dankeboy36/ardunno-cli/compare/1.1.0...1.1.1) (2025-12-20)
+
+
+### Bug Fixes
+
+* move pinned version to dedicated version file ([#17](https://github.com/dankeboy36/ardunno-cli/issues/17)) ([faf9775](https://github.com/dankeboy36/ardunno-cli/commit/faf977568477af56d506ab16cb3521843be99120))
+
 # [1.1.0](https://github.com/dankeboy36/ardunno-cli/compare/1.0.0...1.1.0) (2025-12-19)
 
 
