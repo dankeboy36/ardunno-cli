@@ -48,15 +48,19 @@ async function fetchLatestReleaseTag() {
 
 async function main() {
   const repoRoot = path.resolve(__dirname, '..')
-  const packageJsonPath = path.join(repoRoot, 'package.json')
-
-  /** @type {Record<string, any>} */
-  const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'))
-  /** @type {string} */
-  const currentTag = packageJson.arduinoCli?.version
+  const versionPath = path.join(repoRoot, 'arduino-cli.version')
+  let currentTag
+  try {
+    currentTag = (await fs.readFile(versionPath, 'utf8')).trim()
+  } catch (err) {
+    if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
+      throw new Error('Missing arduino-cli.version')
+    }
+    throw err
+  }
 
   if (!currentTag) {
-    throw new Error('Missing package.json#arduinoCli.version')
+    throw new Error('Missing arduino-cli.version')
   }
 
   const currentSemver = toSemver(currentTag)
@@ -75,15 +79,7 @@ async function main() {
   const updated = semver.gt(latestSemver, currentSemver)
 
   if (updated) {
-    packageJson.arduinoCli = {
-      ...(packageJson.arduinoCli ?? {}),
-      version: latestTag,
-    }
-
-    await fs.writeFile(
-      packageJsonPath,
-      `${JSON.stringify(packageJson, null, 2)}\n`
-    )
+    await fs.writeFile(versionPath, `${latestTag}\n`)
     console.log(`Updated Arduino CLI version: ${currentTag} -> ${latestTag}`)
   } else {
     console.log(`Arduino CLI version is up-to-date: ${currentTag}`)

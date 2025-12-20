@@ -13,12 +13,19 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '../..')
 
 beforeAll(async () => {
-  const pkg = JSON.parse(
-    await fs.readFile(path.join(repoRoot, 'package.json'), 'utf8')
-  )
-  const rawVersion = String(pkg.arduinoCli?.version ?? '')
+  let rawVersion
+  try {
+    rawVersion = (
+      await fs.readFile(path.join(repoRoot, 'arduino-cli.version'), 'utf8')
+    ).trim()
+  } catch (err) {
+    if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
+      throw new Error('Missing arduino-cli.version')
+    }
+    throw err
+  }
   if (!rawVersion) {
-    throw new Error('Missing package.json#arduinoCli.version')
+    throw new Error('Missing arduino-cli.version content')
   }
   const cliVersion = rawVersion.startsWith('v')
     ? rawVersion.slice(1)

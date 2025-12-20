@@ -32,7 +32,7 @@ jobs:
 
       - name: Read Arduino CLI version
         run: |
-          version="$(npm run -s arduino:version)"
+          version="$(tr -d '\n' < arduino-cli.version)"
           echo "ARDUINO_CLI_VERSION=$version" >> "$GITHUB_ENV"
 
       - name: Create pull request
