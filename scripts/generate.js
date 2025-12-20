@@ -4,6 +4,9 @@ const fs = require('node:fs/promises')
 const path = require('node:path')
 const { spawnSync } = require('node:child_process')
 
+const missingVersionFile =
+  'Missing Arduino CLI version. Set arduino-cli.version or pass it as an argument (e.g. `node scripts/generate.js v1.3.1`).'
+
 /**
  * @param {string} command
  * @param {string[]} args
@@ -22,18 +25,25 @@ function run(command, args, options = {}) {
 
 async function main() {
   const repoRoot = path.resolve(__dirname, '..')
-  const packageJsonPath = path.join(repoRoot, 'package.json')
-  const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'))
+  const versionPath = path.join(repoRoot, 'arduino-cli.version')
 
   const versionFromArgs = process.argv
     .slice(2)
     .find((arg) => !arg.startsWith('-'))
-  const version = versionFromArgs ?? packageJson.arduinoCli?.version
+  let version = versionFromArgs
+  if (!version) {
+    try {
+      version = (await fs.readFile(versionPath, 'utf8')).trim()
+    } catch (err) {
+      if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
+        throw new Error(missingVersionFile)
+      }
+      throw err
+    }
+  }
 
   if (!version) {
-    throw new Error(
-      'Missing Arduino CLI version. Set package.json#arduinoCli.version or pass it as an argument (e.g. `node scripts/generate.js v1.3.1`).'
-    )
+    throw new Error(missingVersionFile)
   }
 
   run(
