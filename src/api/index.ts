@@ -94,6 +94,7 @@ export {
   ProfileLibraryReference,
   ProfileLibraryReference_IndexLibrary,
   ProfileLibraryReference_LocalLibrary,
+  ProfilePlatformReference,
   Programmer,
   Sketch,
   SketchProfile,

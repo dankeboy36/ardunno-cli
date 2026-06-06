@@ -259,6 +259,19 @@ export interface SketchProfile {
   portConfig: MonitorPortConfiguration | undefined
   /** Default Protocol in this profile. */
   protocol: string
+  /** Platforms used by the profile. */
+  platforms: ProfilePlatformReference[]
+  /** Libraries used by the profile. */
+  libraries: ProfileLibraryReference[]
+}
+
+export interface ProfilePlatformReference {
+  /** Platform ID (e.g., `arduino:avr`). */
+  id: string
+  /** Version of the platform. */
+  version?: string | undefined
+  /** 3rd party platform URL. */
+  indexUrl?: string | undefined
 }
 
 export interface ProfileLibraryReference {
@@ -2422,6 +2435,8 @@ function createBaseSketchProfile(): SketchProfile {
     port: '',
     portConfig: undefined,
     protocol: '',
+    platforms: [],
+    libraries: [],
   }
 }
 
@@ -2450,6 +2465,12 @@ export const SketchProfile = {
     }
     if (message.protocol !== '') {
       writer.uint32(50).string(message.protocol)
+    }
+    for (const v of message.platforms) {
+      ProfilePlatformReference.encode(v!, writer.uint32(58).fork()).ldelim()
+    }
+    for (const v of message.libraries) {
+      ProfileLibraryReference.encode(v!, writer.uint32(66).fork()).ldelim()
     }
     return writer
   },
@@ -2507,6 +2528,24 @@ export const SketchProfile = {
 
           message.protocol = reader.string()
           continue
+        case 7:
+          if (tag !== 58) {
+            break
+          }
+
+          message.platforms.push(
+            ProfilePlatformReference.decode(reader, reader.uint32())
+          )
+          continue
+        case 8:
+          if (tag !== 66) {
+            break
+          }
+
+          message.libraries.push(
+            ProfileLibraryReference.decode(reader, reader.uint32())
+          )
+          continue
       }
       if ((tag & 7) === 4 || tag === 0) {
         break
@@ -2530,6 +2569,12 @@ export const SketchProfile = {
       protocol: isSet(object.protocol)
         ? globalThis.String(object.protocol)
         : '',
+      platforms: globalThis.Array.isArray(object?.platforms)
+        ? object.platforms.map((e: any) => ProfilePlatformReference.fromJSON(e))
+        : [],
+      libraries: globalThis.Array.isArray(object?.libraries)
+        ? object.libraries.map((e: any) => ProfileLibraryReference.fromJSON(e))
+        : [],
     }
   },
 
@@ -2553,6 +2598,16 @@ export const SketchProfile = {
     if (message.protocol !== '') {
       obj.protocol = message.protocol
     }
+    if (message.platforms?.length) {
+      obj.platforms = message.platforms.map((e) =>
+        ProfilePlatformReference.toJSON(e)
+      )
+    }
+    if (message.libraries?.length) {
+      obj.libraries = message.libraries.map((e) =>
+        ProfileLibraryReference.toJSON(e)
+      )
+    }
     return obj
   },
 
@@ -2570,6 +2625,115 @@ export const SketchProfile = {
         ? MonitorPortConfiguration.fromPartial(object.portConfig)
         : undefined
     message.protocol = object.protocol ?? ''
+    message.platforms =
+      object.platforms?.map((e) => ProfilePlatformReference.fromPartial(e)) ||
+      []
+    message.libraries =
+      object.libraries?.map((e) => ProfileLibraryReference.fromPartial(e)) || []
+    return message
+  },
+}
+
+function createBaseProfilePlatformReference(): ProfilePlatformReference {
+  return { id: '', version: undefined, indexUrl: undefined }
+}
+
+export const ProfilePlatformReference = {
+  encode(
+    message: ProfilePlatformReference,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.id !== '') {
+      writer.uint32(10).string(message.id)
+    }
+    if (message.version !== undefined) {
+      writer.uint32(18).string(message.version)
+    }
+    if (message.indexUrl !== undefined) {
+      writer.uint32(26).string(message.indexUrl)
+    }
+    return writer
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ProfilePlatformReference {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseProfilePlatformReference()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break
+          }
+
+          message.id = reader.string()
+          continue
+        case 2:
+          if (tag !== 18) {
+            break
+          }
+
+          message.version = reader.string()
+          continue
+        case 3:
+          if (tag !== 26) {
+            break
+          }
+
+          message.indexUrl = reader.string()
+          continue
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break
+      }
+      reader.skipType(tag & 7)
+    }
+    return message
+  },
+
+  fromJSON(object: any): ProfilePlatformReference {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : '',
+      version: isSet(object.version)
+        ? globalThis.String(object.version)
+        : undefined,
+      indexUrl: isSet(object.indexUrl)
+        ? globalThis.String(object.indexUrl)
+        : undefined,
+    }
+  },
+
+  toJSON(message: ProfilePlatformReference): unknown {
+    const obj: any = {}
+    if (message.id !== '') {
+      obj.id = message.id
+    }
+    if (message.version !== undefined) {
+      obj.version = message.version
+    }
+    if (message.indexUrl !== undefined) {
+      obj.indexUrl = message.indexUrl
+    }
+    return obj
+  },
+
+  create(
+    base?: DeepPartial<ProfilePlatformReference>
+  ): ProfilePlatformReference {
+    return ProfilePlatformReference.fromPartial(base ?? {})
+  },
+  fromPartial(
+    object: DeepPartial<ProfilePlatformReference>
+  ): ProfilePlatformReference {
+    const message = createBaseProfilePlatformReference()
+    message.id = object.id ?? ''
+    message.version = object.version ?? undefined
+    message.indexUrl = object.indexUrl ?? undefined
     return message
   },
 }
